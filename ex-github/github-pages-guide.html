@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>從零開始把網頁放到 GitHub Pages</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f2ec;
+      --bg-accent: #ebe6db;
+      --ink: #1f1c18;
+      --ink-soft: #6b655d;
+      --line: #d4cdbf;
+      --accent: #a14a2a;
+      --accent-soft: #d49475;
+      --code-bg: #2a2620;
+      --code-text: #e8e1d3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter Tight', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      padding: 64px 24px 120px;
+    }
+
+    .container { max-width: 740px; margin: 0 auto; }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 36px;
+      margin-bottom: 60px;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: clamp(34px, 6vw, 54px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 22px;
+    }
+
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .lede {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      max-width: 600px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .meta-item { display: flex; gap: 8px; }
+    .meta-key { color: var(--accent); }
+
+    nav.toc {
+      background: var(--bg-accent);
+      padding: 24px 28px;
+      border-radius: 8px;
+      margin-bottom: 64px;
+    }
+
+    nav.toc .toc-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    nav.toc ol { list-style: none; counter-reset: toc; }
+    nav.toc li { counter-increment: toc; padding: 4px 0; }
+    nav.toc li::before {
+      content: "§ " counter(toc, decimal-leading-zero) "  ";
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+    }
+    nav.toc a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    nav.toc a:hover { border-bottom-color: var(--accent); }
+
+    .outcome {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 28px 32px;
+      border-radius: 10px;
+      margin-bottom: 64px;
+    }
+
+    .outcome .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      margin-bottom: 14px;
+    }
+
+    .outcome h3 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .outcome p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #c9c0b0;
+      margin-bottom: 14px;
+    }
+
+    .outcome .url-list {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      list-style: none;
+    }
+    .outcome .url-list li { padding: 4px 0; color: var(--bg); }
+    .outcome .url-list .protocol { color: #8a8478; }
+    .outcome .url-list .hl { color: var(--accent-soft); }
+
+    .inline-code-dark {
+      background: rgba(255,255,255,0.1);
+      color: var(--accent-soft);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    section {
+      margin-bottom: 72px;
+      scroll-margin-top: 24px;
+    }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 30px;
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+
+    h2 .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--accent);
+      letter-spacing: 0;
+    }
+
+    .section-intro {
+      color: var(--ink-soft);
+      margin-bottom: 28px;
+      font-size: 16px;
+    }
+
+    ol.steps { list-style: none; counter-reset: step; }
+
+    ol.steps > li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 56px;
+      padding-bottom: 28px;
+      border-left: 1px solid var(--line);
+      margin-left: 14px;
+    }
+
+    ol.steps > li:last-child {
+      border-left: 1px solid transparent;
+      padding-bottom: 0;
+    }
+
+    ol.steps > li::before {
+      content: counter(step, decimal-leading-zero);
+      position: absolute;
+      left: -14px;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .step-body { font-size: 15px; color: var(--ink-soft); }
+    .step-body p { margin-bottom: 8px; }
+    .step-body strong { color: var(--ink); font-weight: 600; }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--bg-accent);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    .note {
+      background: var(--bg-accent);
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--ink);
+      margin: 12px 0;
+      border-left: 3px solid var(--accent-soft);
+    }
+    .note strong { color: var(--accent); font-weight: 600; }
+    .note.critical { background: #fbecdc; border-left-color: var(--accent); }
+
+    .concept {
+      background: var(--bg);
+      border: 1px dashed var(--line);
+      padding: 22px 26px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .concept .concept-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .concept .concept-text {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .url-preview {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 16px 22px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      margin: 14px 0;
+      word-break: break-all;
+    }
+    .url-preview .protocol { color: #8a8478; }
+    .url-preview .hl { color: var(--accent-soft); font-weight: 500; }
+
+    .reminders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .reminder-card {
+      background: var(--bg-accent);
+      padding: 18px 20px;
+      border-radius: 6px;
+    }
+
+    .reminder-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .reminder-card .text {
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 32px;
+      margin-top: 80px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .ornament {
+      text-align: center;
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--ink-soft);
+      margin: 60px 0;
+      font-size: 14px;
+      letter-spacing: 0.3em;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 40px 18px 80px; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 24px; gap: 12px; }
+      .meta { gap: 12px; }
+      ol.steps > li { padding-left: 44px; }
+      .outcome { padding: 22px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="eyebrow">Guide · GitHub Pages</div>
+      <h1>從零開始,<br>把網頁放到 <em>GitHub Pages</em></h1>
+      <p class="lede">完整流程:申請帳號 → 建立 repo → 上傳第一個檔案。看完照做,你會有一個免費、永久的個人網站。</p>
+      <div class="meta">
+        <span class="meta-item"><span class="meta-key">level</span> 零基礎</span>
+        <span class="meta-item"><span class="meta-key">time</span> 約 30 分鐘</span>
+        <span class="meta-item"><span class="meta-key">cost</span> 0 元</span>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <div class="toc-label">這份文件包含</div>
+      <ol>
+        <li><a href="#s1">申請 GitHub 帳號</a></li>
+        <li><a href="#s2">建立 repo(關鍵命名)</a></li>
+        <li><a href="#s3">啟用 GitHub Pages</a></li>
+        <li><a href="#s4">上傳第一個 HTML 檔</a></li>
+        <li><a href="#s5">訪問你的網站</a></li>
+        <li><a href="#s6">關鍵注意事項</a></li>
+        <li><a href="#s7">之後要更新</a></li>
+      </ol>
+    </nav>
+
+    <div class="outcome">
+      <div class="label">完成後你會得到</div>
+      <h3>一個免費永久的個人網站</h3>
+      <p>本指南以虛構帳號 <span class="inline-code-dark">oldchang</span> 作為範例。實際操作時把 <span class="inline-code-dark">oldchang</span> 換成你自己的帳號名即可。</p>
+      <ul class="url-list">
+        <li><span class="protocol">https://</span><span class="hl">oldchang</span>.github.io/</li>
+        <li><span class="protocol">https://</span><span class="hl">oldchang</span>.github.io/your-project/</li>
+        <li><span class="protocol">https://</span><span class="hl">oldchang</span>.github.io/another-project/</li>
+      </ul>
+    </div>
+
+    <section id="s1">
+      <h2><span class="num">§ 01</span>申請 GitHub 帳號</h2>
+      <p class="section-intro">如果你已經有 GitHub 帳號,跳到 §02。</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">打開 GitHub 官網</span>
+          <div class="step-body"><p>網址:<code>github.com</code></p></div>
+        </li>
+        <li>
+          <span class="step-title">點右上角 <strong>Sign up</strong></span>
+          <div class="step-body"><p>進入註冊頁面。</p></div>
+        </li>
+        <li>
+          <span class="step-title">填入 Email</span>
+          <div class="step-body"><p>用一個你常用的信箱,之後驗證、找回密碼都靠它。</p></div>
+        </li>
+        <li>
+          <span class="step-title">設定密碼</span>
+          <div class="step-body"><p>至少 15 個字元,或 8 字元含數字與字母。建議用密碼管理工具產生。</p></div>
+        </li>
+        <li>
+          <span class="step-title">選擇 username(帳號名)</span>
+          <div class="step-body">
+            <p>這是<strong>本指南最重要的決定</strong>。</p>
+            <div class="concept">
+              <div class="concept-label">關鍵概念</div>
+              <div class="concept-text">你選的 username 會永久變成你網址的一部分,例如 <code>oldchang.github.io</code>。改名要付出代價(舊網址全死),所以一次選好。</div>
+            </div>
+            <p>建議:</p>
+            <p>· 全小寫</p>
+            <p>· 不含底線或特殊符號(連字號 <code>-</code> 可以)</p>
+            <p>· 短一點好記</p>
+            <p>· 確認你不會討厭自己未來名片印上這個名字</p>
+            <p>本指南範例假設你的 username 是 <code>oldchang</code>。</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">通過圖形驗證</span>
+          <div class="step-body"><p>依指示完成(通常是辨識圖案)。</p></div>
+        </li>
+        <li>
+          <span class="step-title">驗證 Email</span>
+          <div class="step-body"><p>GitHub 會寄一封驗證信到你剛填的 email。打開信件,點裡面的連結或輸入驗證碼。</p></div>
+        </li>
+        <li>
+          <span class="step-title">完成註冊</span>
+          <div class="step-body"><p>後續可能會問你的角色、興趣等,可以全部跳過(Skip personalization)。</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s2">
+      <h2><span class="num">§ 02</span>建立 repo(關鍵命名)</h2>
+      <p class="section-intro">repo(repository)是 GitHub 上的「專案資料夾」。我們要建一個結構特殊的 repo,讓網址最乾淨。</p>
+
+      <div class="concept">
+        <div class="concept-label">為什麼命名很關鍵</div>
+        <div class="concept-text">GitHub 的規則:如果 repo 名字跟 username 完全一樣(例:<code>oldchang.github.io</code>),這個 repo 會直接掛在根網址,不會多一層路徑。每個帳號只有一次機會用這個特殊命名。</div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">點右上角 <strong>+</strong> 圖示</span>
+          <div class="step-body"><p>下拉選單選 <strong>New repository</strong>。</p></div>
+        </li>
+        <li>
+          <span class="step-title">Repository name 必須打:</span>
+          <div class="step-body">
+            <pre><code>oldchang.github.io</code></pre>
+            <div class="note critical"><strong>注意:</strong> 把 <code>oldchang</code> 換成你自己的 username。格式永遠是 <code>你的username.github.io</code>,後面那個 <code>.github.io</code> 是固定的,一字不能差。</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">Description(描述)可空</span>
+          <div class="step-body"><p>之後再改也行。</p></div>
+        </li>
+        <li>
+          <span class="step-title">必須選 <strong>Public</strong></span>
+          <div class="step-body"><p>GitHub Pages 免費版只支援 Public repo。Private repo 需付費。</p></div>
+        </li>
+        <li>
+          <span class="step-title">勾選 <strong>Add a README file</strong></span>
+          <div class="step-body"><p>這樣 repo 不會是空的,Pages 才會啟動。</p></div>
+        </li>
+        <li>
+          <span class="step-title">點綠色 <strong>Create repository</strong> 按鈕</span>
+          <div class="step-body"><p>創建完成,你會被帶到 repo 主頁。</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s3">
+      <h2><span class="num">§ 03</span>啟用 GitHub Pages</h2>
+      <p class="section-intro">用 <code>username.github.io</code> 這種特殊 repo,通常 Pages 會自動啟用,但還是確認一次。</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">repo 上方點 <strong>Settings</strong></span>
+          <div class="step-body"><p>注意是 repo 的 Settings,不是帳號的 Settings。</p></div>
+        </li>
+        <li>
+          <span class="step-title">左側選單找 <strong>Pages</strong></span>
+          <div class="step-body"><p>在「Code and automation」分類下。</p></div>
+        </li>
+        <li>
+          <span class="step-title">確認設定</span>
+          <div class="step-body">
+            <p>· Source:<strong>Deploy from a branch</strong></p>
+            <p>· Branch:<strong>main</strong></p>
+            <p>· 資料夾:<strong>/ (root)</strong></p>
+            <p>如果跟上面不一樣,改成這樣然後點 <strong>Save</strong>。</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">等候啟用</span>
+          <div class="step-body">
+            <p>幾秒到 1 分鐘後,頁面上方會出現綠色框:</p>
+            <pre><code>Your site is live at https://oldchang.github.io/</code></pre>
+            <p>看到這個就代表 Pages 已啟用。</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s4">
+      <h2><span class="num">§ 04</span>上傳第一個 HTML 檔</h2>
+      <p class="section-intro">把你的網頁檔放到對應位置,網址才會看得到內容。</p>
+
+      <div class="concept">
+        <div class="concept-label">資料夾結構邏輯</div>
+        <div class="concept-text">把每個專案放在不同子資料夾裡,網址就會用資料夾名稱來分類。例如 <code>myproject/index.html</code> → 網址 <code>oldchang.github.io/myproject/</code>。</div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">本機準備 HTML 檔</span>
+          <div class="step-body">
+            <p>檔名必須是 <code>index.html</code>(全小寫)。每個資料夾的主頁都叫這個名字,網址才能省略檔名。</p>
+            <div class="note"><strong>Windows 記事本陷阱:</strong> 存檔時「存檔類型」要選「所有檔案 (*.*)」,否則會被存成 <code>index.html.txt</code>。</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">回到 repo 主頁</span>
+          <div class="step-body"><p>點上方 repo 名稱(<code>oldchang.github.io</code>)回到主頁。</p></div>
+        </li>
+        <li>
+          <span class="step-title">點 <strong>Add file</strong> → <strong>Upload files</strong></span>
+          <div class="step-body"><p>位置在檔案列表的上方,綠色 Code 按鈕旁邊。</p></div>
+        </li>
+        <li>
+          <span class="step-title">拖檔案進虛線框</span>
+          <div class="step-body"><p>或點 <strong>choose your files</strong> 用對話框選檔。</p></div>
+        </li>
+        <li>
+          <span class="step-title">改檔名,加上資料夾路徑 <em>(關鍵步驟)</em></span>
+          <div class="step-body">
+            <p>上傳完成後,列出的 <code>index.html</code> 旁邊有個輸入欄位。點一下,改成:</p>
+            <pre><code>myproject/index.html</code></pre>
+            <p>中間那個斜線就是「自動建立 <code>myproject</code> 資料夾」的指令。<code>myproject</code> 換成你想要的名字。</p>
+            <div class="note critical"><strong>名字規則:</strong> 全小寫、不含空格、不含中文。連字號 <code>-</code> 可以。例:<code>trip-2026</code>、<code>portfolio</code>、<code>blog</code>。</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">填寫 Commit message</span>
+          <div class="step-body"><p>頁面下方有兩個欄位。第一個填修改說明(隨便寫,例:<code>Add first page</code>)。</p></div>
+        </li>
+        <li>
+          <span class="step-title">點綠色 <strong>Commit changes</strong> 按鈕</span>
+          <div class="step-body"><p>送出後,GitHub 會開始部署。</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s5">
+      <h2><span class="num">§ 05</span>訪問你的網站</h2>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">等部署完成</span>
+          <div class="step-body"><p>commit 後通常 1–3 分鐘。要看狀態,repo 上方點 <strong>Actions</strong> 頁籤,看最新一筆有沒有綠色勾(✓)。</p></div>
+        </li>
+        <li>
+          <span class="step-title">打開瀏覽器</span>
+          <div class="step-body">
+            <p>網址(範例):</p>
+            <div class="url-preview">
+              <span class="protocol">https://</span><span class="hl">oldchang</span>.github.io/myproject/
+            </div>
+            <p>看到你上傳的網頁內容,完成。</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-title">看不到變化?</span>
+          <div class="step-body"><p>常見原因:瀏覽器快取。按 <code>Ctrl + Shift + R</code>(Mac:<code>Cmd + Shift + R</code>)強制清除快取重新整理。</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="s6">
+      <h2><span class="num">§ 06</span>關鍵注意事項</h2>
+      <p class="section-intro">踩過會痛,看完省事。</p>
+
+      <div class="reminders">
+        <div class="reminder-card">
+          <div class="label">Public only</div>
+          <div class="text">免費版只能用 Public repo。所有檔案內容公開,別放任何密碼、API 金鑰、私人資料。</div>
+        </div>
+        <div class="reminder-card">
+          <div class="label">禁止商業用途</div>
+          <div class="text">違反 GitHub TOS。個人專案、作品集、開源、學習都 OK,商業用途要換 Cloudflare Pages 或付費方案。</div>
+        </div>
+        <div class="reminder-card">
+          <div class="label">大小寫敏感</div>
+          <div class="text">資料夾、檔名、網址通通要全小寫。<code>MyProject</code> 跟 <code>myproject</code> 是不同的東西。</div>
+        </div>
+        <div class="reminder-card">
+          <div class="label">主頁檔名</div>
+          <div class="text">每個資料夾的主頁必須叫 <code>index.html</code>。檔名打錯網址會 404。</div>
+        </div>
+        <div class="reminder-card">
+          <div class="label">username 是永久的</div>
+          <div class="text">改 username 會牽動所有網址、所有設定。建議一次選好,不要事後改。</div>
+        </div>
+        <div class="reminder-card">
+          <div class="label">頻寬上限</div>
+          <div class="text">100GB/月。一般個人網站絕對用不到,除非爆紅或被攻擊。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="s7">
+      <h2><span class="num">§ 07</span>之後要更新</h2>
+      <p class="section-intro">建好之後,日常維護就這兩招。</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-title">小修改(改幾行字)</span>
+          <div class="step-body"><p>進入對應資料夾 → 點 <code>index.html</code> → 右上角鉛筆圖示 <strong>✏️</strong> → 線上編輯 → 拉到下方 <strong>Commit changes</strong>。</p></div>
+        </li>
+        <li>
+          <span class="step-title">整個檔案換掉</span>
+          <div class="step-body"><p>進入資料夾 → 點 <code>index.html</code> → 右上角 <strong>...</strong> → <strong>Delete file</strong> → Commit。回資料夾 → <strong>Upload files</strong> → 上傳新檔 → 改名為 <code>index.html</code> → Commit。</p></div>
+        </li>
+        <li>
+          <span class="step-title">新增另一個專案</span>
+          <div class="step-body"><p>跟 §04 一樣的流程,只是檔名改成新資料夾,例如 <code>blog/index.html</code>、<code>portfolio/index.html</code>。</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <div class="ornament">· · ·</div>
+
+    <footer>
+      <p>本指南為靜態網站部署入門。範例帳號 oldchang 為虛構,僅作說明用途。</p>
+    </footer>
+
+  </div>
+</body>
+</html>
