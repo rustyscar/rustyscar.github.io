@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#ffffff; --ink:#1a2533; --muted:#5b6b7c;
-    --accent:#1f6feb; --accent-soft:#eaf2ff; --accent2:#0a3d62;
+    --accent:#1f6feb; --accent-soft:#eaf2ff; --accent2:#0a3d62; --input-bg:#f0f6ff;
     --line:#dfe6ee; --head:#f4f7fb; --zebra:#fafcfe;
     --special:#fff6e0; --special-line:#e6c87a;
     --ok:#1f8a4c; --no:#c0392b; --order:#b8860b;
@@ -26,10 +26,11 @@
   .tab.active{background:var(--bg); color:var(--accent); border-color:var(--accent); border-bottom:2px solid var(--bg); margin-bottom:-1px;}
   .wrap{padding:12px;}
   label{font-size:13px; font-weight:600; color:var(--muted);}
-  select,input[type=number]{font-family:inherit; font-size:16px; padding:10px 12px; border:1px solid var(--line);
-    border-radius:8px; background:#fff; color:var(--ink); width:100%;}
-  select:focus,input:focus{outline:none; border-color:var(--accent);}
-  input[type=range]{width:100%;}
+  select,input[type=number],input[type=text]{font-family:inherit; font-size:16px; padding:10px 12px; border:1px solid #b9d2f5;
+    border-radius:8px; background:var(--input-bg); color:var(--ink); width:100%;}
+  select:focus,input:focus{outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(31,111,235,.18);}
+  input:disabled,select:disabled{background:var(--head); border-color:var(--line); color:var(--muted);}
+  input[type=range]{width:100%; background:transparent; border:none; box-shadow:none;}
   .selrow{margin-bottom:10px;}
   .selrow label{display:block; margin-bottom:5px;}
   .badge{font-size:13px; color:var(--muted); margin:2px 0 10px;}
