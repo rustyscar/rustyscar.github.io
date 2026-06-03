@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>H型鋼斷面工具（手機版）</title>
+<style>
+  :root{
+    --bg:#ffffff; --ink:#1a2533; --muted:#5b6b7c;
+    --accent:#1f6feb; --accent-soft:#eaf2ff; --accent2:#0a3d62;
+    --line:#dfe6ee; --head:#f4f7fb; --zebra:#fafcfe;
+    --special:#fff6e0; --special-line:#e6c87a;
+    --ok:#1f8a4c; --no:#c0392b; --order:#b8860b;
+    --okbg:#e8f6ee; --nobg:#fcebe9;
+  }
+  *{box-sizing:border-box; -webkit-text-size-adjust:100%;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Microsoft JhengHei","微軟正黑體","Segoe UI",sans-serif; font-size:14px; line-height:1.5;}
+  header{padding:12px 14px; border-bottom:2px solid var(--accent); position:sticky; top:0; background:#fff; z-index:20;}
+  header h1{margin:0; font-size:17px; font-weight:700;}
+  header .sub{color:var(--muted); font-size:11px; margin-top:3px;}
+  .tabs{display:flex; gap:4px; padding:8px 10px 0; border-bottom:1px solid var(--line);
+    position:sticky; top:54px; background:#fff; z-index:19;}
+  .tab{flex:1; text-align:center; padding:9px 6px; border:1px solid var(--line); border-bottom:none; background:var(--head);
+    color:var(--muted); cursor:pointer; border-radius:8px 8px 0 0; font-size:14px; font-weight:600;}
+  .tab.active{background:var(--bg); color:var(--accent); border-color:var(--accent); border-bottom:2px solid var(--bg); margin-bottom:-1px;}
+  .wrap{padding:12px;}
+  label{font-size:13px; font-weight:600; color:var(--muted);}
+  select,input[type=number]{font-family:inherit; font-size:16px; padding:10px 12px; border:1px solid var(--line);
+    border-radius:8px; background:#fff; color:var(--ink); width:100%;}
+  select:focus,input:focus{outline:none; border-color:var(--accent);}
+  input[type=range]{width:100%;}
+  .selrow{margin-bottom:10px;}
+  .selrow label{display:block; margin-bottom:5px;}
+  .badge{font-size:13px; color:var(--muted); margin:2px 0 10px;}
+  .special-note{display:inline-block; background:var(--special); border:1px solid var(--special-line);
+    color:#7a5b10; padding:4px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;}
+  .panel{display:none;} .panel.active{display:block;}
+
+  /* ----- 查詢卡片（直式） ----- */
+  .seccard{border:1px solid var(--line); border-radius:11px; margin-bottom:11px; overflow:hidden; background:#fff;}
+  .seccard .top{background:var(--accent2); color:#fff; padding:10px 13px; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .seccard .top .name{font-size:15px; font-weight:700;}
+  .seccard .top .sup{font-size:12px; font-weight:600; display:flex; gap:8px; align-items:center;}
+  .seccard .top .sup .s-ok{color:#9be8b8;} .seccard .top .sup .s-no{color:#ffb3aa;} .seccard .top .sup .s-order{color:#ffe08a;}
+  .seccard .cur{padding:6px 13px; font-size:12px; color:var(--muted); background:var(--zebra); border-bottom:1px solid var(--line);}
+  .pairs{display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .pair{display:flex; justify-content:space-between; padding:8px 13px; border-bottom:1px solid var(--line); font-size:13px;}
+  .pair:nth-child(odd){border-right:1px solid var(--line);}
+  .pair .k{color:var(--muted);} .pair .v{font-weight:600;}
+  .pair .k small{font-size:10px;}
+
+  /* ----- 梁設計 ----- */
+  .card{border:1px solid var(--line); border-radius:11px; padding:13px 14px; margin-bottom:11px; background:#fff;}
+  .card h2{margin:0 0 10px; font-size:15px; color:var(--accent2); border-left:4px solid var(--accent); padding-left:9px;}
+  .field{display:flex; flex-direction:column; gap:4px; margin-bottom:10px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{font-weight:600; color:var(--ink); font-size:13px;}
+  .field .unit{color:var(--muted); font-weight:400; font-size:12px;}
+  .diagram{margin:4px 0 8px; text-align:center;}
+  .seclabel{font-size:12px; color:var(--muted); margin:2px 0 9px;}
+  .seclabel.h{color:var(--ink); font-weight:700; margin-top:6px;}
+  .result-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .res{padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--zebra);}
+  .res .lab{font-size:12px; color:var(--muted);}
+  .res .val{font-size:16px; font-weight:700; margin-top:2px;}
+  .res .sub{font-size:11px; color:var(--muted); margin-top:2px;}
+  .check{padding:10px 13px; border-radius:9px; font-weight:700; margin-bottom:8px; font-size:14px;}
+  .check .ratio{display:block; font-weight:400; color:var(--muted); font-size:12px; margin-top:3px;}
+  .check.pass{background:var(--okbg); color:var(--ok); border:1px solid var(--ok);}
+  .check.fail{background:var(--nobg); color:var(--no); border:1px solid var(--no);}
+  .formula{font-family:"Consolas","Courier New",monospace; font-size:11.5px; color:var(--muted); background:var(--head);
+    padding:8px 11px; border-radius:6px; margin-top:8px; white-space:pre-wrap; line-height:1.5; overflow-x:auto;}
+  .hint{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5;}
+  button.calc{font-family:inherit; font-size:16px; font-weight:700; padding:13px; background:var(--accent);
+    color:#fff; border:none; border-radius:8px; cursor:pointer; width:100%;}
+  button.calc:active{background:#1a5fd0;}
+  .legend{margin-top:12px; padding:12px 14px; background:var(--zebra); border:1px solid var(--line); border-radius:10px; font-size:12px;}
+  .legend h3{margin:0 0 7px; font-size:14px; color:var(--ink);}
+  .legend .item{display:block; color:var(--muted); margin-bottom:4px;}
+  .legend b{color:var(--ink);}
+  .sym{display:inline-block; width:1.4em; text-align:center; font-weight:700;}
+  .s-ok{color:var(--ok);} .s-no{color:var(--no);} .s-order{color:var(--order);}
+  footer{padding:12px 14px; color:var(--muted); font-size:11px; border-top:1px solid var(--line); line-height:1.5;}
+</style>
+</head>
+<body>
+<header>
+  <h1>H 型鋼斷面工具</h1>
+  <div class="sub">台灣 RH 熱軋 H 型鋼 · 159 斷面 · 手機直式版</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="query">斷面查詢</div>
+  <div class="tab" data-tab="beam">小梁配置規劃</div>
+</div>
+
+<div class="wrap">
+  <!-- 查詢 -->
+  <div class="panel active" id="panel-query">
+    <div class="selrow">
+      <label for="grp">標稱尺度系列</label>
+      <select id="grp"></select>
+    </div>
+    <div class="badge" id="cnt"></div>
+    <span class="special-note" id="special" style="display:none">☆ 中龍非 JIS 特殊系列</span>
+    <div id="qcards"></div>
+    <div class="legend">
+      <h3>供應情況符號</h3>
+      <span class="item"><span class="sym s-ok">●</span>常用斷面（常備生產）</span>
+      <span class="item"><span class="sym s-order">◎</span>依訂單生產</span>
+      <span class="item"><span class="sym s-no">×</span>未生產</span>
+      <span class="item"><span class="sym">—</span>2019 表未列（非必然停產）</span>
+      <span class="item" style="margin-top:7px"><b>現行型錄</b>：標示現行供應來源；空白＝未在現行型錄中找到，非必然停產。</span>
+    </div>
+  </div>
+
+  <!-- 梁設計 -->
+  <div class="panel" id="panel-beam">
+    <div class="card">
+      <h2>① 幾何 + 載重配置</h2>
+      <div class="diagram" id="beamDiagram"></div>
+      <div class="field"><label>小梁跨距 L <span class="unit">(m)</span></label><input type="number" id="span" value="6" step="0.1" min="0.5"></div>
+      <div class="field"><label>小梁間距 S <span class="unit">(m，貢獻寬)</span></label><input type="number" id="trib" value="3" step="0.1" min="0.1"></div>
+      <div class="field"><label>側撐間距 Lb <span class="unit">(m，0=全側撐)</span></label><input type="number" id="lb" value="0" step="0.1" min="0"></div>
+    </div>
+
+    <div class="card">
+      <h2>② 載重輸入</h2>
+      <div class="seclabel">面載重（含板）乘間距 S 換算梁線載重。</div>
+      <div class="field"><label>RC 樓板厚 t <span class="unit">(cm，不扣梁寬)</span></label><input type="number" id="slab" value="15" step="1" min="0"></div>
+      <div class="field"><label>附加靜載 DL <span class="unit">(kgf/m²)</span></label><input type="number" id="dl" value="150" step="10" min="0"></div>
+      <div class="field"><label>活載重 LL <span class="unit">(kgf/m²)</span></label><input type="number" id="ll" value="200" step="10" min="0"></div>
+      <div class="field"><label>附加線載重 <span class="unit">(kgf/m，選填)</span></label><input type="number" id="wadd" value="0" step="10" min="0"></div>
+      <div class="field"><label>RC 單位重 <span class="unit">(kgf/m³)</span></label><input type="number" id="rcw" value="2400" step="50" min="0"></div>
+      <div class="field"><label>鋼材等級 (Fy)</label>
+        <select id="fy">
+          <option value="2.5">SN400B / A36 (Fy=2.5)</option>
+          <option value="3.3">SN490B (Fy=3.3)</option>
+          <option value="3.5">A572 Gr50 (Fy=3.5)</option>
+          <option value="4.3">SM570 (Fy=4.3)</option>
+        </select></div>
+      <div class="field"><label>含梁自重？</label><select id="selfwt"><option value="1">是（自動加入）</option><option value="0">否</option></select></div>
+      <div class="seclabel h">集中荷重（簡支梁上一點）</div>
+      <div class="field"><label>集中荷重 P<sub>DL</sub> <span class="unit">(tf)</span></label><input type="number" id="pdl" value="0" step="0.1" min="0"></div>
+      <div class="field"><label>集中荷重 P<sub>LL</sub> <span class="unit">(tf)</span></label><input type="number" id="pll" value="0" step="0.1" min="0"></div>
+      <div class="field"><label>集中荷重位置 a＝<span id="posLabel">3.00</span> m（距左端）</label><input type="range" id="pos" min="0" max="100" value="50" step="1"></div>
+    </div>
+
+    <div class="card">
+      <h2>③ 載重組合與內力（LRFD）</h2>
+      <div class="seclabel">取較大者：1.4D ；1.2D + 1.6L</div>
+      <div class="result-grid" id="forceRes"></div>
+      <div class="formula" id="forceFormula"></div>
+    </div>
+
+    <div class="card">
+      <h2>④ 選取小梁斷面</h2>
+      <div class="field"><label>系列</label><select id="bgrp"></select></div>
+      <div class="field"><label>斷面</label><select id="bsec"></select></div>
+      <button class="calc" id="runBtn">計算檢核</button>
+    </div>
+
+    <div class="card" id="strengthCard" style="display:none">
+      <h2>⑤ 強度檢核</h2>
+      <div id="strengthChecks"></div>
+      <div class="result-grid" id="strengthRes"></div>
+      <div class="formula" id="strengthFormula"></div>
+    </div>
+
+    <div class="card" id="deflCard" style="display:none">
+      <h2>⑥ 撓度檢核（服務載重）</h2>
+      <div class="field"><label>構件類型（AISC DG3 / IBC 1604.3）</label>
+        <select id="defPreset">
+          <option value="360,240">樓版梁：活載 L/360、全載 L/240</option>
+          <option value="480,360">支承脆性裝修：活載 L/480、全載 L/360</option>
+          <option value="240,180">屋頂梁（無天花）：活載 L/240、全載 L/180</option>
+          <option value="600,480">支承砌磚/玻璃：活載 L/600、全載 L/480</option>
+          <option value="custom">自訂</option>
+        </select></div>
+      <div class="result-grid" style="margin-bottom:10px">
+        <div class="field" style="margin:0"><label>活載限值 L/</label><input type="number" id="defLL" value="360" step="10" min="1"></div>
+        <div class="field" style="margin:0"><label>全載限值 L/</label><input type="number" id="defTot" value="240" step="10" min="1"></div>
+      </div>
+      <div id="deflChecks"></div>
+      <div class="result-grid" id="deflRes"></div>
+      <div class="formula" id="deflFormula"></div>
+    </div>
+
+    <div class="card">
+      <div class="hint"><b>假設：</b>簡支單跨。彎矩採 AISC F2 章 LTB（依 Lb、Lp、Lr 分三段，Cb=1.0 保守），φMn=0.9·Mn。剪力 φVn=0.9·0.6·Fy·Aw。內力含均布＋集中荷重疊加取最大。撓度用未折減服務載重。LTB 之 J、Cw 為手冊／計算值，rT 視為 rts。本工具供配置規劃／初步選斷面，正式送審須由負責人覆核。</div>
+    </div>
+  </div>
+</div>
+
+<footer>資料整合自 2005／2019 鋼結構設計手冊、東和 2025 與中龍型錄。正式送審應以原廠最新型錄／手冊為準，並由負責人覆核。</footer>
+<script>
+const DATA = [{"name": "100×50", "special": false, "rows": [{"grp": "100x50", "spec": "RH 100×50×5×7", "tonghe": "×", "chunglung": "×", "H": 100, "B": 50, "tw": 5, "tf": 7, "R": 8, "A": 11.8, "m": 9.3, "Ix": 187, "Iy": 14.8, "rx": 3.98, "ry": 1.12, "rT": 1.11, "Sx": 37.5, "Sy": 5.91, "Zx": 44.1, "Zy": 9.52, "J": 2.03, "Cw": 0.3, "cur_prod": "東和2025"}]}, {"name": "100×100", "special": false, "rows": [{"grp": "100x100", "spec": "RH 100×100×6×8", "tonghe": null, "chunglung": "×", "H": 100, "B": 100, "tw": 6, "tf": 8, "R": 8, "A": 21.6, "m": 16.9, "Ix": 378, "Iy": 133.6, "rx": 4.18, "ry": 2.49, "rT": 2.49, "Sx": 75.6, "Sy": 26.72, "Zx": 86.4, "Zy": 41.02, "J": 4.73, "Cw": 2.8, "cur_prod": "東和2025"}]}, {"name": "125×60", "special": false, "rows": [{"grp": "125x60", "spec": "RH 125×60×6×8", "tonghe": "×", "chunglung": "×", "H": 125, "B": 60, "tw": 6, "tf": 8, "R": 8, "A": 16.7, "m": 13.1, "Ix": 409, "Iy": 29.1, "rx": 4.95, "ry": 1.32, "rT": 1.32, "Sx": 65.5, "Sy": 9.71, "Zx": 76.9, "Zy": 15.64, "J": 3.55, "Cw": 1, "cur_prod": "東和2025"}]}, {"name": "125×125", "special": false, "rows": [{"grp": "125x125", "spec": "RH 125×125×6.5×9", "tonghe": null, "chunglung": "×", "H": 125, "B": 125, "tw": 6.5, "tf": 9, "R": 8, "A": 30, "m": 23.6, "Ix": 839, "Iy": 293.4, "rx": 5.29, "ry": 3.13, "rT": 3.13, "Sx": 134.3, "Sy": 46.94, "Zx": 151.9, "Zy": 71.72, "J": 7.91, "Cw": 9.9, "cur_prod": "東和2025"}]}, {"name": "150×75", "special": false, "rows": [{"grp": "150x75", "spec": "RH 150×75×5×7", "tonghe": null, "chunglung": "×", "H": 150, "B": 75, "tw": 5, "tf": 7, "R": 8, "A": 17.8, "m": 14, "Ix": 666, "Iy": 49.5, "rx": 6.11, "ry": 1.66, "rT": 1.66, "Sx": 88.8, "Sy": 13.19, "Zx": 101.8, "Zy": 20.77, "J": 2.81, "Cw": 2.5, "cur_prod": "東和2025"}]}, {"name": "150×100", "special": false, "rows": [{"grp": "150x100", "spec": "RH 148×100×6×9", "tonghe": null, "chunglung": "×", "H": 148, "B": 100, "tw": 6, "tf": 9, "R": 8, "A": 26.3, "m": 20.7, "Ix": 1002, "Iy": 150.4, "rx": 6.17, "ry": 2.39, "rT": 2.39, "Sx": 135.5, "Sy": 30.07, "Zx": 153.9, "Zy": 46.43, "J": 6.56, "Cw": 7.3, "cur_prod": "東和2025"}]}, {"name": "150×150", "special": false, "rows": [{"grp": "150x150", "spec": "RH 150×150×7×10", "tonghe": null, "chunglung": null, "H": 150, "B": 150, "tw": 7, "tf": 10, "R": 8, "A": 39.6, "m": 31.1, "Ix": 1623, "Iy": 563, "rx": 6.4, "ry": 3.77, "rT": 3.77, "Sx": 216.3, "Sy": 75.07, "Zx": 243, "Zy": 114.38, "J": 12.5, "Cw": 27.6, "cur_prod": "東和2025、中龍"}]}, {"name": "175×90", "special": false, "rows": [{"grp": "175x90", "spec": "RH 175×90×5×8", "tonghe": null, "chunglung": "×", "H": 175, "B": 90, "tw": 5, "tf": 8, "R": 8, "A": 22.9, "m": 18, "Ix": 1205, "Iy": 97.5, "rx": 7.26, "ry": 2.06, "rT": 2.06, "Sx": 137.8, "Sy": 21.66, "Zx": 156.1, "Zy": 33.63, "J": 4.31, "Cw": 6.8, "cur_prod": "東和2025"}]}, {"name": "175×175", "special": false, "rows": [{"grp": "175x175", "spec": "RH 175×175×7.5×11", "tonghe": null, "chunglung": "×", "H": 175, "B": 175, "tw": 7.5, "tf": 11, "R": 13, "A": 51.4, "m": 40.4, "Ix": 2895, "Iy": 983.7, "rx": 7.5, "ry": 4.37, "rT": 4.37, "Sx": 330.9, "Sy": 112.43, "Zx": 370.3, "Zy": 171.55, "J": 21, "Cw": 66.1, "cur_prod": "東和2025"}]}, {"name": "200×100", "special": false, "rows": [{"grp": "200x100", "spec": "RH 198×99×4.5×7", "tonghe": null, "chunglung": null, "H": 198, "B": 99, "tw": 4.5, "tf": 7, "R": 8, "A": 22.7, "m": 17.8, "Ix": 1543, "Iy": 113.4, "rx": 8.25, "ry": 2.24, "rT": 2.24, "Sx": 155.9, "Sy": 22.92, "Zx": 175.4, "Zy": 35.46, "J": 3.3, "Cw": 10.3, "cur_prod": "東和2025、中龍"}, {"grp": "200x100", "spec": "RH 200×100×5.5×8", "tonghe": null, "chunglung": null, "H": 200, "B": 100, "tw": 5.5, "tf": 8, "R": 8, "A": 26.7, "m": 20.9, "Ix": 1806, "Iy": 133.7, "rx": 8.23, "ry": 2.24, "rT": 2.24, "Sx": 180.6, "Sy": 26.74, "Zx": 205.1, "Zy": 41.64, "J": 5.08, "Cw": 12.3, "cur_prod": "東和2025、中龍"}]}, {"name": "200×150", "special": false, "rows": [{"grp": "200x150", "spec": "RH 194×150×6×9", "tonghe": null, "chunglung": null, "H": 194, "B": 150, "tw": 6, "tf": 9, "R": 8, "A": 38.1, "m": 29.9, "Ix": 2625, "Iy": 506.7, "rx": 8.3, "ry": 3.65, "rT": 3.65, "Sx": 270.7, "Sy": 67.56, "Zx": 301, "Zy": 103.1, "J": 9.32, "Cw": 43.4, "cur_prod": "東和2025、中龍"}, {"grp": "200x150", "spec": "RH 200×152×8×12", "tonghe": null, "chunglung": null, "H": 200, "B": 152, "tw": 8, "tf": 12, "R": 8, "A": 51.1, "m": 40.1, "Ix": 3632, "Iy": 703.3, "rx": 8.43, "ry": 3.71, "rT": 3.71, "Sx": 363.2, "Sy": 92.54, "Zx": 409.6, "Zy": 141.76, "J": 20.51, "Cw": 62.1, "cur_prod": "中龍(2個月交期)"}]}, {"name": "200×200", "special": false, "rows": [{"grp": "200x200", "spec": "RH 200×200×8×12", "tonghe": null, "chunglung": null, "H": 200, "B": 200, "tw": 8, "tf": 12, "R": 13, "A": 63.5, "m": 49.9, "Ix": 4716, "Iy": 1601.4, "rx": 8.62, "ry": 5.02, "rT": 5.02, "Sx": 471.6, "Sy": 160.14, "Zx": 525.5, "Zy": 243.82, "J": 29.8, "Cw": 141.5, "cur_prod": "東和2025、中龍"}, {"grp": "200x200", "spec": "RH 200×204×12×12", "tonghe": "◎", "chunglung": "◎", "H": 200, "B": 204, "tw": 12, "tf": 12, "R": 13, "A": 71.5, "m": 56.2, "Ix": 4982, "Iy": 1701.6, "rx": 8.35, "ry": 4.88, "rT": 4.88, "Sx": 498.2, "Sy": 166.83, "Zx": 565.5, "Zy": 257.32, "J": 39.6, "Cw": 150.4, "cur_prod": "東和2025、中龍"}, {"grp": "200x200", "spec": "RH 204×200×8×14", "tonghe": null, "chunglung": null, "H": 204, "B": 200, "tw": 8, "tf": 14, "R": 13, "A": 71.5, "m": 56.2, "Ix": 5532, "Iy": 1868.1, "rx": 8.79, "ry": 5.11, "rT": 5.11, "Sx": 542.3, "Sy": 186.81, "Zx": 606.3, "Zy": 283.82, "J": 39.59, "Cw": 168.6, "cur_prod": "中龍(2個月交期)"}, {"grp": "200x200", "spec": "RH 208×202×10×16", "tonghe": null, "chunglung": null, "H": 208, "B": 202, "tw": 10, "tf": 16, "R": 13, "A": 83.7, "m": 65.7, "Ix": 6530, "Iy": 2200.3, "rx": 8.83, "ry": 5.13, "rT": 5.13, "Sx": 627.9, "Sy": 217.86, "Zx": 710.3, "Zy": 331.98, "J": 61.03, "Cw": 202.8, "cur_prod": "中龍"}]}, {"name": "250×125", "special": false, "rows": [{"grp": "250x125", "spec": "RH 248×124×5×8", "tonghe": null, "chunglung": null, "H": 248, "B": 124, "tw": 5, "tf": 8, "R": 8, "A": 32, "m": 25.1, "Ix": 3450, "Iy": 254.6, "rx": 10.38, "ry": 2.82, "rT": 2.82, "Sx": 278.2, "Sy": 41.06, "Zx": 311.6, "Zy": 63.19, "J": 5.78, "Cw": 36.7, "cur_prod": "東和2025、中龍"}, {"grp": "250x125", "spec": "RH 250×125×6×9", "tonghe": null, "chunglung": null, "H": 250, "B": 125, "tw": 6, "tf": 9, "R": 8, "A": 37, "m": 29, "Ix": 3965, "Iy": 293.5, "rx": 10.36, "ry": 2.82, "rT": 2.82, "Sx": 317.2, "Sy": 46.96, "Zx": 358.1, "Zy": 72.66, "J": 8.51, "Cw": 42.6, "cur_prod": "東和2025、中龍"}]}, {"name": "250×175", "special": false, "rows": [{"grp": "250x175", "spec": "RH 244×175×7×11", "tonghe": null, "chunglung": null, "H": 244, "B": 175, "tw": 7, "tf": 11, "R": 13, "A": 55.5, "m": 43.6, "Ix": 6037, "Iy": 983.8, "rx": 10.43, "ry": 4.21, "rT": 4.21, "Sx": 494.8, "Sy": 112.43, "Zx": 550.5, "Zy": 172.09, "J": 21.2, "Cw": 133.5, "cur_prod": "東和2025、中龍"}]}, {"name": "250×250", "special": false, "rows": [{"grp": "250x250", "spec": "RH 244×252×11×11", "tonghe": "×", "chunglung": null, "H": 244, "B": 252, "tw": 11, "tf": 11, "R": 13, "A": 81.3, "m": 63.8, "Ix": 8702, "Iy": 2937.4, "rx": 10.35, "ry": 6.01, "rT": 6.01, "Sx": 713.3, "Sy": 233.12, "Zx": 797.1, "Zy": 357.21, "J": 32.21, "Cw": 398.7, "cur_prod": "中龍"}, {"grp": "250x250", "spec": "RH 250×250×9×14", "tonghe": "◎", "chunglung": null, "H": 250, "B": 250, "tw": 9, "tf": 14, "R": 13, "A": 91.4, "m": 71.8, "Ix": 10748, "Iy": 3648, "rx": 10.84, "ry": 6.32, "rT": 6.32, "Sx": 859.9, "Sy": 291.84, "Zx": 952.6, "Zy": 443.07, "J": 55.8, "Cw": 507.9, "cur_prod": "東和2025、中龍"}, {"grp": "250x250", "spec": "RH 250×255×14×14", "tonghe": "◎", "chunglung": null, "H": 250, "B": 255, "tw": 14, "tf": 14, "R": 13, "A": 103.9, "m": 81.6, "Ix": 11399, "Iy": 3875.5, "rx": 10.47, "ry": 6.11, "rT": 6.11, "Sx": 911.9, "Sy": 303.96, "Zx": 1030.7, "Zy": 467.49, "J": 75.4, "Cw": 539.6, "cur_prod": "東和2025、中龍"}]}, {"name": "300×150", "special": false, "rows": [{"grp": "300x150", "spec": "RH 298×149×5.5×8", "tonghe": null, "chunglung": null, "H": 298, "B": 149, "tw": 5.5, "tf": 8, "R": 13, "A": 40.8, "m": 32, "Ix": 6318, "Iy": 441.9, "rx": 12.44, "ry": 3.29, "rT": 3.29, "Sx": 424, "Sy": 59.32, "Zx": 475.1, "Zy": 91.76, "J": 8.65, "Cw": 92.9, "cur_prod": "東和2025、中龍"}, {"grp": "300x150", "spec": "RH 300×150×6.5×9", "tonghe": null, "chunglung": null, "H": 300, "B": 150, "tw": 6.5, "tf": 9, "R": 13, "A": 46.8, "m": 36.7, "Ix": 7209, "Iy": 507.4, "rx": 12.41, "ry": 3.29, "rT": 3.29, "Sx": 480.6, "Sy": 67.66, "Zx": 542.1, "Zy": 105.12, "J": 12.4, "Cw": 107.4, "cur_prod": "東和2025、中龍"}]}, {"name": "300×200", "special": false, "rows": [{"grp": "300x200", "spec": "RH 294×200×8×12", "tonghe": null, "chunglung": null, "H": 294, "B": 200, "tw": 8, "tf": 12, "R": 13, "A": 71.1, "m": 55.8, "Ix": 11114, "Iy": 1601.8, "rx": 12.51, "ry": 4.75, "rT": 4.75, "Sx": 756.1, "Sy": 160.18, "Zx": 841.8, "Zy": 245.32, "J": 31.4, "Cw": 318.5, "cur_prod": "東和2025、中龍"}, {"grp": "300x200", "spec": "RH 298×201×9×14", "tonghe": "◎", "chunglung": null, "H": 298, "B": 201, "tw": 9, "tf": 14, "R": 13, "A": 82, "m": 64.4, "Ix": 13087, "Iy": 1897.2, "rx": 12.63, "ry": 4.81, "rT": 4.81, "Sx": 878.3, "Sy": 188.78, "Zx": 982.4, "Zy": 289.35, "J": 43.33, "Cw": 382.6, "cur_prod": "中龍"}, {"grp": "300x200", "spec": "RH 300×202×10×15", "tonghe": null, "chunglung": null, "H": 300, "B": 202, "tw": 10, "tf": 15, "R": 13, "A": 89.1, "m": 69.9, "Ix": 14210, "Iy": 2063.8, "rx": 12.63, "ry": 4.81, "rT": 4.81, "Sx": 947.4, "Sy": 204.33, "Zx": 1065, "Zy": 313.93, "J": 54.45, "Cw": 419.1, "cur_prod": "中龍(2個月交期)"}]}, {"name": "300×250", "special": false, "rows": [{"grp": "300x250", "spec": "RH 336×249×8×12", "tonghe": null, "chunglung": null, "H": 336, "B": 249, "tw": 8, "tf": 12, "R": 13, "A": 86.2, "m": 67.6, "Ix": 18055, "Iy": 3089.7, "rx": 14.48, "ry": 5.99, "rT": 5.99, "Sx": 1074.7, "Sy": 248.17, "Zx": 1185, "Zy": 378, "J": 37.8, "Cw": 810.9, "cur_prod": "東和2025、中龍"}]}, {"name": "300×300", "special": false, "rows": [{"grp": "300x300", "spec": "RH 294×302×12×12", "tonghe": null, "chunglung": null, "H": 294, "B": 302, "tw": 12, "tf": 12, "R": 13, "A": 106.3, "m": 83.5, "Ix": 16640, "Iy": 5513.8, "rx": 12.51, "ry": 7.2, "rT": 7.2, "Sx": 1132, "Sy": 365.15, "Zx": 1259.8, "Zy": 558.24, "J": 56.3, "Cw": 1096.2, "cur_prod": "東和2025、中龍"}, {"grp": "300x300", "spec": "RH 300×300×10×15", "tonghe": null, "chunglung": null, "H": 300, "B": 300, "tw": 10, "tf": 15, "R": 13, "A": 118.5, "m": 93, "Ix": 20186, "Iy": 6753.2, "rx": 13.05, "ry": 7.55, "rT": 7.55, "Sx": 1345.7, "Sy": 450.21, "Zx": 1483.9, "Zy": 682.9, "J": 82.1, "Cw": 1371.3, "cur_prod": "東和2025、中龍"}, {"grp": "300x300", "spec": "RH 300×301×11×17", "tonghe": null, "chunglung": null, "H": 300, "B": 301, "tw": 11, "tf": 17, "R": 13, "A": 133.1, "m": 104.4, "Ix": 22486, "Iy": 7730.7, "rx": 13, "ry": 7.62, "rT": 7.61, "Sx": 1499.1, "Sy": 513.67, "Zx": 1661.6, "Zy": 779.37, "J": 110.39, "Cw": 1547.9, "cur_prod": "中龍"}, {"grp": "300x300", "spec": "RH 300×305×15×15", "tonghe": "◎", "chunglung": "◎", "H": 300, "B": 305, "tw": 15, "tf": 15, "R": 13, "A": 133.5, "m": 104.8, "Ix": 21311, "Iy": 7102.3, "rx": 12.64, "ry": 7.3, "rT": 7.29, "Sx": 1420.7, "Sy": 465.73, "Zx": 1596.4, "Zy": 714.38, "J": 109, "Cw": 1442.2, "cur_prod": "東和2025、中龍"}, {"grp": "300x300", "spec": "RH 304×301×11×17", "tonghe": null, "chunglung": null, "H": 304, "B": 301, "tw": 11, "tf": 17, "R": 13, "A": 133.5, "m": 104.8, "Ix": 23156, "Iy": 7730.8, "rx": 13.17, "ry": 7.61, "rT": 7.61, "Sx": 1523.4, "Sy": 513.67, "Zx": 1688.2, "Zy": 779.5, "J": 117, "Cw": 1591.9, "cur_prod": "東和2025"}, {"grp": "300x300", "spec": "RH 312×303×13×21", "tonghe": "◎", "chunglung": "◎", "H": 312, "B": 303, "tw": 13, "tf": 21, "R": 13, "A": 163.8, "m": 128.6, "Ix": 29373, "Iy": 9742.6, "rx": 13.39, "ry": 7.71, "rT": 7.71, "Sx": 1882.9, "Sy": 643.07, "Zx": 2107.7, "Zy": 976.77, "J": 215, "Cw": 2062.5, "cur_prod": "東和2025、中龍"}, {"grp": "300x300", "spec": "RH 318×307×17×24", "tonghe": "◎", "chunglung": "◎", "H": 318, "B": 307, "tw": 17, "tf": 24, "R": 13, "A": 194.7, "m": 152.8, "Ix": 34955, "Iy": 11586.7, "rx": 13.4, "ry": 7.71, "rT": 7.71, "Sx": 2198.4, "Sy": 754.84, "Zx": 2495.2, "Zy": 1152.15, "J": 342, "Cw": 2503.8, "cur_prod": "東和2025、中龍"}, {"grp": "300x300", "spec": "RH 326×310×20×28", "tonghe": "◎", "chunglung": "◎", "H": 326, "B": 310, "tw": 20, "tf": 28, "R": 13, "A": 229.1, "m": 179.8, "Ix": 42188, "Iy": 13922.9, "rx": 13.57, "ry": 7.8, "rT": 7.8, "Sx": 2588.2, "Sy": 898.25, "Zx": 2970.3, "Zy": 1374.27, "J": 546, "Cw": 3091, "cur_prod": "東和2025、中龍"}]}, {"name": "350×175", "special": false, "rows": [{"grp": "350x175", "spec": "RH 344×174×8×8", "tonghe": "×", "chunglung": null, "H": 344, "B": 174, "tw": 8, "tf": 8, "R": 13, "A": 55.5, "m": 43.6, "Ix": 10588, "Iy": 704.5, "rx": 13.81, "ry": 3.56, "rT": null, "Sx": 615.6, "Sy": 80.98, "Zx": 706.3, "Zy": 127.35, "J": 11.54, "Cw": 198.8, "cur_prod": null}, {"grp": "350x175", "spec": "RH 346×174×6×9", "tonghe": null, "chunglung": "×", "H": 346, "B": 174, "tw": 6, "tf": 9, "R": 13, "A": 52.5, "m": 41.2, "Ix": 11035, "Iy": 791.3, "rx": 14.51, "ry": 3.88, "rT": 3.88, "Sx": 637.9, "Sy": 90.95, "Zx": 712.5, "Zy": 140.05, "J": 13.2, "Cw": 224.7, "cur_prod": "東和2025、中龍"}, {"grp": "350x175", "spec": "RH 350×175×7×11", "tonghe": null, "chunglung": null, "H": 350, "B": 175, "tw": 7, "tf": 11, "R": 13, "A": 62.9, "m": 49.4, "Ix": 13500, "Iy": 984.1, "rx": 14.65, "ry": 3.96, "rT": 3.95, "Sx": 771.4, "Sy": 112.47, "Zx": 864.2, "Zy": 173.38, "J": 22.4, "Cw": 282.7, "cur_prod": "東和2025、中龍"}]}, {"name": "350×250", "special": false, "rows": [{"grp": "350x250", "spec": "RH 340×250×9×14", "tonghe": null, "chunglung": null, "H": 340, "B": 250, "tw": 9, "tf": 14, "R": 13, "A": 99.5, "m": 78.1, "Ix": 21228, "Iy": 3648.5, "rx": 14.6, "ry": 6.05, "rT": 6.05, "Sx": 1248.7, "Sy": 291.88, "Zx": 1382.2, "Zy": 444.89, "J": 58, "Cw": 969.4, "cur_prod": "東和2025、中龍"}, {"grp": "350x250", "spec": "RH 350×252×11×19", "tonghe": "◎", "chunglung": "◎", "H": 350, "B": 252, "tw": 11, "tf": 19, "R": 13, "A": 131.5, "m": 103.3, "Ix": 29382, "Iy": 5072.1, "rx": 14.95, "ry": 6.21, "rT": 6.21, "Sx": 1679, "Sy": 402.55, "Zx": 1874.7, "Zy": 613.95, "J": 136, "Cw": 1389.3, "cur_prod": "東和2025、中龍"}, {"grp": "350x250", "spec": "RH 356×256×15×22", "tonghe": "◎", "chunglung": "◎", "H": 356, "B": 256, "tw": 15, "tf": 22, "R": 13, "A": 160.9, "m": 126.3, "Ix": 35596, "Iy": 6162, "rx": 14.87, "ry": 6.19, "rT": 6.19, "Sx": 1999.8, "Sy": 481.41, "Zx": 2268.3, "Zy": 739.96, "J": 228, "Cw": 1718.5, "cur_prod": "東和2025、中龍"}, {"grp": "350x250", "spec": "RH 364×258×17×26", "tonghe": "◎", "chunglung": "◎", "H": 364, "B": 258, "tw": 17, "tf": 26, "R": 13, "A": 188.7, "m": 148.1, "Ix": 43036, "Iy": 7456.5, "rx": 15.1, "ry": 6.29, "rT": 6.29, "Sx": 2364.6, "Sy": 578.02, "Zx": 2703.2, "Zy": 889.53, "J": 367, "Cw": 2129.7, "cur_prod": "東和2025、中龍"}]}, {"name": "350×350", "special": false, "rows": [{"grp": "350x350", "spec": "RH 338×351×13×13", "tonghe": "◎", "chunglung": null, "H": 338, "B": 351, "tw": 13, "tf": 13, "R": 13, "A": 133.3, "m": 104.6, "Ix": 27741, "Iy": 9376.4, "rx": 14.43, "ry": 8.39, "rT": 8.39, "Sx": 1641.5, "Sy": 534.27, "Zx": 1821.6, "Zy": 815.35, "J": 81.4, "Cw": 2476, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 344×348×10×16", "tonghe": "◎", "chunglung": "◎", "H": 344, "B": 348, "tw": 10, "tf": 16, "R": 13, "A": 144, "m": 113, "Ix": 32846, "Iy": 11242, "rx": 15.1, "ry": 8.84, "rT": 8.84, "Sx": 1909.7, "Sy": 646.09, "Zx": 2091.9, "Zy": 977.78, "J": 111, "Cw": 3023.6, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 344×354×16×16", "tonghe": "◎", "chunglung": null, "H": 344, "B": 354, "tw": 16, "tf": 16, "R": 13, "A": 164.7, "m": 129.3, "Ix": 34881, "Iy": 11842.2, "rx": 14.56, "ry": 8.48, "rT": 8.48, "Sx": 2028, "Sy": 669.05, "Zx": 2269.4, "Zy": 1024.08, "J": 151, "Cw": 3185.1, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 350×350×12×19", "tonghe": "×", "chunglung": "×", "H": 350, "B": 350, "tw": 12, "tf": 19, "R": 13, "A": 171.9, "m": 134.9, "Ix": 39846, "Iy": 13582.7, "rx": 15.23, "ry": 8.89, "rT": 8.89, "Sx": 2276.9, "Sy": 776.16, "Zx": 2515.4, "Zy": 1176.27, "J": 186, "Cw": 3720.3, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 350×357×19×19", "tonghe": null, "chunglung": null, "H": 350, "B": 357, "tw": 19, "tf": 19, "R": 13, "A": 196.4, "m": 154.2, "Ix": 42347, "Iy": 14428.2, "rx": 14.68, "ry": 8.57, "rT": 8.57, "Sx": 2419.8, "Sy": 808.3, "Zx": 2729.8, "Zy": 1240.72, "J": 252, "Cw": 3951.9, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 352×350×12×20", "tonghe": null, "chunglung": null, "H": 352, "B": 350, "tw": 12, "tf": 20, "R": 13, "A": 178.9, "m": 140.4, "Ix": 42002, "Iy": 14297.3, "rx": 15.32, "ry": 8.94, "rT": 8.94, "Sx": 2386.5, "Sy": 816.99, "Zx": 2638.2, "Zy": 1237.52, "J": 204.64, "Cw": 3939.8, "cur_prod": "中龍(2個月交期)"}, {"grp": "350x350", "spec": "RH 356×352×14×22", "tonghe": "×", "chunglung": "×", "H": 356, "B": 352, "tw": 14, "tf": 22, "R": 13, "A": 200, "m": 157, "Ix": 47140, "Iy": 16000.4, "rx": 15.35, "ry": 8.94, "rT": 8.94, "Sx": 2648.3, "Sy": 909.12, "Zx": 2949.4, "Zy": 1379.67, "J": 278.41, "Cw": 4462.4, "cur_prod": "中龍"}, {"grp": "350x350", "spec": "RH 360×354×16×24", "tonghe": null, "chunglung": null, "H": 360, "B": 354, "tw": 16, "tf": 24, "R": 13, "A": 221.3, "m": 173.7, "Ix": 52429, "Iy": 17757.1, "rx": 15.39, "ry": 8.96, "rT": 8.96, "Sx": 2912.7, "Sy": 1003.23, "Zx": 3266.2, "Zy": 1525.34, "J": 382, "Cw": 5011.8, "cur_prod": "東和2025、中龍"}, {"grp": "350x350", "spec": "RH 366×358×18×28", "tonghe": null, "chunglung": null, "H": 366, "B": 358, "tw": 18, "tf": 28, "R": 13, "A": 257.7, "m": 202.3, "Ix": 62194, "Iy": 21429.1, "rx": 15.53, "ry": 9.12, "rT": 9.06, "Sx": 3398.6, "Sy": 1197.15, "Zx": 3842.6, "Zy": 1821.13, "J": 584.19, "Cw": 6120.4, "cur_prod": "中龍(2個月交期)"}, {"grp": "350x350", "spec": "RH 368×356×18×28", "tonghe": "◎", "chunglung": "◎", "H": 368, "B": 356, "tw": 18, "tf": 28, "R": 13, "A": 257, "m": 201.7, "Ix": 62641, "Iy": 21072.3, "rx": 15.61, "ry": 9.06, "rT": 9.06, "Sx": 3404.4, "Sy": 1183.84, "Zx": 3849.4, "Zy": 1801.3, "J": 596, "Cw": 6089.9, "cur_prod": "東和2025"}, {"grp": "350x350", "spec": "RH 378×358×20×33", "tonghe": "◎", "chunglung": "◎", "H": 378, "B": 358, "tw": 20, "tf": 33, "R": 13, "A": 300.1, "m": 235.6, "Ix": 75924, "Iy": 25258.7, "rx": 15.91, "ry": 9.17, "rT": 9.17, "Sx": 4017.2, "Sy": 1411.1, "Zx": 4584.8, "Zy": 2147.78, "J": 952, "Cw": 7516, "cur_prod": "東和2025、中龍"}]}, {"name": "400×200", "special": false, "rows": [{"grp": "400x200", "spec": "RH 396×199×7×11", "tonghe": null, "chunglung": null, "H": 396, "B": 199, "tw": 7, "tf": 11, "R": 13, "A": 71.4, "m": 56.1, "Ix": 19771, "Iy": 1446.4, "rx": 16.64, "ry": 4.5, "rT": 4.5, "Sx": 998.5, "Sy": 145.37, "Zx": 1114.3, "Zy": 223.32, "J": 25, "Cw": 536, "cur_prod": "東和2025、中龍"}, {"grp": "400x200", "spec": "RH 400×200×8×13", "tonghe": null, "chunglung": null, "H": 400, "B": 200, "tw": 8, "tf": 13, "R": 13, "A": 83.4, "m": 65.4, "Ix": 23457, "Iy": 1735.6, "rx": 16.77, "ry": 4.56, "rT": 4.56, "Sx": 1172.8, "Sy": 173.56, "Zx": 1312.7, "Zy": 266.99, "J": 39.6, "Cw": 649.9, "cur_prod": "東和2025、中龍"}, {"grp": "400x200", "spec": "RH 424×207×15×25", "tonghe": "×", "chunglung": "×", "H": 424, "B": 207, "tw": 15, "tf": 25, "R": 13, "A": 161.1, "m": 126.4, "Ix": 48278, "Iy": 3707.8, "rx": 17.31, "ry": 4.8, "rT": 4.8, "Sx": 2277.3, "Sy": 358.24, "Zx": 2616.1, "Zy": 558.16, "J": 257.7, "Cw": 1475.7, "cur_prod": "中龍"}]}, {"name": "400×300", "special": false, "rows": [{"grp": "400x300", "spec": "RH 386×299×9×14", "tonghe": "◎", "chunglung": null, "H": 386, "B": 299, "tw": 9, "tf": 14, "R": 13, "A": 117.4, "m": 92.2, "Ix": 32869, "Iy": 6240.2, "rx": 16.73, "ry": 7.29, "rT": 7.29, "Sx": 1703, "Sy": 417.4, "Zx": 1871.1, "Zy": 634.13, "J": 68.1, "Cw": 2158.9, "cur_prod": "東和2025、中龍"}, {"grp": "400x300", "spec": "RH 390×300×10×16", "tonghe": null, "chunglung": null, "H": 390, "B": 300, "tw": 10, "tf": 16, "R": 13, "A": 133.3, "m": 104.6, "Ix": 37864, "Iy": 7203.9, "rx": 16.86, "ry": 7.35, "rT": 7.35, "Sx": 1941.8, "Sy": 480.26, "Zx": 2141.2, "Zy": 730.1, "J": 99.6, "Cw": 2519.1, "cur_prod": "東和2025、中龍"}, {"grp": "400x300", "spec": "RH 400×304×14×21", "tonghe": null, "chunglung": null, "H": 400, "B": 304, "tw": 14, "tf": 21, "R": 13, "A": 179.3, "m": 140.7, "Ix": 51700, "Iy": 9842.7, "rx": 16.98, "ry": 7.41, "rT": 7.41, "Sx": 2585, "Sy": 647.54, "Zx": 2893.7, "Zy": 989.35, "J": 231, "Cw": 3534.5, "cur_prod": "東和2025、中龍"}, {"grp": "400x300", "spec": "RH 408×305×15×25", "tonghe": "×", "chunglung": "×", "H": 408, "B": 305, "tw": 15, "tf": 25, "R": 13, "A": 207.7, "m": 163, "Ix": 62190, "Iy": 11833.6, "rx": 17.31, "ry": 7.55, "rT": 7.55, "Sx": 3048.5, "Sy": 775.97, "Zx": 3426.5, "Zy": 1184.46, "J": 357.98, "Cw": 4339.6, "cur_prod": "中龍"}, {"grp": "400x300", "spec": "RH 410×308×18×26", "tonghe": "◎", "chunglung": "◎", "H": 410, "B": 308, "tw": 18, "tf": 26, "R": 13, "A": 226.1, "m": 177.4, "Ix": 66464, "Iy": 12680.6, "rx": 17.15, "ry": 7.49, "rT": 7.49, "Sx": 3242.1, "Sy": 823.42, "Zx": 3677.4, "Zy": 1263.96, "J": 447, "Cw": 4674.6, "cur_prod": "東和2025、中龍"}, {"grp": "400x300", "spec": "RH 418×310×20×30", "tonghe": "◎", "chunglung": "◎", "H": 418, "B": 310, "tw": 20, "tf": 30, "R": 13, "A": 259.1, "m": 203.4, "Ix": 78239, "Iy": 14921.8, "rx": 17.38, "ry": 7.59, "rT": 7.59, "Sx": 3743.5, "Sy": 962.7, "Zx": 4274.8, "Zy": 1479.17, "J": 671, "Cw": 5616, "cur_prod": "東和2025、中龍"}, {"grp": "400x300", "spec": "RH 434×299×10×15", "tonghe": "◎", "chunglung": "◎", "H": 434, "B": 299, "tw": 10, "tf": 15, "R": 13, "A": 131.6, "m": 103.3, "Ix": 45456, "Iy": 6687, "rx": 18.59, "ry": 7.13, "rT": 7.13, "Sx": 2094.8, "Sy": 447.29, "Zx": 2316.1, "Zy": 681.75, "J": 86.3, "Cw": 2934.9, "cur_prod": "東和2025"}]}, {"name": "400×400", "special": false, "rows": [{"grp": "400x400", "spec": "RH 388×402×15×15", "tonghe": "◎", "chunglung": null, "H": 388, "B": 402, "tw": 15, "tf": 15, "R": 22, "A": 178.5, "m": 140.1, "Ix": 48964, "Iy": 16257.7, "rx": 16.56, "ry": 9.54, "rT": 9.54, "Sx": 2523.9, "Sy": 808.84, "Zx": 2802.1, "Zy": 1237.33, "J": 156, "Cw": 5654.8, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 394×398×11×18", "tonghe": "◎", "chunglung": null, "H": 394, "B": 398, "tw": 11, "tf": 18, "R": 22, "A": 186.8, "m": 146.6, "Ix": 56145, "Iy": 18921.9, "rx": 17.34, "ry": 10.06, "rT": 10.1, "Sx": 2850, "Sy": 950.85, "Zx": 3118.4, "Zy": 1440.79, "J": 194, "Cw": 6687.8, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 394×405×18×18", "tonghe": "◎", "chunglung": null, "H": 394, "B": 405, "tw": 18, "tf": 18, "R": 22, "A": 214.4, "m": 168.3, "Ix": 59712, "Iy": 19954.5, "rx": 16.69, "ry": 9.65, "rT": 9.65, "Sx": 3031.1, "Sy": 985.41, "Zx": 3390.1, "Zy": 1511, "J": 264, "Cw": 7052.7, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 400×400×13×21", "tonghe": null, "chunglung": null, "H": 400, "B": 400, "tw": 13, "tf": 21, "R": 22, "A": 218.7, "m": 171.7, "Ix": 66621, "Iy": 22412, "rx": 17.45, "ry": 10.12, "rT": 10.1, "Sx": 3331, "Sy": 1120.6, "Zx": 3672.5, "Zy": 1699.87, "J": 303, "Cw": 8048.2, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 400×408×21×21", "tonghe": null, "chunglung": null, "H": 400, "B": 408, "tw": 21, "tf": 21, "R": 22, "A": 250.7, "m": 196.8, "Ix": 70887, "Iy": 23808.6, "rx": 16.82, "ry": 9.75, "rT": 9.74, "Sx": 3544.4, "Sy": 1167.09, "Zx": 3992.5, "Zy": 1793.75, "J": 415, "Cw": 8549.7, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 406×403×16×24", "tonghe": "◎", "chunglung": "×", "H": 406, "B": 403, "tw": 16, "tf": 24, "R": 22, "A": 254.9, "m": 200.1, "Ix": 78039, "Iy": 26199.5, "rx": 17.5, "ry": 10.14, "rT": null, "Sx": 3844.3, "Sy": 1300.22, "Zx": 4279.7, "Zy": 1977.19, "J": 420.28, "Cw": 9557.8, "cur_prod": null}, {"grp": "400x400", "spec": "RH 408×402×15×25", "tonghe": "×", "chunglung": "×", "H": 408, "B": 402, "tw": 15, "tf": 25, "R": 22, "A": 258.9, "m": 203.2, "Ix": 80810, "Iy": 27085.1, "rx": 17.67, "ry": 10.23, "rT": null, "Sx": 3961.3, "Sy": 1347.52, "Zx": 4402.1, "Zy": 2045.35, "J": 459.02, "Cw": 9932.7, "cur_prod": null}, {"grp": "400x400", "spec": "RH 408×406×19×25", "tonghe": "×", "chunglung": "×", "H": 408, "B": 406, "tw": 19, "tf": 25, "R": 22, "A": 275.2, "m": 216, "Ix": 83074, "Iy": 27913.9, "rx": 17.38, "ry": 10.07, "rT": null, "Sx": 4072.3, "Sy": 1375.07, "Zx": 4568.6, "Zy": 2098.75, "J": 504.77, "Cw": 10236.6, "cur_prod": null}, {"grp": "400x400", "spec": "RH 414×405×18×28", "tonghe": "◎", "chunglung": null, "H": 414, "B": 405, "tw": 18, "tf": 28, "R": 22, "A": 295.4, "m": 231.9, "Ix": 92770, "Iy": 31026.2, "rx": 17.72, "ry": 10.25, "rT": 10.2, "Sx": 4481.7, "Sy": 1532.16, "Zx": 5026.3, "Zy": 2331.13, "J": 714, "Cw": 11556.9, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 428×407×20×35", "tonghe": "◎", "chunglung": null, "H": 428, "B": 407, "tw": 20, "tf": 35, "R": 22, "A": 360.7, "m": 283.1, "Ix": 119203, "Iy": 39360.9, "rx": 18.18, "ry": 10.45, "rT": 10.4, "Sx": 5570.3, "Sy": 1934.2, "Zx": 6311.4, "Zy": 2940.85, "J": 1320, "Cw": 15198.1, "cur_prod": "東和2025"}, {"grp": "400x400", "spec": "RH 438×407×20×40", "tonghe": "×", "chunglung": "×", "H": 438, "B": 407, "tw": 20, "tf": 40, "R": 22, "A": 401.4, "m": 315.1, "Ix": 138281, "Iy": 44979.2, "rx": 18.56, "ry": 10.59, "rT": null, "Sx": 6314.2, "Sy": 2210.28, "Zx": 7192.6, "Zy": 3354.98, "J": 1832, "Cw": 17812.2, "cur_prod": null}, {"grp": "400x400", "spec": "RH 438×417×30×40", "tonghe": "×", "chunglung": "×", "H": 438, "B": 417, "tw": 30, "tf": 40, "R": 22, "A": 445.2, "m": 349.4, "Ix": 145284, "Iy": 48438.2, "rx": 18.07, "ry": 10.43, "rT": null, "Sx": 6634, "Sy": 2323.17, "Zx": 7672.2, "Zy": 3566.6, "J": 2101.4, "Cw": 19182, "cur_prod": null}, {"grp": "400x400", "spec": "RH 450×200×9×14", "tonghe": null, "chunglung": null, "H": 450, "B": 200, "tw": 9, "tf": 14, "R": 13, "A": 95.4, "m": 74.9, "Ix": 32887, "Iy": 1870, "rx": 18.56, "ry": 4.43, "rT": 4.43, "Sx": 1461.7, "Sy": 187, "Zx": 1651.7, "Zy": 289.62, "J": 51.6, "Cw": 888.7, "cur_prod": "東和2025"}]}, {"name": "450×200", "special": false, "rows": [{"grp": "450x200", "spec": "RH 446×199×8×12", "tonghe": null, "chunglung": null, "H": 446, "B": 199, "tw": 8, "tf": 12, "R": 13, "A": 83, "m": 65.1, "Ix": 28134, "Iy": 1578.6, "rx": 18.41, "ry": 4.36, "rT": 4.36, "Sx": 1261.6, "Sy": 158.65, "Zx": 1422.7, "Zy": 245.36, "J": 33.9, "Cw": 743.4, "cur_prod": "東和2025"}, {"grp": "450x200", "spec": "RH 456×201×10×17", "tonghe": "◎", "chunglung": "◎", "H": 456, "B": 201, "tw": 10, "tf": 17, "R": 13, "A": 112, "m": 87.9, "Ix": 39834, "Iy": 2305.3, "rx": 18.86, "ry": 4.54, "rT": 4.54, "Sx": 1747.1, "Sy": 229.38, "Zx": 1975.5, "Zy": 355.11, "J": 85.6, "Cw": 1110.7, "cur_prod": "東和2025"}, {"grp": "450x200", "spec": "RH 466×205×14×22", "tonghe": "◎", "chunglung": "◎", "H": 466, "B": 205, "tw": 14, "tf": 22, "R": 13, "A": 150.7, "m": 118.3, "Ix": 53886, "Iy": 3170, "rx": 18.91, "ry": 4.59, "rT": 4.59, "Sx": 2312.7, "Sy": 309.26, "Zx": 2655.9, "Zy": 484.39, "J": 194, "Cw": 1562.3, "cur_prod": "東和2025"}, {"grp": "450x200", "spec": "RH 478×208×17×28", "tonghe": "◎", "chunglung": "◎", "H": 478, "B": 208, "tw": 17, "tf": 28, "R": 13, "A": 189.7, "m": 148.9, "Ix": 70319, "Iy": 4218.7, "rx": 19.25, "ry": 4.72, "rT": 4.72, "Sx": 2942.2, "Sy": 405.64, "Zx": 3407.8, "Zy": 637.84, "J": 385, "Cw": 2135.7, "cur_prod": "東和2025"}]}, {"name": "450×300", "special": false, "rows": [{"grp": "450x300", "spec": "RH 440×300×11×18", "tonghe": null, "chunglung": null, "H": 440, "B": 300, "tw": 11, "tf": 18, "R": 13, "A": 153.9, "m": 120.8, "Ix": 54731, "Iy": 8105.5, "rx": 18.86, "ry": 7.26, "rT": 7.26, "Sx": 2487.8, "Sy": 540.37, "Zx": 2756.5, "Zy": 823.44, "J": 141, "Cw": 3608.7, "cur_prod": "東和2025"}, {"grp": "450x300", "spec": "RH 446×302×13×21", "tonghe": "◎", "chunglung": "◎", "H": 446, "B": 302, "tw": 13, "tf": 21, "R": 13, "A": 180.8, "m": 141.9, "Ix": 65041, "Iy": 9648.9, "rx": 18.97, "ry": 7.31, "rT": 7.3, "Sx": 2916.6, "Sy": 639, "Zx": 3254.7, "Zy": 976.08, "J": 225, "Cw": 4357.1, "cur_prod": "東和2025"}, {"grp": "450x300", "spec": "RH 450×304×15×23", "tonghe": "◎", "chunglung": "◎", "H": 450, "B": 304, "tw": 15, "tf": 23, "R": 13, "A": 201.9, "m": 158.5, "Ix": 72621, "Iy": 10782.5, "rx": 18.97, "ry": 7.31, "rT": 7.31, "Sx": 3227.6, "Sy": 709.37, "Zx": 3626.5, "Zy": 1087.02, "J": 303, "Cw": 4914.9, "cur_prod": "東和2025"}, {"grp": "450x300", "spec": "RH 458×306×17×27", "tonghe": "◎", "chunglung": "◎", "H": 458, "B": 306, "tw": 17, "tf": 27, "R": 13, "A": 235.4, "m": 184.8, "Ix": 86755, "Iy": 12912.1, "rx": 19.2, "ry": 7.41, "rT": 7.41, "Sx": 3788.4, "Sy": 843.93, "Zx": 4283.5, "Zy": 1294.93, "J": 480, "Cw": 5996.4, "cur_prod": "東和2025"}, {"grp": "450x300", "spec": "RH 468×308×19×32", "tonghe": "◎", "chunglung": "◎", "H": 468, "B": 308, "tw": 19, "tf": 32, "R": 13, "A": 275.3, "m": 216.1, "Ix": 104863, "Iy": 15608.3, "rx": 19.52, "ry": 7.53, "rT": 7.53, "Sx": 4481.3, "Sy": 1013.53, "Zx": 5101.4, "Zy": 1556.08, "J": 775, "Cw": 7417.7, "cur_prod": "東和2025"}]}, {"name": "450×400", "special": false, "rows": [{"grp": "450x400", "spec": "RH 458×417×30×50", "tonghe": "◎", "chunglung": null, "H": 458, "B": 417, "tw": 30, "tf": 50, "R": 22, "A": 528.6, "m": 414.9, "Ix": 187137, "Iy": 60523.5, "rx": 18.82, "ry": 10.7, "rT": 10.7, "Sx": 8171.9, "Sy": 2902.8, "Zx": 9540.4, "Zy": 4436.05, "J": 3797.2, "Cw": 25187.4, "cur_prod": "東和2025"}]}, {"name": "500×200", "special": false, "rows": [{"grp": "500x200", "spec": "RH 496×199×9×14", "tonghe": null, "chunglung": null, "H": 496, "B": 199, "tw": 9, "tf": 14, "R": 13, "A": 99.3, "m": 77.9, "Ix": 40834, "Iy": 1842.4, "rx": 20.28, "ry": 4.31, "rT": 4.31, "Sx": 1646.5, "Sy": 185.17, "Zx": 1869.2, "Zy": 287.76, "J": 52.5, "Cw": 1070.1, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 500×200×10×16", "tonghe": null, "chunglung": null, "H": 500, "B": 200, "tw": 10, "tf": 16, "R": 13, "A": 112.3, "m": 88.1, "Ix": 46811, "Iy": 2138.1, "rx": 20.42, "ry": 4.36, "rT": 4.36, "Sx": 1872.5, "Sy": 213.81, "Zx": 2129.9, "Zy": 332.85, "J": 75.9, "Cw": 1252.2, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 506×201×11×19", "tonghe": "◎", "chunglung": "◎", "H": 506, "B": 201, "tw": 11, "tf": 19, "R": 13, "A": 129.3, "m": 101.5, "Ix": 55481, "Iy": 2577.7, "rx": 20.71, "ry": 4.46, "rT": 4.46, "Sx": 2192.9, "Sy": 256.49, "Zx": 2495.7, "Zy": 399.19, "J": 119, "Cw": 1528.4, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 512×202×12×22", "tonghe": "◎", "chunglung": "◎", "H": 512, "B": 202, "tw": 12, "tf": 22, "R": 13, "A": 146.5, "m": 115, "Ix": 64411, "Iy": 3030.1, "rx": 20.97, "ry": 4.55, "rT": 4.55, "Sx": 2516.1, "Sy": 300.01, "Zx": 2868.2, "Zy": 466.98, "J": 177, "Cw": 1818.8, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 518×205×15×25", "tonghe": "◎", "chunglung": "◎", "H": 518, "B": 205, "tw": 15, "tf": 25, "R": 13, "A": 174.2, "m": 136.7, "Ix": 75922, "Iy": 3604.4, "rx": 20.88, "ry": 4.55, "rT": 4.55, "Sx": 2931.4, "Sy": 351.65, "Zx": 3381.5, "Zy": 553.15, "J": 276, "Cw": 2190.1, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 528×208×18×30", "tonghe": "◎", "chunglung": "◎", "H": 528, "B": 208, "tw": 18, "tf": 30, "R": 13, "A": 210.5, "m": 165.2, "Ix": 93621, "Iy": 4524.3, "rx": 21.09, "ry": 4.64, "rT": 4.64, "Sx": 3546.3, "Sy": 435.02, "Zx": 4126.7, "Zy": 688.59, "J": 476, "Cw": 2805.1, "cur_prod": "東和2025"}, {"grp": "500x200", "spec": "RH 536×210×20×34", "tonghe": "◎", "chunglung": "◎", "H": 536, "B": 210, "tw": 20, "tf": 34, "R": 13, "A": 237.9, "m": 186.7, "Ix": 107962, "Iy": 5281.5, "rx": 21.31, "ry": 4.71, "rT": 4.71, "Sx": 4028.4, "Sy": 503, "Zx": 4712.9, "Zy": 798.37, "J": 683, "Cw": 3327.4, "cur_prod": "東和2025"}]}, {"name": "500×300", "special": false, "rows": [{"grp": "500x300", "spec": "RH 482×300×11×15", "tonghe": null, "chunglung": null, "H": 482, "B": 300, "tw": 11, "tf": 15, "R": 13, "A": 141.2, "m": 110.8, "Ix": 58274, "Iy": 6756, "rx": 20.32, "ry": 6.92, "rT": 6.92, "Sx": 2418, "Sy": 450.4, "Zx": 2695.7, "Zy": 689.89, "J": 93.9, "Cw": 3683.5, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 488×300×11×18", "tonghe": "◎", "chunglung": null, "H": 488, "B": 300, "tw": 11, "tf": 18, "R": 13, "A": 159.2, "m": 124.9, "Ix": 68859, "Iy": 8106, "rx": 20.8, "ry": 7.14, "rT": 7.14, "Sx": 2822.1, "Sy": 540.4, "Zx": 3132.2, "Zy": 824.89, "J": 143, "Cw": 4476.6, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 494×302×13×21", "tonghe": "◎", "chunglung": null, "H": 494, "B": 302, "tw": 13, "tf": 21, "R": 13, "A": 187.1, "m": 146.8, "Ix": 81717, "Iy": 9649.8, "rx": 20.9, "ry": 7.18, "rT": 7.18, "Sx": 3308.4, "Sy": 639.06, "Zx": 3696.1, "Zy": 978.1, "J": 228, "Cw": 5397.4, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 500×302×13×24", "tonghe": "×", "chunglung": "×", "H": 500, "B": 302, "tw": 13, "tf": 24, "R": 13, "A": 205.2, "m": 161.1, "Ix": 92907, "Iy": 11027, "rx": 21.28, "ry": 7.33, "rT": null, "Sx": 3716.3, "Sy": 730.26, "Zx": 4146.4, "Zy": 1114.91, "J": 311.42, "Cw": 6246.1, "cur_prod": null}, {"grp": "500x300", "spec": "RH 500×304×15×24", "tonghe": "◎", "chunglung": null, "H": 500, "B": 304, "tw": 15, "tf": 24, "R": 13, "A": 215.2, "m": 168.9, "Ix": 94990, "Iy": 11252.1, "rx": 21.01, "ry": 7.23, "rT": 7.23, "Sx": 3799.6, "Sy": 740.27, "Zx": 4271.4, "Zy": 1135.93, "J": 342, "Cw": 6373.6, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 510×306×17×29", "tonghe": "◎", "chunglung": "◎", "H": 510, "B": 306, "tw": 17, "tf": 29, "R": 13, "A": 255.8, "m": 200.8, "Ix": 116584, "Iy": 13869.2, "rx": 21.35, "ry": 7.36, "rT": 7.36, "Sx": 4571.9, "Sy": 906.48, "Zx": 5169.1, "Zy": 1392.03, "J": 581, "Cw": 8022, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 518×310×21×33", "tonghe": "◎", "chunglung": "◎", "H": 518, "B": 310, "tw": 21, "tf": 33, "R": 13, "A": 301, "m": 236.3, "Ix": 137386, "Iy": 16422.5, "rx": 21.37, "ry": 7.39, "rT": 7.39, "Sx": 5304.5, "Sy": 1059.52, "Zx": 6066.5, "Zy": 1637.43, "J": 897, "Cw": 9657.5, "cur_prod": "東和2025"}, {"grp": "500x300", "spec": "RH 532×314×25×40", "tonghe": "◎", "chunglung": "◎", "H": 532, "B": 314, "tw": 25, "tf": 40, "R": 13, "A": 365.7, "m": 287, "Ix": 172312, "Iy": 20701.7, "rx": 21.71, "ry": 7.52, "rT": 7.52, "Sx": 6477.9, "Sy": 1318.58, "Zx": 7488.8, "Zy": 2044.78, "J": 1580, "Cw": 12527.9, "cur_prod": "東和2025"}]}, {"name": "550×200", "special": false, "rows": [{"grp": "550x200", "spec": "RH 546×200×10×16", "tonghe": null, "chunglung": null, "H": 546, "B": 200, "tw": 10, "tf": 16, "R": 13, "A": 116.9, "m": 91.7, "Ix": 57211, "Iy": 2138.5, "rx": 22.13, "ry": 4.28, "rT": 4.28, "Sx": 2095.6, "Sy": 213.85, "Zx": 2393.4, "Zy": 334, "J": 71.75, "Cw": 1501.8, "cur_prod": "中龍"}, {"grp": "550x200", "spec": "RH 548×215×25×40", "tonghe": "◎", "chunglung": "◎", "H": 548, "B": 215, "tw": 25, "tf": 40, "R": 13, "A": 290.5, "m": 228, "Ix": 133326, "Iy": 6690, "rx": 21.43, "ry": 4.8, "rT": 4.8, "Sx": 4865.9, "Sy": 622.32, "Zx": 5771.2, "Zy": 999.86, "J": 1170, "Cw": 4316.1, "cur_prod": "東和2025"}]}, {"name": "600×200", "special": false, "rows": [{"grp": "600x200", "spec": "RH 582×300×12×17", "tonghe": null, "chunglung": null, "H": 582, "B": 300, "tw": 12, "tf": 17, "R": 13, "A": 169.2, "m": 132.8, "Ix": 98950, "Iy": 7659, "rx": 24.18, "ry": 6.73, "rT": 6.73, "Sx": 3400.3, "Sy": 510.6, "Zx": 3821.7, "Zy": 786.02, "J": 137, "Cw": 6112.4, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 596×199×10×15", "tonghe": null, "chunglung": null, "H": 596, "B": 199, "tw": 10, "tf": 15, "R": 13, "A": 117.8, "m": 92.4, "Ix": 66640, "Iy": 1975.8, "rx": 23.79, "ry": 4.1, "rT": 4.1, "Sx": 2236.3, "Sy": 198.57, "Zx": 2575.8, "Zy": 312.3, "J": 69.2, "Cw": 1667.4, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 600×200×11×17", "tonghe": null, "chunglung": null, "H": 600, "B": 200, "tw": 11, "tf": 17, "R": 13, "A": 131.7, "m": 103.4, "Ix": 75557, "Iy": 2274, "rx": 23.95, "ry": 4.16, "rT": 4.15, "Sx": 2518.6, "Sy": 227.4, "Zx": 2903.8, "Zy": 358.34, "J": 97.3, "Cw": 1932.2, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 606×201×12×20", "tonghe": "◎", "chunglung": "◎", "H": 606, "B": 201, "tw": 12, "tf": 20, "R": 13, "A": 149.8, "m": 117.6, "Ix": 88320, "Iy": 2716.2, "rx": 24.28, "ry": 4.26, "rT": 4.26, "Sx": 2914.8, "Sy": 270.27, "Zx": 3357.4, "Zy": 425.68, "J": 147, "Cw": 2331.8, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 612×202×13×23", "tonghe": "◎", "chunglung": "◎", "H": 612, "B": 202, "tw": 13, "tf": 23, "R": 13, "A": 168, "m": 131.8, "Ix": 101412, "Iy": 3171.2, "rx": 24.57, "ry": 4.35, "rT": 4.34, "Sx": 3314.1, "Sy": 313.98, "Zx": 3818.3, "Zy": 494.52, "J": 213, "Cw": 2750.4, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 618×205×16×26", "tonghe": "◎", "chunglung": "◎", "H": 618, "B": 205, "tw": 16, "tf": 26, "R": 13, "A": 198.6, "m": 155.9, "Ix": 118773, "Iy": 3754.3, "rx": 24.45, "ry": 4.35, "rT": 4.35, "Sx": 3843.8, "Sy": 366.27, "Zx": 4477.4, "Zy": 584.13, "J": 329, "Cw": 3289.3, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 626×207×18×30", "tonghe": "◎", "chunglung": "◎", "H": 626, "B": 207, "tw": 18, "tf": 30, "R": 13, "A": 227.5, "m": 178.6, "Ix": 138724, "Iy": 4464.4, "rx": 24.69, "ry": 4.43, "rT": 4.43, "Sx": 4432.1, "Sy": 431.35, "Zx": 5183.4, "Zy": 690.31, "J": 493, "Cw": 3964.6, "cur_prod": "東和2025"}, {"grp": "600x200", "spec": "RH 634×209×20×34", "tonghe": "◎", "chunglung": "◎", "H": 634, "B": 209, "tw": 20, "tf": 34, "R": 13, "A": 256.8, "m": 201.6, "Ix": 159403, "Iy": 5213.4, "rx": 24.92, "ry": 4.51, "rT": 4.51, "Sx": 5028.5, "Sy": 498.89, "Zx": 5906, "Zy": 801.05, "J": 706, "Cw": 4692.1, "cur_prod": "東和2025"}]}, {"name": "600×300", "special": false, "rows": [{"grp": "600x300", "spec": "RH 588×300×12×20", "tonghe": "◎", "chunglung": null, "H": 588, "B": 300, "tw": 12, "tf": 20, "R": 13, "A": 187.2, "m": 147, "Ix": 114350, "Iy": 9009, "rx": 24.71, "ry": 6.94, "rT": 6.94, "Sx": 3889.5, "Sy": 600.6, "Zx": 4348.2, "Zy": 921.02, "J": 199, "Cw": 7266.3, "cur_prod": "東和2025"}, {"grp": "600x300", "spec": "RH 594×302×14×23", "tonghe": "◎", "chunglung": null, "H": 594, "B": 302, "tw": 14, "tf": 23, "R": 13, "A": 217.1, "m": 170.4, "Ix": 133561, "Iy": 10572.3, "rx": 24.8, "ry": 6.98, "rT": 6.98, "Sx": 4497, "Sy": 700.15, "Zx": 5056.6, "Zy": 1077.13, "J": 304, "Cw": 8617.5, "cur_prod": "東和2025"}, {"grp": "600x300", "spec": "RH 600×304×16×26", "tonghe": "◎", "chunglung": "◎", "H": 600, "B": 304, "tw": 16, "tf": 26, "R": 13, "A": 247.2, "m": 194.1, "Ix": 153306, "Iy": 12194.7, "rx": 24.9, "ry": 7.02, "rT": 7.02, "Sx": 5110.2, "Sy": 802.28, "Zx": 5777.4, "Zy": 1238.06, "J": 442, "Cw": 10044.7, "cur_prod": "東和2025"}, {"grp": "600x300", "spec": "RH 608×306×18×30", "tonghe": "◎", "chunglung": "◎", "H": 608, "B": 306, "tw": 18, "tf": 30, "R": 13, "A": 283.7, "m": 222.7, "Ix": 179233, "Iy": 14355, "rx": 25.14, "ry": 7.11, "rT": 7.11, "Sx": 5895.8, "Sy": 938.24, "Zx": 6696.7, "Zy": 1450.65, "J": 668, "Cw": 11989.4, "cur_prod": "東和2025"}, {"grp": "600x300", "spec": "RH 616×308×20×34", "tonghe": "◎", "chunglung": "◎", "H": 616, "B": 308, "tw": 20, "tf": 34, "R": 13, "A": 320.5, "m": 251.6, "Ix": 206052, "Iy": 16595.9, "rx": 25.36, "ry": 7.2, "rT": 7.2, "Sx": 6690, "Sy": 1077.65, "Zx": 7635.6, "Zy": 1669.36, "J": 961, "Cw": 14053.6, "cur_prod": "東和2025"}, {"grp": "600x300", "spec": "RH 628×312×24×40", "tonghe": "◎", "chunglung": "◎", "H": 628, "B": 312, "tw": 24, "tf": 40, "R": 13, "A": 382.6, "m": 300.3, "Ix": 250057, "Iy": 20313.9, "rx": 25.57, "ry": 7.29, "rT": 7.29, "Sx": 7963.6, "Sy": 1302.17, "Zx": 9179.4, "Zy": 2027.95, "J": 1590, "Cw": 17558.5, "cur_prod": "東和2025"}]}, {"name": "650×200", "special": false, "rows": [{"grp": "650x200", "spec": "RH 646×214×25×40", "tonghe": "◎", "chunglung": "◎", "H": 646, "B": 214, "tw": 25, "tf": 40, "R": 13, "A": 314.2, "m": 246.6, "Ix": 196319, "Iy": 6610.7, "rx": 25, "ry": 4.59, "rT": 4.59, "Sx": 6078, "Sy": 617.82, "Zx": 7230.2, "Zy": 1006.59, "J": 1220, "Cw": 6069.2, "cur_prod": "東和2025"}]}, {"name": "700×250", "special": false, "rows": [{"grp": "700x250", "spec": "RH 688×254×13×21", "tonghe": null, "chunglung": null, "H": 688, "B": 254, "tw": 13, "tf": 21, "R": 15, "A": 192.6, "m": 151.2, "Ix": 149870, "Iy": 5749.2, "rx": 27.9, "ry": 5.46, "rT": 5.46, "Sx": 4356.7, "Sy": 452.69, "Zx": 4975.8, "Zy": 706.61, "J": 204.13, "Cw": 6394.4, "cur_prod": "中龍(2個月交期)"}]}, {"name": "700×300", "special": false, "rows": [{"grp": "700x300", "spec": "RH 692×300×13×20", "tonghe": null, "chunglung": null, "H": 692, "B": 300, "tw": 13, "tf": 20, "R": 18, "A": 207.5, "m": 162.9, "Ix": 168425, "Iy": 9015, "rx": 28.49, "ry": 6.59, "rT": 6.59, "Sx": 4867.8, "Sy": 601, "Zx": 5503.1, "Zy": 930.47, "J": 226, "Cw": 10177.6, "cur_prod": "東和2025、中龍"}, {"grp": "700x300", "spec": "RH 700×300×13×24", "tonghe": null, "chunglung": null, "H": 700, "B": 300, "tw": 13, "tf": 24, "R": 18, "A": 231.5, "m": 181.8, "Ix": 197490, "Iy": 10815, "rx": 29.21, "ry": 6.83, "rT": 6.83, "Sx": 5642.6, "Sy": 721, "Zx": 6338.3, "Zy": 1110.47, "J": 343, "Cw": 12355.5, "cur_prod": "東和2025、中龍"}, {"grp": "700x300", "spec": "RH 701×356×16.8×27.4", "tonghe": "×", "chunglung": null, "H": 701, "B": 356, "tw": 16.8, "tf": 27.4, "R": 18, "A": 306.4, "m": 240.5, "Ix": 262027, "Iy": 20633.7, "rx": 29.24, "ry": 8.21, "rT": null, "Sx": 7475.8, "Sy": 1159.2, "Zx": 8413.1, "Zy": 1785.33, "J": 590.35, "Cw": 23405.7, "cur_prod": null}, {"grp": "700x300", "spec": "RH 702×300×13×25", "tonghe": "×", "chunglung": "×", "H": 702, "B": 300, "tw": 13, "tf": 25, "R": 18, "A": 237.5, "m": 186.5, "Ix": 204861, "Iy": 11265, "rx": 29.37, "ry": 6.89, "rT": 6.89, "Sx": 5836.5, "Sy": 751, "Zx": 6548.6, "Zy": 1155.47, "J": 360.25, "Cw": 12907.7, "cur_prod": "中龍(2個月交期)"}, {"grp": "700x300", "spec": "RH 708×302×15×28", "tonghe": null, "chunglung": null, "H": 708, "B": 302, "tw": 15, "tf": 28, "R": 18, "A": 269.7, "m": 211.7, "Ix": 233143, "Iy": 12875.7, "rx": 29.4, "ry": 6.91, "rT": 6.91, "Sx": 6585.9, "Sy": 852.7, "Zx": 7433.8, "Zy": 1316.74, "J": 537, "Cw": 14884.3, "cur_prod": "東和2025、中龍"}, {"grp": "700x300", "spec": "RH 712×306×19×30", "tonghe": "◎", "chunglung": null, "H": 712, "B": 306, "tw": 19, "tf": 30, "R": 18, "A": 310.3, "m": 243.6, "Ix": 260398, "Iy": 14368.7, "rx": 28.97, "ry": 6.81, "rT": 6.8, "Sx": 7314.5, "Sy": 939.13, "Zx": 8369.6, "Zy": 1467.14, "J": 735, "Cw": 16708, "cur_prod": "東和2025、中龍"}, {"grp": "700x300", "spec": "RH 714×303×16×31", "tonghe": "×", "chunglung": "×", "H": 714, "B": 303, "tw": 16, "tf": 31, "R": 18, "A": 295, "m": 231.5, "Ix": 259076, "Iy": 14399, "rx": 29.64, "ry": 6.99, "rT": 6.99, "Sx": 7257, "Sy": 950.43, "Zx": 8205.4, "Zy": 1468.11, "J": 690.8, "Cw": 16792.4, "cur_prod": "中龍(2個月交期)"}, {"grp": "700x300", "spec": "RH 714×356×19.1×34", "tonghe": "×", "chunglung": null, "H": 714, "B": 356, "tw": 19.1, "tf": 34, "R": 18, "A": 368.2, "m": 289.1, "Ix": 325817, "Iy": 25609.5, "rx": 29.75, "ry": 8.34, "rT": null, "Sx": 9126.5, "Sy": 1438.74, "Zx": 10312.1, "Zy": 2217.2, "J": 1082.86, "Cw": 29604.6, "cur_prod": null}, {"grp": "700x300", "spec": "RH 718×308×21×33", "tonghe": "◎", "chunglung": null, "H": 718, "B": 308, "tw": 21, "tf": 33, "R": 18, "A": 343, "m": 269.2, "Ix": 290032, "Iy": 16126.1, "rx": 29.08, "ry": 6.86, "rT": 6.86, "Sx": 8078.9, "Sy": 1047.15, "Zx": 9283.7, "Zy": 1641.18, "J": 980, "Cw": 18917, "cur_prod": "東和2025、中龍"}, {"grp": "700x300", "spec": "RH 720×306×19×34", "tonghe": "×", "chunglung": "×", "H": 720, "B": 306, "tw": 19, "tf": 34, "R": 18, "A": 334.7, "m": 262.8, "Ix": 291773, "Iy": 16278.8, "rx": 29.52, "ry": 6.97, "rT": 6.97, "Sx": 8104.8, "Sy": 1063.98, "Zx": 9245.9, "Zy": 1654.42, "J": 950.87, "Cw": 19151.9, "cur_prod": "中龍(2個月交期)"}, {"grp": "700x300", "spec": "RH 730×307×20×39", "tonghe": "×", "chunglung": "×", "H": 730, "B": 307, "tw": 20, "tf": 39, "R": 18, "A": 372.6, "m": 292.5, "Ix": 335225, "Iy": 18856.3, "rx": 29.99, "ry": 7.11, "rT": 7.11, "Sx": 9184.3, "Sy": 1228.42, "Zx": 10488.4, "Zy": 1906.95, "J": 1387.93, "Cw": 22508.8, "cur_prod": "中龍(2個月交期)"}, {"grp": "700x300", "spec": "RH 732×311×24×40", "tonghe": null, "chunglung": null, "H": 732, "B": 311, "tw": 24, "tf": 40, "R": 18, "A": 408.1, "m": 320.3, "Ix": 356502, "Iy": 20135.7, "rx": 29.56, "ry": 7.02, "rT": 7.02, "Sx": 9740.5, "Sy": 1294.9, "Zx": 11248.7, "Zy": 2032.76, "J": 1670, "Cw": 24105.7, "cur_prod": "東和2025、中龍"}]}, {"name": "800×300", "special": false, "rows": [{"grp": "800x300", "spec": "RH 792×300×14×22", "tonghe": null, "chunglung": null, "H": 792, "B": 300, "tw": 14, "tf": 22, "R": 18, "A": 239.5, "m": 188, "Ix": 248343, "Iy": 9920.5, "rx": 32.2, "ry": 6.44, "rT": 6.44, "Sx": 6271.3, "Sy": 661.37, "Zx": 7143.2, "Zy": 1029.72, "J": 303, "Cw": 14704.6, "cur_prod": "東和2025、中龍"}, {"grp": "800x300", "spec": "RH 794×300×14×23", "tonghe": null, "chunglung": null, "H": 794, "B": 300, "tw": 14, "tf": 23, "R": 18, "A": 245.5, "m": 192.7, "Ix": 257776, "Iy": 10370.5, "rx": 32.4, "ry": 6.5, "rT": 6.5, "Sx": 6493.1, "Sy": 691.37, "Zx": 7381.1, "Zy": 1074.72, "J": 311.76, "Cw": 15411.6, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 800×300×14×26", "tonghe": null, "chunglung": null, "H": 800, "B": 300, "tw": 14, "tf": 26, "R": 18, "A": 263.5, "m": 206.8, "Ix": 286361, "Iy": 11720.5, "rx": 32.97, "ry": 6.67, "rT": 6.67, "Sx": 7159, "Sy": 781.37, "Zx": 8098.4, "Zy": 1209.72, "J": 440, "Cw": 17553.6, "cur_prod": "東和2025、中龍"}, {"grp": "800x300", "spec": "RH 804×300×14×28", "tonghe": "×", "chunglung": "×", "H": 804, "B": 300, "tw": 14, "tf": 28, "R": 18, "A": 275.5, "m": 216.3, "Ix": 305657, "Iy": 12620.5, "rx": 33.31, "ry": 6.77, "rT": null, "Sx": 7603.4, "Sy": 841.37, "Zx": 8579.6, "Zy": 1299.72, "J": 507.46, "Cw": 18999.4, "cur_prod": null}, {"grp": "800x300", "spec": "RH 804×302×16×28", "tonghe": "×", "chunglung": "×", "H": 804, "B": 302, "tw": 16, "tf": 28, "R": 18, "A": 291.6, "m": 228.9, "Ix": 314319, "Iy": 12883.2, "rx": 32.83, "ry": 6.65, "rT": 6.65, "Sx": 7818.9, "Sy": 853.19, "Zx": 8902.8, "Zy": 1328.07, "J": 544.09, "Cw": 19394.9, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 808×302×16×30", "tonghe": null, "chunglung": null, "H": 808, "B": 302, "tw": 16, "tf": 30, "R": 18, "A": 303.7, "m": 238.4, "Ix": 333938, "Iy": 13801.4, "rx": 33.16, "ry": 6.74, "rT": 6.74, "Sx": 8265.8, "Sy": 914, "Zx": 9389.6, "Zy": 1419.28, "J": 645.73, "Cw": 20884.3, "cur_prod": "東和2025、中龍"}, {"grp": "800x300", "spec": "RH 808×304×18×30", "tonghe": null, "chunglung": null, "H": 808, "B": 304, "tw": 18, "tf": 30, "R": 18, "A": 319.8, "m": 251.1, "Ix": 342730, "Iy": 14088.3, "rx": 32.74, "ry": 6.64, "rT": null, "Sx": 8483.4, "Sy": 926.86, "Zx": 9716, "Zy": 1450.45, "J": 669, "Cw": 21318.6, "cur_prod": "中龍"}, {"grp": "800x300", "spec": "RH 808×306×20×30", "tonghe": "◎", "chunglung": null, "H": 808, "B": 306, "tw": 20, "tf": 30, "R": 18, "A": 336, "m": 263.7, "Ix": 351522, "Iy": 14381.6, "rx": 32.35, "ry": 6.54, "rT": 6.54, "Sx": 8701, "Sy": 939.98, "Zx": 10042.5, "Zy": 1483.24, "J": 750.27, "Cw": 21762.4, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 812×302×18×32", "tonghe": "×", "chunglung": "×", "H": 812, "B": 302, "tw": 18, "tf": 32, "R": 18, "A": 330.7, "m": 259.6, "Ix": 360727, "Iy": 14731, "rx": 33.03, "ry": 6.67, "rT": 6.67, "Sx": 8884.9, "Sy": 975.56, "Zx": 10158.6, "Zy": 1523.47, "J": 805.14, "Cw": 22405.8, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 816×306×20×34", "tonghe": "◎", "chunglung": null, "H": 816, "B": 306, "tw": 20, "tf": 34, "R": 18, "A": 360.5, "m": 283, "Ix": 391874, "Iy": 16291.8, "rx": 32.97, "ry": 6.72, "rT": 6.73, "Sx": 9604.8, "Sy": 1064.82, "Zx": 11036.3, "Zy": 1670.51, "J": 1001.27, "Cw": 24907.1, "cur_prod": "東和2025(依訂單)、中龍"}, {"grp": "800x300", "spec": "RH 818×304×18×35", "tonghe": "×", "chunglung": "×", "H": 818, "B": 304, "tw": 18, "tf": 35, "R": 18, "A": 350.2, "m": 274.9, "Ix": 392964, "Iy": 16429.5, "rx": 33.5, "ry": 6.85, "rT": 6.85, "Sx": 9607.9, "Sy": 1080.89, "Zx": 10951.8, "Zy": 1681.49, "J": 1014.34, "Cw": 25181.9, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 820×306×20×36", "tonghe": "×", "chunglung": "◎", "H": 820, "B": 306, "tw": 20, "tf": 36, "R": 18, "A": 372.7, "m": 292.6, "Ix": 412349, "Iy": 17246.9, "rx": 33.26, "ry": 6.8, "rT": 6.8, "Sx": 10057.3, "Sy": 1127.25, "Zx": 11537, "Zy": 1764.15, "J": 1151.25, "Cw": 26502.3, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 824×306×20×38", "tonghe": "×", "chunglung": "×", "H": 824, "B": 306, "tw": 20, "tf": 38, "R": 18, "A": 384.9, "m": 302.2, "Ix": 433025, "Iy": 18202, "rx": 33.54, "ry": 6.88, "rT": 6.88, "Sx": 10510.3, "Sy": 1189.67, "Zx": 12040, "Zy": 1857.78, "J": 1318.86, "Cw": 28112.8, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 824×308×22×38", "tonghe": "×", "chunglung": "×", "H": 824, "B": 308, "tw": 22, "tf": 38, "R": 18, "A": 401.4, "m": 315.1, "Ix": 442350, "Iy": 18577.5, "rx": 33.2, "ry": 6.8, "rT": 6.8, "Sx": 10736.6, "Sy": 1206.33, "Zx": 12379.5, "Zy": 1897.1, "J": 1392.2, "Cw": 28692.7, "cur_prod": "中龍(2個月交期)"}, {"grp": "800x300", "spec": "RH 828×308×22×40", "tonghe": "◎", "chunglung": null, "H": 828, "B": 308, "tw": 22, "tf": 40, "R": 18, "A": 413.7, "m": 324.8, "Ix": 463364, "Iy": 19551.4, "rx": 33.47, "ry": 6.87, "rT": 6.88, "Sx": 11192.4, "Sy": 1269.57, "Zx": 12888.3, "Zy": 1991.97, "J": 1579.62, "Cw": 30350.8, "cur_prod": "東和2025(依訂單)、中龍(2個月交期)"}]}, {"name": "850×300", "special": true, "rows": [{"grp": "850x300", "spec": "RH 841×295×14.5×22", "tonghe": null, "chunglung": null, "H": 841, "B": 295, "tw": 14.5, "tf": 22, "R": 18, "A": 248.1, "m": 194.8, "Ix": 283216, "Iy": 9437, "rx": 33.78, "ry": 6.17, "rT": 6.17, "Sx": 6735.2, "Sy": 639.8, "Zx": 7727.7, "Zy": 1002.3, "J": 290.4, "Cw": 15824.9, "cur_prod": "中龍(2個月交期)"}, {"grp": "850x300", "spec": "RH 846×296×15.5×24.5", "tonghe": null, "chunglung": null, "H": 846, "B": 296, "tw": 15.5, "tf": 24.5, "R": 18, "A": 271.4, "m": 213, "Ix": 314498, "Iy": 10618.4, "rx": 34.04, "ry": 6.26, "rT": 6.26, "Sx": 7434.9, "Sy": 717.46, "Zx": 8528.7, "Zy": 1124.44, "J": 389.13, "Cw": 17915, "cur_prod": "中龍(2個月交期)"}, {"grp": "850x300", "spec": "RH 850×297×16×27", "tonghe": null, "chunglung": null, "H": 850, "B": 297, "tw": 16, "tf": 27, "R": 18, "A": 290.5, "m": 228.1, "Ix": 343237, "Iy": 11820.3, "rx": 34.37, "ry": 6.38, "rT": 6.38, "Sx": 8076.2, "Sy": 795.98, "Zx": 9243.7, "Zy": 1245.11, "J": 498.4, "Cw": 20015.6, "cur_prod": "中龍(2個月交期)"}]}, {"name": "900×300", "special": true, "rows": [{"grp": "900x300", "spec": "RH 890×299×15×23", "tonghe": "×", "chunglung": null, "H": 890, "B": 299, "tw": 15, "tf": 23, "R": 18, "A": 266.9, "m": 209.5, "Ix": 338539, "Iy": 10274.3, "rx": 35.61, "ry": 6.2, "rT": 6.2, "Sx": 7607.6, "Sy": 687.24, "Zx": 8749.9, "Zy": 1078.79, "J": 337.48, "Cw": 19307.6, "cur_prod": "中龍(2個月交期)"}, {"grp": "900x300", "spec": "RH 900×300×16×28", "tonghe": "×", "chunglung": null, "H": 900, "B": 300, "tw": 16, "tf": 28, "R": 18, "A": 305.8, "m": 240.1, "Ix": 404492, "Iy": 12632.8, "rx": 36.37, "ry": 6.43, "rT": 6.43, "Sx": 8988.7, "Sy": 842.19, "Zx": 10290.4, "Zy": 1317.36, "J": 554.27, "Cw": 24014.5, "cur_prod": "中龍"}, {"grp": "900x300", "spec": "RH 912×302×18×34", "tonghe": "×", "chunglung": null, "H": 912, "B": 302, "tw": 18, "tf": 34, "R": 18, "A": 360.1, "m": 282.6, "Ix": 491010, "Iy": 15653.8, "rx": 36.93, "ry": 6.59, "rT": 6.59, "Sx": 10767.8, "Sy": 1036.67, "Zx": 12337.1, "Zy": 1622.45, "J": 955.39, "Cw": 30168.1, "cur_prod": "中龍"}, {"grp": "900x300", "spec": "RH 918×303×19×37", "tonghe": "×", "chunglung": null, "H": 918, "B": 303, "tw": 19, "tf": 37, "R": 18, "A": 387.4, "m": 304.1, "Ix": 535384, "Iy": 17207.8, "rx": 37.18, "ry": 6.67, "rT": 6.67, "Sx": 11664.1, "Sy": 1135.83, "Zx": 13376.7, "Zy": 1778.4, "J": 1216.16, "Cw": 33390.1, "cur_prod": "中龍"}]}, {"name": "950×300", "special": true, "rows": [{"grp": "950x300", "spec": "RH 926×307×19×32", "tonghe": null, "chunglung": null, "H": 926, "B": 307, "tw": 19, "tf": 32, "R": 19, "A": 363.4, "m": 285.2, "Ix": 499809, "Iy": 15486.8, "rx": 37.09, "ry": 6.53, "rT": 6.53, "Sx": 10795, "Sy": 1008.91, "Zx": 12444.4, "Zy": 1590.04, "J": 867.73, "Cw": 30944.1, "cur_prod": "中龍(2個月交期)"}, {"grp": "950x300", "spec": "RH 932×309×21×34.5", "tonghe": null, "chunglung": null, "H": 932, "B": 309, "tw": 21, "tf": 34.5, "R": 19, "A": 397.5, "m": 312.1, "Ix": 547702, "Iy": 17037.9, "rx": 37.12, "ry": 6.55, "rT": 6.55, "Sx": 11753.3, "Sy": 1102.78, "Zx": 13610.2, "Zy": 1746.76, "J": 1112.32, "Cw": 34310.4, "cur_prod": "中龍(2個月交期)"}, {"grp": "950x300", "spec": "RH 943×308×22×40", "tonghe": null, "chunglung": null, "H": 943, "B": 308, "tw": 22, "tf": 40, "R": 19, "A": 439.4, "m": 344.9, "Ix": 626112, "Iy": 19562.5, "rx": 37.75, "ry": 6.67, "rT": 6.67, "Sx": 13279.2, "Sy": 1270.29, "Zx": 15353.6, "Zy": 2006.43, "J": 1620.44, "Cw": 39878.6, "cur_prod": "中龍(2個月交期)"}, {"grp": "950x300", "spec": "RH 950×312×26×43.5", "tonghe": null, "chunglung": null, "H": 950, "B": 312, "tw": 26, "tf": 43.5, "R": 19, "A": 498.9, "m": 391.7, "Ix": 702979, "Iy": 22154.8, "rx": 37.54, "ry": 6.66, "rT": 6.67, "Sx": 14799.5, "Sy": 1420.18, "Zx": 17276.4, "Zy": 2268.42, "J": 2217.71, "Cw": 45513.9, "cur_prod": "中龍(2個月交期)"}]}];
+
+/* ---------- 斷面查詢（手機卡片） ---------- */
+const fmt=v=>v==null?'—':(typeof v==='number'?v.toLocaleString('en-US',{maximumFractionDigits:2}):v);
+function supSym(v){
+  if(v==null||v==='') return '<span class="s-ok" title="常備生產">●</span>';
+  if(v==='×') return '<span class="s-no">×</span>';
+  if(v==='◎') return '<span class="s-order">◎</span>';
+  return '<span>'+v+'</span>';
+}
+const grpSel=document.getElementById('grp'), qcards=document.getElementById('qcards');
+const cntEl=document.getElementById('cnt'), specialEl=document.getElementById('special');
+DATA.forEach((g,i)=>{const o=document.createElement('option');o.value=i;o.textContent=g.name+(g.special?'　☆':'');grpSel.appendChild(o);});
+const PAIRS=[['H','H','mm'],['B','B','mm'],['tw','tw','mm'],['tf','tf','mm'],['R','R','mm'],
+  ['A','A','cm²'],['m','m','kg/m'],['rx','rx','cm'],['ry','ry','cm'],
+  ['Ix','Ix','cm⁴'],['Iy','Iy','cm⁴'],['Zx','Zx','cm³'],['Zy','Zy','cm³']];
+function renderQuery(i){
+  const g=DATA[i];
+  cntEl.textContent='共 '+g.rows.length+' 斷面';
+  specialEl.style.display=g.special?'inline-block':'none';
+  qcards.innerHTML=g.rows.map(r=>{
+    const pairs=PAIRS.map(([k,lab,u])=>`<div class="pair"><span class="k">${lab} <small>${u}</small></span><span class="v">${fmt(r[k])}</span></div>`).join('');
+    const cur = r.cur_prod?('現行型錄：'+r.cur_prod):'現行型錄：—';
+    return `<div class="seccard">
+      <div class="top"><span class="name">${r.spec}</span>
+        <span class="sup">東和 ${supSym(r.tonghe)}　中龍 ${supSym(r.chunglung)}</span></div>
+      <div class="cur">${cur}</div>
+      <div class="pairs">${pairs}</div>
+    </div>`;
+  }).join('');
+}
+grpSel.addEventListener('change',e=>renderQuery(+e.target.value));
+renderQuery(0);
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    if(t.classList.contains('disabled'))return;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- 小梁配置 ---------- */
+const bgrp=document.getElementById('bgrp'), bsec=document.getElementById('bsec');
+DATA.forEach((g,i)=>{const o=document.createElement('option');o.value=i;o.textContent=g.name+(g.special?'　☆':'');bgrp.appendChild(o);});
+function fillSec(){const g=DATA[+bgrp.value]; bsec.innerHTML=''; g.rows.forEach((r,j)=>{const o=document.createElement('option');o.value=j;o.textContent=r.spec;bsec.appendChild(o);});}
+bgrp.value=String(Math.min(22,DATA.length-1)); fillSec();
+bgrp.addEventListener('change',()=>{fillSec(); curSecMass=DATA[+bgrp.value].rows[+bsec.value].m; drawDiagram(); calcForces();});
+bsec.addEventListener('change',()=>{curSecMass=DATA[+bgrp.value].rows[+bsec.value].m; drawDiagram(); calcForces();});
+
+const $=id=>document.getElementById(id);
+function getInputs(){
+  const L=parseFloat($('span').value)||0;
+  const posPct=parseFloat($('pos').value)||50;
+  const a=L*posPct/100;
+  return {L,S:parseFloat($('trib').value)||0,Lb:parseFloat($('lb').value)||0,
+    slab:parseFloat($('slab').value)||0, dl:parseFloat($('dl').value)||0,
+    ll:parseFloat($('ll').value)||0, wadd:parseFloat($('wadd').value)||0,
+    rcw:parseFloat($('rcw').value)||2400, Fy:parseFloat($('fy').value)||2.5,
+    selfwt:$('selfwt').value==='1', Pdl:parseFloat($('pdl').value)||0,
+    Pll:parseFloat($('pll').value)||0, a};
+}
+
+/* ---- proportional diagram with inline loads ---- */
+function drawDiagram(){
+  const I=getInputs();
+  const dg=lineLoads(I,curSecMass); const dgD=dg.wD, dgL=dg.wL;
+  const W=560, ml=70, mr=40, x0=ml, x1=W-mr, bw=x1-x0; // beam pixel span
+  const L=I.L||1;
+  const ax=x0 + (I.a/L)*bw;           // point load x in px (proportional)
+  const by=120;                        // beam y
+  // slab thickness scaled (visual): map cm to px modestly
+  const slabPx=Math.max(6, Math.min(34, I.slab*1.6));
+  const arrows=[];
+  for(let k=0;k<=10;k++){const x=x0+k*bw/10; arrows.push(`<line x1="${x}" y1="${by-40}" x2="${x}" y2="${by-8}" stroke="var(--no)" stroke-width="1.2"/><polygon points="${x},${by-8} ${x-3},${by-15} ${x+3},${by-15}" fill="var(--no)"/>`);}
+  const pl = (I.Pdl+I.Pll)>0 ? `
+    <line x1="${ax}" y1="22" x2="${ax}" y2="${by-6}" stroke="var(--accent2)" stroke-width="2.5"/>
+    <polygon points="${ax},${by-6} ${ax-6},${by-20} ${ax+6},${by-20}" fill="var(--accent2)"/>
+    <text x="${ax}" y="16" text-anchor="middle" font-size="12" fill="var(--accent2)" font-weight="700">P<tspan baseline-shift="sub" font-size="9">DL</tspan>=${I.Pdl} tf , P<tspan baseline-shift="sub" font-size="9">LL</tspan>=${I.Pll} tf</text>
+    <line x1="${ax}" y1="${by+18}" x2="${ax}" y2="${by+30}" stroke="var(--accent2)" stroke-dasharray="3 3"/>
+    <text x="${ax}" y="${by+44}" text-anchor="middle" font-size="11" fill="var(--accent2)">a=${I.a.toFixed(2)} m</text>` : '';
+  const svg=`<svg viewBox="0 0 ${W} 230" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+    <!-- RC slab (proportional thickness) -->
+    <rect x="${x0}" y="${by-40-slabPx}" width="${bw}" height="${slabPx}" fill="var(--accent-soft)" stroke="var(--accent)" />
+    <text x="${(x0+x1)/2}" y="${by-46-slabPx}" text-anchor="middle" font-size="14" fill="var(--muted)">RC 樓板 t=${I.slab} cm　貢獻寬 S=${I.S} m</text>
+    <!-- udl arrows -->
+    ${arrows.join('')}
+    <text x="${x0+8}" y="${by-46}" font-size="14" fill="var(--no)">w<tspan baseline-shift="sub" font-size="11">DL</tspan>=${dgD.toFixed(0)} , w<tspan baseline-shift="sub" font-size="11">LL</tspan>=${dgL.toFixed(0)} kgf/m</text>
+    <!-- beam (proportional length) -->
+    <rect x="${x0}" y="${by}" width="${bw}" height="13" fill="var(--accent2)"/>
+    <!-- supports -->
+    <polygon points="${x0},${by+13} ${x0-9},${by+30} ${x0+9},${by+30}" fill="var(--ink)"/>
+    <polygon points="${x1},${by+13} ${x1-9},${by+30} ${x1+9},${by+30}" fill="var(--ink)"/>
+    <circle cx="${x1}" cy="${by+34}" r="3" fill="none" stroke="var(--ink)"/>
+    <line x1="${x0-12}" y1="${by+30}" x2="${x0+12}" y2="${by+30}" stroke="var(--ink)"/>
+    <line x1="${x1-12}" y1="${by+38}" x2="${x1+12}" y2="${by+38}" stroke="var(--ink)"/>
+    ${pl}
+    <!-- span dim -->
+    <line x1="${x0}" y1="200" x2="${x1}" y2="200" stroke="var(--muted)"/>
+    <line x1="${x0}" y1="195" x2="${x0}" y2="205" stroke="var(--muted)"/><line x1="${x1}" y1="195" x2="${x1}" y2="205" stroke="var(--muted)"/>
+    <text x="${(x0+x1)/2}" y="218" text-anchor="middle" font-size="15" fill="var(--muted)">跨距 L = ${I.L} m（簡支，比例近似）</text>
+  </svg>`;
+  $('beamDiagram').innerHTML=svg;
+  $('posLabel').textContent=I.a.toFixed(2);
+}
+
+/* ---- distributed line loads (kgf/m), separated D and L ---- */
+function lineLoads(I, secMass){
+  const slabSelf = I.slab/100 * I.rcw * I.S;   // (m thick)*(kgf/m3)*(width m) = kgf/m
+  const wD = I.dl*I.S + I.wadd + slabSelf + ((I.selfwt&&secMass)?secMass:0); // kgf/m
+  const wL = I.ll*I.S;                          // kgf/m
+  return {wD,wL,slabSelf};
+}
+
+/* envelope of moment & shear for UDL(w)+point(P at a), simple beam, returns max|M|, max|V| */
+function envelope(w, P, a, L){
+  // w in kgf/m, P in kgf, a,L in m
+  const R1=w*L/2 + P*(L-a)/L;     // left reaction (kgf)
+  const N=200; let Mmax=0, Vmax=0;
+  for(let i=0;i<=N;i++){
+    const x=L*i/N;
+    let V=R1 - w*x - (x>a?P:0);
+    let M=R1*x - w*x*x/2 - (x>a?P*(x-a):0);
+    if(Math.abs(V)>Vmax)Vmax=Math.abs(V);
+    if(M>Mmax)Mmax=M;
+  }
+  // ensure support shear captured
+  Vmax=Math.max(Vmax,Math.abs(R1),Math.abs(w*L/2+P*a/L));
+  return {Mmax,Vmax,R1};
+}
+
+/* midspan-ish deflection: superpose UDL + point, sample max deflection */
+function deflMax(w, P, a, L, E, I_in){
+  // w kgf/m -> tf/cm ; P kgf -> tf ; lengths cm
+  const Lc=L*100, ac=a*100;
+  const wt=w/1000/100, Pt=P/1000;
+  const N=200; let dmax=0;
+  for(let i=0;i<=N;i++){
+    const x=Lc*i/N;
+    // UDL deflection at x (downward +): w x (L^3 -2Lx^2 + x^3)/(24EI)
+    const dU = wt*x*(Math.pow(Lc,3)-2*Lc*x*x+Math.pow(x,3))/(24*E*I_in);
+    // point load at a: for x<=a use y=Pb x(L^2-b^2-x^2)/(6LEI); for x>a symmetric formula
+    const b=Lc-ac; let dP;
+    if(x<=ac){dP=Pt*b*x*(Lc*Lc - b*b - x*x)/(6*Lc*E*I_in);}
+    else{const xx=Lc-x, aa=b; dP=Pt*ac*xx*(Lc*Lc - ac*ac - xx*xx)/(6*Lc*E*I_in);}
+    const d=dU+dP; if(d>dmax)dmax=d;
+  }
+  return dmax; // cm
+}
+
+let curSecMass=0;
+function calcForces(){
+  const I=getInputs();
+  const {wD,wL,slabSelf}=lineLoads(I,curSecMass);
+  const Pd=I.Pdl*1000, Pl=I.Pll*1000; // tf->kgf
+  // factored: combine D and L sources with factors, then envelope
+  const env14=envelope(1.4*wD, 1.4*Pd, I.a, I.L);
+  const env12=envelope(1.2*wD+1.6*wL, 1.2*Pd+1.6*Pl, I.a, I.L);
+  let Mu,Vu,gov;
+  if(env14.Mmax>=env12.Mmax){Mu=env14.Mmax;gov='1.4D';}else{Mu=env12.Mmax;gov='1.2D + 1.6L';}
+  Vu=Math.max(env14.Vmax,env12.Vmax);
+  window._bf={I,wD,wL,slabSelf,Pd,Pl,Mu,Vu,gov};
+  $('forceRes').innerHTML=[
+    ['控制組合',gov,''],
+    ['線載 wD / wL',(wD).toFixed(0)+' / '+wL.toFixed(0),'kgf/m'],
+    ['設計彎矩 Mu',(Mu/1000).toFixed(2)+' tf·m','含點荷疊加'],
+    ['設計剪力 Vu',(Vu/1000).toFixed(2)+' tf','含點荷疊加'],
+  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
+  $('forceFormula').textContent=
+    `板自重 = t/100×RC單位重×S = ${(I.slab/100).toFixed(2)}×${I.rcw}×${I.S} = ${slabSelf.toFixed(0)} kgf/m\n`+
+    `wD = 附加DL×S + 線載 + 板自重 ${I.selfwt?'+ 梁自重':''} = ${wD.toFixed(0)} kgf/m ; wL = LL×S = ${wL.toFixed(0)} kgf/m\n`+
+    `點荷 D=${I.Pdl} tf, L=${I.Pll} tf @ a=${I.a.toFixed(2)} m\n`+
+    `Mu, Vu 由 1.4D 與 1.2D+1.6L 各自(均布+點荷)沿跨度取包絡最大 → 控制 ${gov}`;
+}
+
+['span','trib','lb','slab','dl','ll','wadd','rcw','fy','selfwt','pdl','pll'].forEach(id=>$(id).addEventListener('input',()=>{drawDiagram();calcForces();}));
+$('pos').addEventListener('input',()=>{drawDiagram();calcForces();});
+
+/* deflection preset */
+$('defPreset').addEventListener('change',e=>{
+  if(e.target.value==='custom')return;
+  const [a,b]=e.target.value.split(','); $('defLL').value=a; $('defTot').value=b;
+  if(window._bf&&$('strengthCard').style.display!=='none')runCheck();
+});
+['defLL','defTot'].forEach(id=>$(id).addEventListener('input',()=>{$('defPreset').value='custom'; if($('deflCard').style.display!=='none')runCheck();}));
+
+$('runBtn').addEventListener('click',runCheck);
+function runCheck(){
+  const sec=DATA[+bgrp.value].rows[+bsec.value];
+  curSecMass=sec.m;
+  calcForces();
+  const F=window._bf, I=F.I, Fy=I.Fy;
+  // strength — AISC F2 LTB (Cb=1.0 conservative)
+  const E=2040;
+  const Lb_m = I.Lb>0 ? I.Lb : 0;          // 0 = 全側撐
+  const ho=(sec.H-sec.tf)/10;              // cm, flange-centroid distance
+  const rts=sec.rT;                        // cm (≈rts)
+  const Mp=Fy*sec.Zx;                      // tf·cm
+  const Lp=1.76*sec.ry*Math.sqrt(E/Fy);    // cm
+  const cc=1.0, termJ=sec.J*cc/(sec.Sx*ho);
+  const Lr=1.95*rts*(E/(0.7*Fy))*Math.sqrt(termJ+Math.sqrt(termJ*termJ+6.76*Math.pow(0.7*Fy/E,2))); // cm
+  let Mn, ltbState;
+  if(Lb_m===0){ Mn=Mp; ltbState='全側撐 → 塑性 Mp'; }
+  else{
+    const Lb=Lb_m*100, Cb=1.0;
+    if(Lb<=Lp){ Mn=Mp; ltbState=`Lb≤Lp(${(Lp/100).toFixed(2)}m) → 塑性 Mp`; }
+    else if(Lb<=Lr){ Mn=Math.min(Cb*(Mp-(Mp-0.7*Fy*sec.Sx)*(Lb-Lp)/(Lr-Lp)),Mp);
+      ltbState=`Lp<Lb≤Lr → 非彈性 LTB`; }
+    else{ const Fcr=Cb*Math.PI*Math.PI*E/Math.pow(Lb/rts,2)*Math.sqrt(1+0.078*termJ*Math.pow(Lb/rts,2));
+      Mn=Math.min(Fcr*sec.Sx,Mp); ltbState=`Lb>Lr(${(Lr/100).toFixed(2)}m) → 彈性 LTB`; }
+  }
+  const phiMn=0.9*Mn/100;                  // tf·m
+  const Mu_t=F.Mu/1000;
+  const Aw=sec.H*sec.tw/100;               // cm²
+  const phiVn=0.9*0.6*Fy*Aw;              // tf
+  const Vu_t=F.Vu/1000;
+  const mOK=phiMn>=Mu_t, vOK=phiVn>=Vu_t;
+  $('strengthCard').style.display='block';
+  $('strengthChecks').innerHTML=chk('彎矩',mOK,Mu_t,phiMn,'tf·m','Mu','φMn')+chk('剪力',vOK,Vu_t,phiVn,'tf','Vu','φVn');
+  $('strengthRes').innerHTML=[
+    ['φMn (φ=0.9)',phiMn.toFixed(2)+' tf·m',ltbState],['Mu',Mu_t.toFixed(2)+' tf·m',''],
+    ['φVn (φ=0.9)',phiVn.toFixed(2)+' tf','0.6·Fy·Aw'],['Vu',Vu_t.toFixed(2)+' tf',''],
+  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
+  const redu = (Lb_m>0 && Mn<Mp) ? `\n側撐折減：Mn/Mp = ${(Mn/Mp).toFixed(3)}（Mp=${(Mp/100).toFixed(2)} → Mn=${(Mn/100).toFixed(2)} tf·m）`:'';
+  $('strengthFormula').textContent=
+    `【彎矩 AISC F2，Cb=1.0】\nMp=Fy·Zx=${Fy}×${sec.Zx}/100=${(Mp/100).toFixed(2)} tf·m\n`+
+    `Lp=1.76·ry·√(E/Fy)=${(Lp/100).toFixed(2)} m ; Lr=${(Lr/100).toFixed(2)} m ; Lb=${Lb_m===0?'0(全側撐)':Lb_m+' m'}\n`+
+    `${ltbState}${redu}\nφMn=0.9×Mn=${phiMn.toFixed(2)} tf·m\n`+
+    `【剪力】Aw=H·tw=${sec.H}×${sec.tw}/100=${Aw.toFixed(2)} cm² ; φVn=0.9×0.6×${Fy}×${Aw.toFixed(2)}=${phiVn.toFixed(2)} tf`;
+
+  // deflection — service (unfactored)
+  const Ix=sec.Ix;
+  const dLL=deflMax(F.wL, F.Pl, I.a, I.L, E, Ix);
+  const dTOT=deflMax(F.wD+F.wL, F.Pd+F.Pl, I.a, I.L, E, Ix);
+  const Lcm=I.L*100;
+  const limLL=parseFloat($('defLL').value)||360, limTot=parseFloat($('defTot').value)||240;
+  const aLL=Lcm/limLL, aTot=Lcm/limTot;
+  const llOK=dLL<=aLL, totOK=dTOT<=aTot;
+  $('deflCard').style.display='block';
+  $('deflChecks').innerHTML=chk('活載撓度',llOK,dLL,aLL,'cm','δ_LL','L/'+limLL)+chk('全載撓度',totOK,dTOT,aTot,'cm','δ_全','L/'+limTot);
+  $('deflRes').innerHTML=[
+    ['δ 活載',dLL.toFixed(3)+' cm','限 '+aLL.toFixed(3)],['δ 全載',dTOT.toFixed(3)+' cm','限 '+aTot.toFixed(3)],
+    ['Ix',Ix.toLocaleString()+' cm⁴',''],['L/δ 活載',dLL>0?(Lcm/dLL).toFixed(0):'∞','需 ≥ '+limLL],
+  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
+  $('deflFormula').textContent=`未折減服務載重（AISC：撓度為使用性，不乘載重因數）。\nδ = 均布 5wL⁴/384EI 與點荷疊加沿跨度取最大，E=2040 tf/cm², Ix=${Ix} cm⁴\n活載 δ=${dLL.toFixed(3)} ≤ L/${limLL}=${aLL.toFixed(3)} → ${llOK?'OK':'NG'}\n全載 δ=${dTOT.toFixed(3)} ≤ L/${limTot}=${aTot.toFixed(3)} → ${totOK?'OK':'NG'}`;
+}
+function chk(name,ok,demand,cap,unit,dl,cl){
+  const r=cap>0?demand/cap:0;
+  return `<div class="check ${ok?'pass':'fail'}"><span>${ok?'✔':'✘'} ${name}檢核 ${ok?'合格':'不合格'}</span>
+    <span class="ratio">${dl}/${cl} = ${demand.toFixed(2)}/${cap.toFixed(2)} ${unit}　比值 ${r.toFixed(2)}</span></div>`;
+}
+curSecMass=DATA[+bgrp.value].rows[+bsec.value].m;
+drawDiagram(); calcForces();
+</script>
+</body>
+</html>
