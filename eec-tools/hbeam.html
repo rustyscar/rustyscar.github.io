@@ -110,19 +110,12 @@
             <th>東和<span class="u">2019</span></th>
             <th>中龍<span class="u">2019</span></th>
             <th>現行型錄<span class="u">供應來源</span></th>
-            <th>H<span class="u">mm</span></th>
-            <th>B<span class="u">mm</span></th>
-            <th>tw<span class="u">mm</span></th>
-            <th>tf<span class="u">mm</span></th>
-            <th>R<span class="u">mm</span></th>
-            <th>A<span class="u">cm²</span></th>
-            <th>m<span class="u">kg/m</span></th>
-            <th>rx<span class="u">cm</span></th>
-            <th>ry<span class="u">cm</span></th>
-            <th>Ix<span class="u">cm⁴</span></th>
-            <th>Iy<span class="u">cm⁴</span></th>
-            <th>Zx<span class="u">cm³</span></th>
-            <th>Zy<span class="u">cm³</span></th>
+            <th>H<span class="u">mm</span></th><th>B<span class="u">mm</span></th>
+            <th>tw<span class="u">mm</span></th><th>tf<span class="u">mm</span></th><th>R<span class="u">mm</span></th>
+            <th>A<span class="u">cm²</span></th><th>m<span class="u">kg/m</span></th>
+            <th>rx<span class="u">cm</span></th><th>ry<span class="u">cm</span></th>
+            <th>Ix<span class="u">cm⁴</span></th><th>Iy<span class="u">cm⁴</span></th>
+            <th>Zx<span class="u">cm³</span></th><th>Zy<span class="u">cm³</span></th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>
@@ -147,39 +140,43 @@
   <div class="panel" id="panel-beam">
 
     <div class="card">
-      <h2>① 幾何配置</h2>
+      <h2>① 幾何 + 載重配置（簡圖）</h2>
       <div class="diagram" id="beamDiagram"></div>
       <div class="grid">
-        <div class="field"><label>小梁跨距 L <span class="unit">(m)</span></label><input type="number" id="span" value="6" step="0.1" min="0.1"></div>
-        <div class="field"><label>小梁間距 S <span class="unit">(m)</span></label><input type="number" id="trib" value="3" step="0.1" min="0.1"></div>
+        <div class="field"><label>小梁跨距 L <span class="unit">(m)</span></label><input type="number" id="span" value="6" step="0.1" min="0.5"></div>
+        <div class="field"><label>小梁間距 S <span class="unit">(m，貢獻寬)</span></label><input type="number" id="trib" value="3" step="0.1" min="0.1"></div>
         <div class="field"><label>側撐間距 Lb <span class="unit">(m，0=全側撐)</span></label><input type="number" id="lb" value="0" step="0.1" min="0"></div>
       </div>
-      <div class="hint">本工具採簡支梁、均布載重模型。間距 S 為小梁負擔之樓版貢獻寬度（tributary width）。</div>
     </div>
 
     <div class="card">
       <h2>② 載重輸入</h2>
-      <div class="seclabel">面載重會乘上間距 S 換算為梁線載重；另可加梁自重以外之線載重。</div>
+      <div class="seclabel">面載重（含樓板）會乘上間距 S 換算為梁線載重。點荷重位置以下方撥桿設定。</div>
       <div class="grid">
-        <div class="field"><label>靜載重 DL <span class="unit">(kgf/m²)</span></label><input type="number" id="dl" value="300" step="10" min="0"></div>
+        <div class="field"><label>RC 樓板厚 t <span class="unit">(cm，不扣梁寬)</span></label><input type="number" id="slab" value="15" step="1" min="0"></div>
+        <div class="field"><label>附加靜載 DL <span class="unit">(kgf/m²)</span></label><input type="number" id="dl" value="150" step="10" min="0"></div>
         <div class="field"><label>活載重 LL <span class="unit">(kgf/m²)</span></label><input type="number" id="ll" value="200" step="10" min="0"></div>
         <div class="field"><label>附加線載重 <span class="unit">(kgf/m，選填)</span></label><input type="number" id="wadd" value="0" step="10" min="0"></div>
-        <div class="field">
-          <label>鋼材等級 (Fy)</label>
-          <select id="fy">
-            <option value="2.5">A36 (Fy=2.5 tf/cm²)</option>
-            <option value="3.5">SN490 / A572 Gr50 (Fy=3.5 tf/cm²)</option>
-          </select>
-        </div>
-        <div class="field"><label>含梁自重？</label>
-          <select id="selfwt"><option value="1">是（自動加入）</option><option value="0">否</option></select>
+        <div class="field"><label>RC 單位重 <span class="unit">(kgf/m³)</span></label><input type="number" id="rcw" value="2400" step="50" min="0"></div>
+        <div class="field"><label>鋼材等級 (Fy)</label>
+          <select id="fy"><option value="2.5">A36 (Fy=2.5 tf/cm²)</option><option value="3.5">SN490 / A572 Gr50 (Fy=3.5 tf/cm²)</option></select></div>
+        <div class="field"><label>含梁自重？</label><select id="selfwt"><option value="1">是（自動加入）</option><option value="0">否</option></select></div>
+      </div>
+      <div class="seclabel" style="margin-top:12px;color:var(--ink);font-weight:600">集中荷重（簡支梁上一點）</div>
+      <div class="grid">
+        <div class="field"><label>集中荷重 P<sub>DL</sub> <span class="unit">(tf)</span></label><input type="number" id="pdl" value="0" step="0.1" min="0"></div>
+        <div class="field"><label>集中荷重 P<sub>LL</sub> <span class="unit">(tf)</span></label><input type="number" id="pll" value="0" step="0.1" min="0"></div>
+        <div class="field" style="grid-column:1 / -1">
+          <label>集中荷重位置 a＝<span id="posLabel">3.00</span> m（距左端，撥桿）</label>
+          <input type="range" id="pos" min="0" max="100" value="50" step="1" style="width:100%">
         </div>
       </div>
+      <div class="hint">內力含均布＋集中荷重疊加沿跨度取最大。點荷 DL／LL 各自施加在同一位置 a。</div>
     </div>
 
     <div class="card">
       <h2>③ 載重組合與內力（LRFD）</h2>
-      <div class="seclabel">控制組合取兩式較大者：1.4D ；1.2D + 1.6L</div>
+      <div class="seclabel">控制組合取較大者：1.4D ；1.2D + 1.6L（線載與點荷分別套用因數後疊加）</div>
       <div class="result-grid" id="forceRes"></div>
       <div class="formula" id="forceFormula"></div>
     </div>
@@ -203,8 +200,16 @@
     <div class="card" id="deflCard" style="display:none">
       <h2>⑥ 撓度檢核（使用性，未折減載重）</h2>
       <div class="grid" style="margin-bottom:12px">
-        <div class="field"><label>活載限值 L/<span class="unit"></span></label><input type="number" id="defLL" value="360" step="10" min="1"></div>
-        <div class="field"><label>全載限值 L/<span class="unit"></span></label><input type="number" id="defTot" value="240" step="10" min="1"></div>
+        <div class="field"><label>構件類型（AISC DG3 / IBC 1604.3）</label>
+          <select id="defPreset">
+            <option value="360,240">樓版梁：活載 L/360、全載 L/240</option>
+            <option value="480,360">支承脆性裝修：活載 L/480、全載 L/360</option>
+            <option value="240,180">屋頂梁（無天花）：活載 L/240、全載 L/180</option>
+            <option value="600,480">支承砌磚/玻璃：活載 L/600、全載 L/480</option>
+            <option value="custom">自訂</option>
+          </select></div>
+        <div class="field"><label>活載限值 L/</label><input type="number" id="defLL" value="360" step="10" min="1"></div>
+        <div class="field"><label>全載限值 L/</label><input type="number" id="defTot" value="240" step="10" min="1"></div>
       </div>
       <div id="deflChecks"></div>
       <div class="result-grid" id="deflRes"></div>
@@ -212,7 +217,7 @@
     </div>
 
     <div class="card">
-      <div class="hint"><b>計算範圍與假設：</b>簡支單跨均布載重；彎矩強度採塑性 φMn=φ·Fy·Zx（φ=0.9），預設全側撐（Lb=0 時不做側向扭轉挫屈折減）；剪力 φVn=φ·0.6·Fy·Aw（φ=1.0，Aw=H·tw）。撓度限值預設 活載 L/360、全載 L/240，可於上方調整。本工具為配置規劃／初步選斷面用，正式設計與送審須由負責人依完整規範覆核。</div>
+      <div class="hint"><b>計算範圍與假設：</b>簡支單跨。彎矩 φMn=0.9·Fy·Zx（塑性，預設全側撐，不做 LTB 折減）；剪力 φVn=0.9·0.6·Fy·Aw（Aw=H·tw）。內力含均布＋集中荷重疊加沿跨度取最大。撓度用未折減服務載重，依 AISC Design Guide 3／IBC 表 1604.3 之常用限值（可切換）。本工具為配置規劃／初步選斷面，正式設計送審須由負責人依完整規範覆核。</div>
     </div>
 
   </div>
@@ -225,7 +230,7 @@ const DATA = [{"name": "100×50", "special": false, "rows": [{"grp": "100x50", "
 /* ---------- 斷面查詢 ---------- */
 const fmt=v=>v==null?'—':(typeof v==='number'?v.toLocaleString('en-US',{maximumFractionDigits:2}):v);
 function supCell(v){
-  if(v==null||v==='') return '<td class="sup s-ok" title="常用斷面（常備生產）">●</td>';
+  if(v==null||v==='') return '<td class="sup s-ok" title="常備生產">●</td>';
   if(v==='×') return '<td class="sup s-no">×</td>';
   if(v==='◎') return '<td class="sup s-order">◎</td>';
   return '<td class="sup">'+v+'</td>';
@@ -263,161 +268,192 @@ document.querySelectorAll('.tab').forEach(t=>{
 /* ---------- 小梁配置 ---------- */
 const bgrp=document.getElementById('bgrp'), bsec=document.getElementById('bsec');
 DATA.forEach((g,i)=>{const o=document.createElement('option');o.value=i;o.textContent=g.name+(g.special?'　☆':'');bgrp.appendChild(o);});
-function fillSec(){
-  const g=DATA[+bgrp.value]; bsec.innerHTML='';
-  g.rows.forEach((r,j)=>{const o=document.createElement('option');o.value=j;o.textContent=r.spec;bsec.appendChild(o);});
-}
-bgrp.addEventListener('change',fillSec); fillSec();
-// default to a mid beam
-bgrp.value=String(Math.min(20,DATA.length-1)); fillSec();
+function fillSec(){const g=DATA[+bgrp.value]; bsec.innerHTML=''; g.rows.forEach((r,j)=>{const o=document.createElement('option');o.value=j;o.textContent=r.spec;bsec.appendChild(o);});}
+bgrp.value=String(Math.min(22,DATA.length-1)); fillSec();
+bgrp.addEventListener('change',()=>{fillSec(); curSecMass=DATA[+bgrp.value].rows[+bsec.value].m; drawDiagram(); calcForces();});
+bsec.addEventListener('change',()=>{curSecMass=DATA[+bgrp.value].rows[+bsec.value].m; drawDiagram(); calcForces();});
 
-/* simple beam diagram */
-function drawDiagram(){
-  const L=parseFloat(document.getElementById('span').value)||0;
-  const S=parseFloat(document.getElementById('trib').value)||0;
-  const svg=`<svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%">
-    <!-- tributary slab -->
-    <rect x="60" y="20" width="400" height="40" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1"/>
-    <line x1="60" y1="40" x2="460" y2="40" stroke="var(--accent)" stroke-dasharray="4 4"/>
-    <text x="260" y="15" text-anchor="middle" font-size="12" fill="var(--muted)">樓版貢獻寬度 S = ${S} m</text>
-    <line x1="60" y1="25" x2="60" y2="55" stroke="var(--muted)"/><line x1="460" y1="25" x2="460" y2="55" stroke="var(--muted)"/>
-    <!-- beam -->
-    <rect x="60" y="95" width="400" height="14" fill="var(--accent2)"/>
-    <!-- supports -->
-    <polygon points="60,109 50,128 70,128" fill="var(--ink)"/>
-    <polygon points="460,109 450,128 470,128" fill="var(--ink)"/>
-    <circle cx="460" cy="132" r="3" fill="none" stroke="var(--ink)"/>
-    <!-- udl arrows -->
-    ${[0,1,2,3,4,5,6,7,8].map(k=>{const x=80+k*42.5;return `<line x1="${x}" y1="72" x2="${x}" y2="92" stroke="var(--no)" /><polygon points="${x},92 ${x-3},86 ${x+3},86" fill="var(--no)"/>`;}).join('')}
-    <text x="260" y="68" text-anchor="middle" font-size="12" fill="var(--no)">均布載重 w</text>
-    <!-- span dim -->
-    <line x1="60" y1="148" x2="460" y2="148" stroke="var(--muted)"/>
-    <line x1="60" y1="143" x2="60" y2="153" stroke="var(--muted)"/><line x1="460" y1="143" x2="460" y2="153" stroke="var(--muted)"/>
-    <text x="260" y="164" text-anchor="middle" font-size="12" fill="var(--muted)">跨距 L = ${L} m（簡支）</text>
-  </svg>`;
-  document.getElementById('beamDiagram').innerHTML=svg;
-}
-['span','trib'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{drawDiagram();calcForces();}));
-['dl','ll','wadd','fy','selfwt'].forEach(id=>document.getElementById(id).addEventListener('input',calcForces));
-drawDiagram();
-
-/* forces: returns object */
+const $=id=>document.getElementById(id);
 function getInputs(){
-  return {
-    L:parseFloat(document.getElementById('span').value)||0,
-    S:parseFloat(document.getElementById('trib').value)||0,
-    Lb:parseFloat(document.getElementById('lb').value)||0,
-    DL:parseFloat(document.getElementById('dl').value)||0,
-    LL:parseFloat(document.getElementById('ll').value)||0,
-    wadd:parseFloat(document.getElementById('wadd').value)||0,
-    Fy:parseFloat(document.getElementById('fy').value)||2.5,
-    selfwt:document.getElementById('selfwt').value==='1'
-  };
+  const L=parseFloat($('span').value)||0;
+  const posPct=parseFloat($('pos').value)||50;
+  const a=L*posPct/100;
+  return {L,S:parseFloat($('trib').value)||0,Lb:parseFloat($('lb').value)||0,
+    slab:parseFloat($('slab').value)||0, dl:parseFloat($('dl').value)||0,
+    ll:parseFloat($('ll').value)||0, wadd:parseFloat($('wadd').value)||0,
+    rcw:parseFloat($('rcw').value)||2400, Fy:parseFloat($('fy').value)||2.5,
+    selfwt:$('selfwt').value==='1', Pdl:parseFloat($('pdl').value)||0,
+    Pll:parseFloat($('pll').value)||0, a};
 }
-let lastForces=null;
+
+/* ---- proportional diagram with inline loads ---- */
+function drawDiagram(){
+  const I=getInputs();
+  const dg=lineLoads(I,curSecMass); const dgD=dg.wD, dgL=dg.wL;
+  const W=560, ml=70, mr=40, x0=ml, x1=W-mr, bw=x1-x0; // beam pixel span
+  const L=I.L||1;
+  const ax=x0 + (I.a/L)*bw;           // point load x in px (proportional)
+  const by=120;                        // beam y
+  // slab thickness scaled (visual): map cm to px modestly
+  const slabPx=Math.max(6, Math.min(34, I.slab*1.6));
+  const arrows=[];
+  for(let k=0;k<=10;k++){const x=x0+k*bw/10; arrows.push(`<line x1="${x}" y1="${by-40}" x2="${x}" y2="${by-8}" stroke="var(--no)" stroke-width="1.2"/><polygon points="${x},${by-8} ${x-3},${by-15} ${x+3},${by-15}" fill="var(--no)"/>`);}
+  const pl = (I.Pdl+I.Pll)>0 ? `
+    <line x1="${ax}" y1="22" x2="${ax}" y2="${by-6}" stroke="var(--accent2)" stroke-width="2.5"/>
+    <polygon points="${ax},${by-6} ${ax-6},${by-20} ${ax+6},${by-20}" fill="var(--accent2)"/>
+    <text x="${ax}" y="16" text-anchor="middle" font-size="12" fill="var(--accent2)" font-weight="700">P<tspan baseline-shift="sub" font-size="9">DL</tspan>=${I.Pdl} tf , P<tspan baseline-shift="sub" font-size="9">LL</tspan>=${I.Pll} tf</text>
+    <line x1="${ax}" y1="${by+18}" x2="${ax}" y2="${by+30}" stroke="var(--accent2)" stroke-dasharray="3 3"/>
+    <text x="${ax}" y="${by+44}" text-anchor="middle" font-size="11" fill="var(--accent2)">a=${I.a.toFixed(2)} m</text>` : '';
+  const svg=`<svg viewBox="0 0 ${W} 230" xmlns="http://www.w3.org/2000/svg" style="max-width:${W}px;width:100%">
+    <!-- RC slab (proportional thickness) -->
+    <rect x="${x0}" y="${by-40-slabPx}" width="${bw}" height="${slabPx}" fill="var(--accent-soft)" stroke="var(--accent)" />
+    <text x="${(x0+x1)/2}" y="${by-46-slabPx}" text-anchor="middle" font-size="11" fill="var(--muted)">RC 樓板 t=${I.slab} cm　貢獻寬 S=${I.S} m</text>
+    <!-- udl arrows -->
+    ${arrows.join('')}
+    <text x="${x0+8}" y="${by-46}" font-size="11" fill="var(--no)">w<tspan baseline-shift="sub" font-size="8">DL</tspan>=${dgD.toFixed(0)} , w<tspan baseline-shift="sub" font-size="8">LL</tspan>=${dgL.toFixed(0)} kgf/m</text>
+    <!-- beam (proportional length) -->
+    <rect x="${x0}" y="${by}" width="${bw}" height="13" fill="var(--accent2)"/>
+    <!-- supports -->
+    <polygon points="${x0},${by+13} ${x0-9},${by+30} ${x0+9},${by+30}" fill="var(--ink)"/>
+    <polygon points="${x1},${by+13} ${x1-9},${by+30} ${x1+9},${by+30}" fill="var(--ink)"/>
+    <circle cx="${x1}" cy="${by+34}" r="3" fill="none" stroke="var(--ink)"/>
+    <line x1="${x0-12}" y1="${by+30}" x2="${x0+12}" y2="${by+30}" stroke="var(--ink)"/>
+    <line x1="${x1-12}" y1="${by+38}" x2="${x1+12}" y2="${by+38}" stroke="var(--ink)"/>
+    ${pl}
+    <!-- span dim -->
+    <line x1="${x0}" y1="200" x2="${x1}" y2="200" stroke="var(--muted)"/>
+    <line x1="${x0}" y1="195" x2="${x0}" y2="205" stroke="var(--muted)"/><line x1="${x1}" y1="195" x2="${x1}" y2="205" stroke="var(--muted)"/>
+    <text x="${(x0+x1)/2}" y="218" text-anchor="middle" font-size="12" fill="var(--muted)">跨距 L = ${I.L} m（簡支，比例近似）</text>
+  </svg>`;
+  $('beamDiagram').innerHTML=svg;
+  $('posLabel').textContent=I.a.toFixed(2);
+}
+
+/* ---- distributed line loads (kgf/m), separated D and L ---- */
+function lineLoads(I, secMass){
+  const slabSelf = I.slab/100 * I.rcw * I.S;   // (m thick)*(kgf/m3)*(width m) = kgf/m
+  const wD = I.dl*I.S + I.wadd + slabSelf + ((I.selfwt&&secMass)?secMass:0); // kgf/m
+  const wL = I.ll*I.S;                          // kgf/m
+  return {wD,wL,slabSelf};
+}
+
+/* envelope of moment & shear for UDL(w)+point(P at a), simple beam, returns max|M|, max|V| */
+function envelope(w, P, a, L){
+  // w in kgf/m, P in kgf, a,L in m
+  const R1=w*L/2 + P*(L-a)/L;     // left reaction (kgf)
+  const N=200; let Mmax=0, Vmax=0;
+  for(let i=0;i<=N;i++){
+    const x=L*i/N;
+    let V=R1 - w*x - (x>a?P:0);
+    let M=R1*x - w*x*x/2 - (x>a?P*(x-a):0);
+    if(Math.abs(V)>Vmax)Vmax=Math.abs(V);
+    if(M>Mmax)Mmax=M;
+  }
+  // ensure support shear captured
+  Vmax=Math.max(Vmax,Math.abs(R1),Math.abs(w*L/2+P*a/L));
+  return {Mmax,Vmax,R1};
+}
+
+/* midspan-ish deflection: superpose UDL + point, sample max deflection */
+function deflMax(w, P, a, L, E, I_in){
+  // w kgf/m -> tf/cm ; P kgf -> tf ; lengths cm
+  const Lc=L*100, ac=a*100;
+  const wt=w/1000/100, Pt=P/1000;
+  const N=200; let dmax=0;
+  for(let i=0;i<=N;i++){
+    const x=Lc*i/N;
+    // UDL deflection at x (downward +): w x (L^3 -2Lx^2 + x^3)/(24EI)
+    const dU = wt*x*(Math.pow(Lc,3)-2*Lc*x*x+Math.pow(x,3))/(24*E*I_in);
+    // point load at a: for x<=a use y=Pb x(L^2-b^2-x^2)/(6LEI); for x>a symmetric formula
+    const b=Lc-ac; let dP;
+    if(x<=ac){dP=Pt*b*x*(Lc*Lc - b*b - x*x)/(6*Lc*E*I_in);}
+    else{const xx=Lc-x, aa=b; dP=Pt*ac*xx*(Lc*Lc - ac*ac - xx*xx)/(6*Lc*E*I_in);}
+    const d=dU+dP; if(d>dmax)dmax=d;
+  }
+  return dmax; // cm
+}
+
+let curSecMass=0;
 function calcForces(){
   const I=getInputs();
-  // line loads kgf/m (self weight added at section calc; here use 0 placeholder)
-  const wD = I.DL*I.S + I.wadd;      // kgf/m  (excl. self weight)
-  const wL = I.LL*I.S;               // kgf/m
-  const wSelf = (lastForces&&lastForces.wSelf)||0;
-  const wD_t = wD + (I.selfwt?wSelf:0);
-  const c1 = 1.4*wD_t;
-  const c2 = 1.2*wD_t + 1.6*wL;
-  const wu = Math.max(c1,c2);
-  const gov = c1>=c2?'1.4D':'1.2D + 1.6L';
-  const L=I.L;
-  const Mu = wu*L*L/8;        // kgf·m
-  const Vu = wu*L/2;          // kgf
-  lastForces=Object.assign({},lastForces,{wD:wD_t,wL,wu,Mu,Vu,gov,L,
-     wD_service:wD_t, wTot_service:wD_t+wL});
-  const f=document.getElementById('forceRes');
-  f.innerHTML=[
+  const {wD,wL,slabSelf}=lineLoads(I,curSecMass);
+  const Pd=I.Pdl*1000, Pl=I.Pll*1000; // tf->kgf
+  // factored: combine D and L sources with factors, then envelope
+  const env14=envelope(1.4*wD, 1.4*Pd, I.a, I.L);
+  const env12=envelope(1.2*wD+1.6*wL, 1.2*Pd+1.6*Pl, I.a, I.L);
+  let Mu,Vu,gov;
+  if(env14.Mmax>=env12.Mmax){Mu=env14.Mmax;gov='1.4D';}else{Mu=env12.Mmax;gov='1.2D + 1.6L';}
+  Vu=Math.max(env14.Vmax,env12.Vmax);
+  window._bf={I,wD,wL,slabSelf,Pd,Pl,Mu,Vu,gov};
+  $('forceRes').innerHTML=[
     ['控制組合',gov,''],
-    ['設計線載重 wu',(wu/1000).toFixed(3)+' tf/m',(wu).toFixed(0)+' kgf/m'],
-    ['設計彎矩 Mu',(Mu/1000).toFixed(2)+' tf·m','wu·L²/8'],
-    ['設計剪力 Vu',(Vu/1000).toFixed(2)+' tf','wu·L/2'],
+    ['線載 wD / wL',(wD).toFixed(0)+' / '+wL.toFixed(0),'kgf/m'],
+    ['設計彎矩 Mu',(Mu/1000).toFixed(2)+' tf·m','含點荷疊加'],
+    ['設計剪力 Vu',(Vu/1000).toFixed(2)+' tf','含點荷疊加'],
   ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
-  document.getElementById('forceFormula').textContent=
-    `wD = DL×S + 附加 (+自重) = ${(wD_t).toFixed(0)} kgf/m\n`+
-    `wL = LL×S = ${wL.toFixed(0)} kgf/m\n`+
-    `1.4D = ${c1.toFixed(0)} kgf/m ; 1.2D+1.6L = ${c2.toFixed(0)} kgf/m  → 取大 = ${wu.toFixed(0)} kgf/m`;
+  $('forceFormula').textContent=
+    `板自重 = t/100×RC單位重×S = ${(I.slab/100).toFixed(2)}×${I.rcw}×${I.S} = ${slabSelf.toFixed(0)} kgf/m\n`+
+    `wD = 附加DL×S + 線載 + 板自重 ${I.selfwt?'+ 梁自重':''} = ${wD.toFixed(0)} kgf/m ; wL = LL×S = ${wL.toFixed(0)} kgf/m\n`+
+    `點荷 D=${I.Pdl} tf, L=${I.Pll} tf @ a=${I.a.toFixed(2)} m\n`+
+    `Mu, Vu 由 1.4D 與 1.2D+1.6L 各自(均布+點荷)沿跨度取包絡最大 → 控制 ${gov}`;
 }
 
-/* full check */
-document.getElementById('runBtn').addEventListener('click',runCheck);
+['span','trib','lb','slab','dl','ll','wadd','rcw','fy','selfwt','pdl','pll'].forEach(id=>$(id).addEventListener('input',()=>{drawDiagram();calcForces();}));
+$('pos').addEventListener('input',()=>{drawDiagram();calcForces();});
+
+/* deflection preset */
+$('defPreset').addEventListener('change',e=>{
+  if(e.target.value==='custom')return;
+  const [a,b]=e.target.value.split(','); $('defLL').value=a; $('defTot').value=b;
+  if(window._bf&&$('strengthCard').style.display!=='none')runCheck();
+});
+['defLL','defTot'].forEach(id=>$(id).addEventListener('input',()=>{$('defPreset').value='custom'; if($('deflCard').style.display!=='none')runCheck();}));
+
+$('runBtn').addEventListener('click',runCheck);
 function runCheck(){
-  const I=getInputs();
   const sec=DATA[+bgrp.value].rows[+bsec.value];
-  // self weight kgf/m = m (kg/m)
-  lastForces=Object.assign({},lastForces,{wSelf:sec.m});
-  calcForces();           // recompute including self weight if selected
-  const F=lastForces;
-  const phi_b=0.9, phi_v=1.0;
-  const Fy=I.Fy;          // tf/cm²
-  // Mn plastic = Fy*Zx  -> tf·cm ; convert to tf·m /100
-  const Mp = Fy*sec.Zx;            // tf·cm
-  const phiMn = phi_b*Mp/100;      // tf·m
-  const Mu_t = F.Mu/1000;          // tf·m
-  // Shear: Aw = H*tw mm² -> cm² /100 ; Vn=0.6 Fy Aw
-  const Aw = (sec.H*sec.tw)/100;   // cm²
-  const Vn = 0.6*Fy*Aw;            // tf
-  const phiVn = phi_v*Vn;          // tf
-  const Vu_t = F.Vu/1000;          // tf
-  const mOK = phiMn>=Mu_t, vOK=phiVn>=Vu_t;
-
-  document.getElementById('strengthCard').style.display='block';
-  document.getElementById('strengthChecks').innerHTML=
-    chk('彎矩',mOK,Mu_t,phiMn,'tf·m','Mu','φMn')+
-    chk('剪力',vOK,Vu_t,phiVn,'tf','Vu','φVn');
-  document.getElementById('strengthRes').innerHTML=[
-    ['φMn (φ=0.9)',phiMn.toFixed(2)+' tf·m','Fy·Zx 塑性'],
-    ['Mu',Mu_t.toFixed(2)+' tf·m',''],
-    ['φVn (φ=1.0)',phiVn.toFixed(2)+' tf','0.6·Fy·Aw'],
-    ['Vu',Vu_t.toFixed(2)+' tf',''],
+  curSecMass=sec.m;
+  calcForces();
+  const F=window._bf, I=F.I, Fy=I.Fy;
+  // strength
+  const phiMn=0.9*Fy*sec.Zx/100;          // tf·m
+  const Mu_t=F.Mu/1000;
+  const Aw=sec.H*sec.tw/100;              // cm²
+  const phiVn=0.9*0.6*Fy*Aw;             // tf
+  const Vu_t=F.Vu/1000;
+  const mOK=phiMn>=Mu_t, vOK=phiVn>=Vu_t;
+  $('strengthCard').style.display='block';
+  $('strengthChecks').innerHTML=chk('彎矩',mOK,Mu_t,phiMn,'tf·m','Mu','φMn')+chk('剪力',vOK,Vu_t,phiVn,'tf','Vu','φVn');
+  $('strengthRes').innerHTML=[
+    ['φMn (φ=0.9)',phiMn.toFixed(2)+' tf·m','Fy·Zx 塑性'],['Mu',Mu_t.toFixed(2)+' tf·m',''],
+    ['φVn (φ=0.9)',phiVn.toFixed(2)+' tf','0.6·Fy·Aw'],['Vu',Vu_t.toFixed(2)+' tf',''],
   ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
-  const ltbNote = (I.Lb>0)?`\n※ 你輸入 Lb=${I.Lb} m，但本版彎矩強度僅做塑性 Mp（假設全側撐），未做 LTB 折減；若 Lb 較大需另行檢核。`:'';
-  document.getElementById('strengthFormula').textContent=
-    `Zx=${sec.Zx} cm³, Fy=${Fy} tf/cm²\n`+
-    `φMn = 0.9 × ${Fy} × ${sec.Zx} = ${phiMn.toFixed(2)} tf·m  (÷100 換算)\n`+
-    `Aw = H·tw = ${sec.H}×${sec.tw}/100 = ${Aw.toFixed(2)} cm²\n`+
-    `φVn = 1.0 × 0.6 × ${Fy} × ${Aw.toFixed(2)} = ${phiVn.toFixed(2)} tf`+ltbNote;
+  const ltb=(I.Lb>0)?`\n※ Lb=${I.Lb} m：本版彎矩僅做塑性 Mp（假設全側撐），未做 LTB 折減，Lb 較大時需另行檢核。`:'';
+  $('strengthFormula').textContent=`φMn=0.9×${Fy}×${sec.Zx}/100=${phiMn.toFixed(2)} tf·m\nAw=H·tw=${sec.H}×${sec.tw}/100=${Aw.toFixed(2)} cm²\nφVn=0.9×0.6×${Fy}×${Aw.toFixed(2)}=${phiVn.toFixed(2)} tf`+ltb;
 
-  // deflection (service, unfactored)
-  const E=2040;            // tf/cm²  (鋼 ~2.04e6 kgf/cm²)
-  const Ix=sec.Ix;         // cm⁴
-  const Lcm=F.L*100;       // cm
-  // w in tf/cm : (kgf/m)/1000 /100
-  const wLs = F.wL/1000/100;     // tf/cm
-  const wTs = F.wTot_service/1000/100;
-  const d_LL = 5*wLs*Math.pow(Lcm,4)/(384*E*Ix);   // cm
-  const d_TOT= 5*wTs*Math.pow(Lcm,4)/(384*E*Ix);
-  const limLL=parseFloat(document.getElementById('defLL').value)||360;
-  const limTot=parseFloat(document.getElementById('defTot').value)||240;
-  const allowLL=Lcm/limLL, allowTot=Lcm/limTot;
-  const llOK=d_LL<=allowLL, totOK=d_TOT<=allowTot;
-  document.getElementById('deflCard').style.display='block';
-  document.getElementById('deflChecks').innerHTML=
-    chk('活載撓度',llOK,d_LL,allowLL,'cm','δ_LL','L/'+limLL)+
-    chk('全載撓度',totOK,d_TOT,allowTot,'cm','δ_全','L/'+limTot);
-  document.getElementById('deflRes').innerHTML=[
-    ['δ 活載',d_LL.toFixed(3)+' cm','限 '+allowLL.toFixed(3)],
-    ['δ 全載',d_TOT.toFixed(3)+' cm','限 '+allowTot.toFixed(3)],
-    ['Ix',Ix.toLocaleString()+' cm⁴',''],
-    ['L/δ 活載',(Lcm/d_LL).toFixed(0),'≥ '+limLL+' 合格'],
+  // deflection — service (unfactored)
+  const E=2040, Ix=sec.Ix;
+  const dLL=deflMax(F.wL, F.Pll, I.a, I.L, E, Ix);
+  const dTOT=deflMax(F.wD+F.wL, F.Pd+F.Pll, I.a, I.L, E, Ix);
+  const Lcm=I.L*100;
+  const limLL=parseFloat($('defLL').value)||360, limTot=parseFloat($('defTot').value)||240;
+  const aLL=Lcm/limLL, aTot=Lcm/limTot;
+  const llOK=dLL<=aLL, totOK=dTOT<=aTot;
+  $('deflCard').style.display='block';
+  $('deflChecks').innerHTML=chk('活載撓度',llOK,dLL,aLL,'cm','δ_LL','L/'+limLL)+chk('全載撓度',totOK,dTOT,aTot,'cm','δ_全','L/'+limTot);
+  $('deflRes').innerHTML=[
+    ['δ 活載',dLL.toFixed(3)+' cm','限 '+aLL.toFixed(3)],['δ 全載',dTOT.toFixed(3)+' cm','限 '+aTot.toFixed(3)],
+    ['Ix',Ix.toLocaleString()+' cm⁴',''],['L/δ 活載',dLL>0?(Lcm/dLL).toFixed(0):'∞','需 ≥ '+limLL],
   ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
-  document.getElementById('deflFormula').textContent=
-    `δ = 5wL⁴ / (384·E·Ix),  E=2040 tf/cm², Ix=${Ix} cm⁴\n`+
-    `活載 δ=${d_LL.toFixed(3)} cm ≤ L/${limLL}=${allowLL.toFixed(3)} cm → ${llOK?'OK':'NG'}\n`+
-    `全載 δ=${d_TOT.toFixed(3)} cm ≤ L/${limTot}=${allowTot.toFixed(3)} cm → ${totOK?'OK':'NG'}`;
+  $('deflFormula').textContent=`未折減服務載重（AISC：撓度為使用性，不乘載重因數）。\nδ = 均布 5wL⁴/384EI 與點荷疊加沿跨度取最大，E=2040 tf/cm², Ix=${Ix} cm⁴\n活載 δ=${dLL.toFixed(3)} ≤ L/${limLL}=${aLL.toFixed(3)} → ${llOK?'OK':'NG'}\n全載 δ=${dTOT.toFixed(3)} ≤ L/${limTot}=${aTot.toFixed(3)} → ${totOK?'OK':'NG'}`;
 }
 function chk(name,ok,demand,cap,unit,dl,cl){
-  const r=demand/cap;
-  return `<div class="check ${ok?'pass':'fail'}">
-    <span>${ok?'✔':'✘'} ${name}檢核 ${ok?'合格':'不合格'}</span>
-    <span class="ratio">${dl}/${cl} = ${demand.toFixed(2)}/${cap.toFixed(2)} ${unit}　比值 ${(r).toFixed(2)}</span></div>`;
+  const r=cap>0?demand/cap:0;
+  return `<div class="check ${ok?'pass':'fail'}"><span>${ok?'✔':'✘'} ${name}檢核 ${ok?'合格':'不合格'}</span>
+    <span class="ratio">${dl}/${cl} = ${demand.toFixed(2)}/${cap.toFixed(2)} ${unit}　比值 ${r.toFixed(2)}</span></div>`;
 }
-calcForces();
+curSecMass=DATA[+bgrp.value].rows[+bsec.value].m;
+drawDiagram(); calcForces();
 </script>
 </body>
 </html>
