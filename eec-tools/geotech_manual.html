@@ -429,7 +429,11 @@
       <li>寫入 Claude Desktop 設定（會先備份，不覆蓋你既有的設定）</li>
     </ul>
     <div class="callout warn">
-      <strong>裝完務必「完全關閉」再重開 Claude Desktop</strong>（連右下角系統匣的圖示也要關），MCP 連線才會生效。重開後即可直接使用，<strong>不需要其他設定</strong>。觸發規則、強制詢問簡報、報告模板都已內建在工具裡。
+      <strong>裝完務必「完全關閉」再重開 Claude Desktop</strong>（連右下角系統匣的圖示也要關，右鍵 Quit；按 ✕ 不算），MCP 連線才會生效。重開後即可直接使用，<strong>不需要其他設定</strong>。觸發規則、強制詢問簡報、報告模板都已內建在工具裡。
+    </div>
+
+    <div class="callout">
+      <strong>官網版與 Microsoft Store 版都支援。</strong>安裝程式會自動把設定寫到兩個位置（官網版的 <code>%APPDATA%\Claude\</code> 與 Store 版沙盒的 <code>Packages\Claude*\LocalCache\</code>），不論你的 Claude Desktop 是哪種裝法都能用。雙擊若閃退，改用 cmd 執行（開 cmd → 把 install.bat 拖進去 → Enter）。
     </div>
 
     <p style="margin-top:24px;"><strong>（選用）建立 Claude Project 加強規則遵循</strong></p>
@@ -496,6 +500,15 @@
   <!-- 6 常見問題 -->
   <section>
     <div class="sec-head"><div class="sec-num">6</div><h2>常見問題</h2></div>
+
+    <div class="callout">
+      <strong>附帶兩個排查工具：</strong><code>diagnose.bat</code> 一鍵檢查 Python／套件／Chromium／server／設定檔六個環節（跑完截圖給管理員）；<code>repair_config.bat</code> 只重寫 Claude 設定（官網版＋Store 版位置都寫），比重跑 install.bat 快。
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">設定 → Developer 看不到 geotech / MCP 沒連上</div>
+      <div class="faq-a">依序試：① 確認「完全關閉」再重開（系統匣右鍵 Quit，不是按 ✕）② 跑 <code>repair_config.bat</code> 再完全重啟 ③ 還是不行就跑 <code>diagnose.bat</code> 截圖給管理員。</div>
+    </div>
     <div class="faq-item">
       <div class="faq-q">Claude 說「找不到工具」或「MCP server 未連線」</div>
       <div class="faq-a">完全關閉 Claude Desktop（右下角系統匣也要關），重新開啟。</div>
