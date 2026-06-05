@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鑽探地質分析系統 — 使用說明</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4efe6;
+    --paper-dark: #e8e0d2;
+    --ink: #2a241d;
+    --ink-soft: #5c5246;
+    --ink-faint: #8a7d6d;
+    --topsoil: #8c6239;     /* 表土層 */
+    --clay: #b5481f;        /* 黏土/赭紅 */
+    --clay-light: #c97a4a;
+    --sand: #d9a441;        /* 砂層 */
+    --bedrock: #3a4a52;     /* 岩盤/深藍灰 */
+    --bedrock-light: #5a6e78;
+    --line: #d4c8b4;
+    --ok: #4f7a4a;
+    --warn: #b5481f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    font-weight: 300;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(140,98,57,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 88% 22%, rgba(58,74,82,0.04) 0%, transparent 40%);
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+
+  /* ===== Header with strata bars ===== */
+  header {
+    padding: 72px 0 0;
+    position: relative;
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--clay);
+    font-weight: 500;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    max-width: 560px;
+    font-weight: 400;
+  }
+  .meta-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+  .meta-row span b { color: var(--ink-soft); font-weight: 500; }
+
+  /* strata decoration */
+  .strata {
+    display: flex;
+    height: 14px;
+    margin: 44px 0 0;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(42,36,29,0.12);
+  }
+  .strata div { flex: 1; }
+  .strata .s1 { background: var(--topsoil); flex: 0.8; }
+  .strata .s2 { background: var(--clay); flex: 1.4; }
+  .strata .s3 { background: var(--sand); flex: 1.1; }
+  .strata .s4 { background: var(--clay-light); flex: 0.7; }
+  .strata .s5 { background: var(--bedrock); flex: 1.6; }
+
+  /* ===== Section ===== */
+  section { padding: 54px 0 0; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 26px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .sec-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--paper);
+    background: var(--ink);
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transform: translateY(2px);
+  }
+  h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    font-size: 1.55rem;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+
+  p { margin-bottom: 16px; color: var(--ink-soft); font-weight: 400; }
+  strong { color: var(--ink); font-weight: 500; }
+
+  /* ===== Intro steps (what it does) ===== */
+  .flow {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 28px 30px;
+    margin: 8px 0 4px;
+  }
+  .flow ol { list-style: none; counter-reset: flowc; }
+  .flow li {
+    counter-increment: flowc;
+    padding: 12px 0 12px 46px;
+    position: relative;
+    color: var(--ink-soft);
+    font-weight: 400;
+    border-bottom: 1px dashed var(--line);
+  }
+  .flow li:last-child { border-bottom: none; }
+  .flow li::before {
+    content: counter(flowc);
+    position: absolute; left: 0; top: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--clay);
+    border: 1.5px solid var(--clay);
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+  }
+
+  /* ===== Requirement table ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 18px;
+    font-size: 0.92rem;
+  }
+  th {
+    text-align: left;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    padding: 10px 14px;
+    background: var(--paper-dark);
+    border-bottom: 2px solid var(--ink-faint);
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-weight: 400;
+    vertical-align: top;
+  }
+  td:first-child { font-weight: 500; color: var(--ink); white-space: nowrap; }
+  .yes { color: var(--ok); font-weight: 700; }
+
+  /* ===== Code blocks ===== */
+  .code {
+    background: var(--bedrock);
+    color: #e8e0d2;
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    margin: 12px 0 20px;
+    overflow-x: auto;
+    position: relative;
+    white-space: pre;
+    box-shadow: 0 3px 12px rgba(58,74,82,0.18);
+  }
+  .code .tag { color: var(--sand); }
+  .code .cmt { color: var(--bedrock-light); }
+  .code-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* ===== Install hero ===== */
+  .install-hero {
+    background: linear-gradient(135deg, var(--clay) 0%, var(--topsoil) 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 32px 34px;
+    margin: 14px 0 24px;
+    box-shadow: 0 6px 20px rgba(181,72,31,0.25);
+  }
+  .install-hero .big {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 2;
+    color: #fff;
+  }
+  .install-hero .big b {
+    background: rgba(255,255,255,0.2);
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  .install-hero .arrow { opacity: 0.6; margin: 0 4px; }
+
+  /* what install does */
+  .does {
+    list-style: none;
+    counter-reset: dc;
+    margin: 4px 0;
+  }
+  .does li {
+    counter-increment: dc;
+    padding: 10px 0 10px 44px;
+    position: relative;
+    color: var(--ink-soft);
+    font-weight: 400;
+    font-size: 0.95rem;
+  }
+  .does li::before {
+    content: counter(dc);
+    position: absolute; left: 0; top: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--bedrock);
+    color: var(--paper);
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+  }
+  .does code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+    background: var(--paper-dark);
+    padding: 1px 7px;
+    border-radius: 4px;
+    color: var(--clay);
+  }
+
+  /* callout */
+  .callout {
+    border-left: 4px solid var(--sand);
+    background: rgba(217,164,65,0.1);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 18px 0;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .callout.warn { border-left-color: var(--warn); background: rgba(181,72,31,0.08); }
+  .callout strong { color: var(--ink); }
+
+  /* field tags */
+  .triggers {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin: 14px 0 20px;
+  }
+  .trigger {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    background: var(--bedrock);
+    color: var(--sand);
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  /* FAQ */
+  .faq-item {
+    border-bottom: 1px solid var(--line);
+    padding: 18px 0;
+  }
+  .faq-q {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
+  }
+  .faq-q::before { content: "Q"; color: var(--clay); font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  .faq-a { color: var(--ink-soft); font-weight: 400; padding-left: 24px; font-size: 0.93rem; }
+  .faq-a::before { content: "→ "; color: var(--ink-faint); }
+
+  /* footer */
+  footer {
+    margin-top: 64px;
+    padding: 36px 0 60px;
+    border-top: 2px solid var(--ink);
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  footer .disclaimer {
+    background: var(--paper-dark);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  footer .disclaimer strong { color: var(--warn); }
+
+  /* inline code */
+  p code, td code, .faq-a code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--paper-dark);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--clay);
+  }
+
+  .note-small { font-size: 0.82rem; color: var(--ink-faint); margin-top: -8px; }
+
+  @media print {
+    body { background: #fff; }
+    .install-hero { box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .code { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .strata { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { page-break-inside: avoid; }
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 0 18px; }
+    header { padding-top: 48px; }
+    .meta-row { gap: 16px; }
+    .install-hero .big { font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Geotechnical Analysis · MCP v4.11</div>
+    <h1>鑽探地質分析系統<br>使用說明</h1>
+    <p class="subtitle">輸入一個地址，自動取得鄰近歷史鑽探資料、柱狀圖與試驗數據，由 AI 判讀土層並產出地質分析報告。</p>
+    <div class="meta-row">
+      <span><b>版本</b> v4.11</span>
+      <span><b>環境</b> Claude Desktop + MCP</span>
+      <span><b>平台</b> Windows</span>
+      <span><b>資料源</b> 中央地質調查所</span>
+    </div>
+    <div class="strata">
+      <div class="s1"></div><div class="s2"></div><div class="s3"></div><div class="s4"></div><div class="s5"></div>
+    </div>
+  </header>
+
+  <!-- 1 這是什麼 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">1</div><h2>這是什麼</h2></div>
+    <p>在 Claude Desktop 裡輸入一個地址，系統會自動完成以下工作：</p>
+    <div class="flow">
+      <ol>
+        <li>找出該地址附近 200m 內的歷史鑽探資料</li>
+        <li>取得各鑽孔的柱狀圖（PNG 圖片）</li>
+        <li>取得各鑽孔的實驗室試驗資料（USCS、含水量、液塑性限度等）</li>
+        <li>由 AI 判讀土層，產出地質分析報告</li>
+      </ol>
+    </div>
+    <p class="note-small">資料來源：經濟部中央地質調查所公開資料庫。不需要帳號、不需要付費。</p>
+  </section>
+
+  <!-- 2 安裝前需要什麼 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">2</div><h2>安裝前需要什麼</h2></div>
+    <table>
+      <thead><tr><th>項目</th><th>必要</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Desktop</td><td class="yes">✓</td><td>已安裝並可正常使用</td></tr>
+        <tr><td>Claude Max 訂閱</td><td class="yes">✓</td><td>需要 Max 才能使用 MCP 功能</td></tr>
+        <tr><td>Python</td><td class="yes">✓</td><td>版本 3.10 以上，未安裝見下方說明</td></tr>
+        <tr><td>網路連線</td><td class="yes">✓</td><td>需連到 geotech.gsmma.gov.tw</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>如果你沒有 Python：</strong>到 <code>python.org/downloads</code> 下載最新版，執行安裝程式時<strong>務必勾選「Add Python to PATH」</strong>，裝完再執行本安裝包。
+    </div>
+  </section>
+
+  <!-- 3 安裝步驟 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">3</div><h2>安裝步驟</h2></div>
+    <div class="install-hero">
+      <div class="big">
+        解壓縮 <span class="arrow">→</span> 雙擊 <b>install.bat</b> <span class="arrow">→</span> 等 2–5 分鐘 <span class="arrow">→</span> 重開 Claude Desktop <span class="arrow">→</span> 完成
+      </div>
+    </div>
+    <p>就這麼簡單。安裝程式會自動處理以下 5 件事：</p>
+    <ul class="does">
+      <li>檢查 Python（沒裝會停下來，顯示下載連結）</li>
+      <li>安裝相依套件 <code>pip install fastmcp playwright</code></li>
+      <li>安裝瀏覽器引擎 <code>playwright install chromium</code>（約 150MB）</li>
+      <li>複製 Server 到 <code>%USERPROFILE%\geotech_mcp\</code></li>
+      <li>寫入 Claude Desktop 設定（會先備份，不覆蓋你既有的設定）</li>
+    </ul>
+    <div class="callout warn">
+      <strong>裝完務必「完全關閉」再重開 Claude Desktop</strong>（連右下角系統匣的圖示也要關），MCP 連線才會生效。重開後即可直接使用，<strong>不需要其他設定</strong>。觸發規則、強制詢問簡報、報告模板都已內建在工具裡。
+    </div>
+
+    <p style="margin-top:24px;"><strong>（選用）建立 Claude Project 加強規則遵循</strong></p>
+    <p>這步<strong>不是必須</strong>的，裝完就能用。若希望 Claude 更穩定遵守規則（例如每次都記得先問要不要簡報），可額外建 Project：上傳 <code>input_format.md</code> 與 <code>report_template.md</code> 到 Project 知識庫，自訂指令填「請嚴格遵循 input_format.md 的規則」。一般使用直接用即可。</p>
+  </section>
+
+  <!-- 4 使用方式 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">4</div><h2>使用方式</h2></div>
+    <p>在 Claude Desktop 開一個新對話，輸入觸發詞加地址即可。最簡單的用法：</p>
+    <span class="code-label">最小範例</span>
+    <div class="code"><span class="tag">&lt;地質分析&gt;</span>
+地址：台北市大安區永康街31巷10號</div>
+    <p>加上更多選項：</p>
+    <span class="code-label">完整範例</span>
+    <div class="code"><span class="tag">【地質分析】</span>
+地址：台北市中山區松江路 131 巷 5 弄 3 號
+半徑：500m
+案名：松江大樓新建工程
+備註：考慮 B3 開挖，請特別標註 15m 深度內的軟弱層</div>
+
+    <p style="margin-top:24px;"><strong>欄位說明</strong></p>
+    <table>
+      <thead><tr><th>欄位</th><th>必填</th><th>預設</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>地址</td><td class="yes">✓</td><td>—</td><td>台灣地址或 WGS84 座標（如 25.0578, 121.5436）</td></tr>
+        <tr><td>半徑</td><td>—</td><td>200m</td><td>搜尋範圍，找不到自動擴大至 500m → 1000m</td></tr>
+        <tr><td>案名</td><td>—</td><td>無</td><td>顯示在報告封面</td></tr>
+        <tr><td>備註</td><td>—</td><td>無</td><td>任何特殊需求</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:20px;"><strong>觸發詞</strong>（四種寫法擇一，沒寫觸發詞 Claude 不會啟動分析）</p>
+    <div class="triggers">
+      <span class="trigger">&lt;地質分析&gt;</span>
+      <span class="trigger">【地質分析】</span>
+      <span class="trigger">[地質分析]</span>
+      <span class="trigger">"地質分析"</span>
+    </div>
+
+    <div class="callout">
+      <strong>會先問你要不要做簡報：</strong>資料抓取與判讀完成後，Claude 會先回報資料摘要，然後主動問你「是否需要製作 PPT 簡報」。回「要」才會產出 6 張投影片報告；回「不用」就停在資料摘要。若想跳過詢問，可在備註寫「直接做簡報」。
+    </div>
+  </section>
+
+  <!-- 5 輸出說明 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">5</div><h2>輸出說明</h2></div>
+    <table>
+      <thead><tr><th>項目</th><th>內容</th></tr></thead>
+      <tbody>
+        <tr><td>鑽孔清單</td><td>各方位代表鑽孔，含孔號、距離、深度、鑽探公司</td></tr>
+        <tr><td>柱狀圖</td><td>各鑽孔原始柱狀圖（PNG 圖片）</td></tr>
+        <tr><td>試驗資料</td><td>USCS 分類、含水量、液塑性限度、粒徑分佈、剪力參數等</td></tr>
+        <tr><td>AI 土層判讀</td><td>結構化土層 JSON（後續版本）</td></tr>
+        <tr><td>PPT 報告</td><td>6 張投影片簡報（後續版本）</td></tr>
+      </tbody>
+    </table>
+    <span class="code-label">檔名格式</span>
+    <div class="code">地址_日期_鄰近鑽孔資料(半徑).pptx
+<span class="cmt"># 例：台北市中山區松江路131號_20260416_鄰近鑽孔資料(200m).pptx</span></div>
+  </section>
+
+  <!-- 6 常見問題 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">6</div><h2>常見問題</h2></div>
+    <div class="faq-item">
+      <div class="faq-q">Claude 說「找不到工具」或「MCP server 未連線」</div>
+      <div class="faq-a">完全關閉 Claude Desktop（右下角系統匣也要關），重新開啟。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">搜尋很久沒有回應</div>
+      <div class="faq-a">正常。系統需啟動 Chromium 去政府網站抓資料，第一次較慢（30–60 秒）。超過 2 分鐘無回應，可能是政府網站暫時無法連線，稍後再試。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">顯示「no boreholes found」</div>
+      <div class="faq-a">該地址附近 1000m 內無歷史鑽探資料。可確認地址是否正確、手動指定更大半徑（如 <code>半徑：2000m</code>）、或改用座標輸入。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">需要更新 Server</div>
+      <div class="faq-a">收到新版 <code>geotech_mcp_server.py</code> 後，再跑一次 <code>install.bat</code> 即可覆蓋更新。</div>
+    </div>
+  </section>
+
+  <!-- 7 手動設定 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">7</div><h2>手動設定（安裝失敗時備用）</h2></div>
+    <p>如果 <code>install.bat</code> 自動設定失敗，可手動完成四步：</p>
+
+    <p style="margin-top:14px;"><strong>① 安裝 Python 套件</strong>（開啟 CMD 輸入）</p>
+    <div class="code">pip install fastmcp playwright
+playwright install chromium</div>
+
+    <p><strong>② 放置 Server 檔案</strong></p>
+    <div class="code">C:\Users\<span class="tag">&lt;你的使用者名稱&gt;</span>\geotech_mcp\geotech_mcp_server.py</div>
+
+    <p><strong>③ 設定 Claude Desktop</strong>（編輯下列檔案，不存在就新建）</p>
+    <div class="code">C:\Users\<span class="tag">&lt;你的使用者名稱&gt;</span>\AppData\Roaming\Claude\claude_desktop_config.json</div>
+    <p class="note-small">用記事本打開，填入以下內容（記得把 <code>&lt;你的使用者名稱&gt;</code> 換成你的 Windows 帳號）：</p>
+    <div class="code">{
+  <span class="tag">"mcpServers"</span>: {
+    <span class="tag">"geotech"</span>: {
+      <span class="tag">"command"</span>: "python",
+      <span class="tag">"args"</span>: ["C:\\Users\\&lt;你的使用者名稱&gt;\\geotech_mcp\\geotech_mcp_server.py"]
+    }
+  }
+}</div>
+
+    <p><strong>④ 重啟 Claude Desktop</strong>（完全關閉包括系統匣，再開啟）</p>
+  </section>
+
+  <footer>
+    <div class="disclaimer">
+      <strong>資料來源與免責</strong><br>
+      鑽探資料來自經濟部中央地質調查所公開資料庫，由各計畫執行單位上傳，品質不一。本系統產出之分析僅供<strong>初步參考</strong>，最終工程設計應依據<strong>原始鑽探報告正本</strong>。
+    </div>
+    鑽探地質分析系統 · MCP Server v4.11 · 2026/04　｜　如有問題請聯繫系統管理員
+  </footer>
+
+</div>
+</body>
+</html>
