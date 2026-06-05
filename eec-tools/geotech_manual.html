@@ -3,565 +3,354 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>鑽探地質分析系統 — 使用說明</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>地質鑽探分析工具 — 使用說明 v4.18</title>
 <style>
-  :root {
-    --paper: #f4efe6;
-    --paper-dark: #e8e0d2;
-    --ink: #2a241d;
-    --ink-soft: #5c5246;
-    --ink-faint: #8a7d6d;
-    --topsoil: #8c6239;     /* 表土層 */
-    --clay: #b5481f;        /* 黏土/赭紅 */
-    --clay-light: #c97a4a;
-    --sand: #d9a441;        /* 砂層 */
-    --bedrock: #3a4a52;     /* 岩盤/深藍灰 */
-    --bedrock-light: #5a6e78;
-    --line: #d4c8b4;
-    --ok: #4f7a4a;
-    --warn: #b5481f;
+  :root{
+    --blue:#385D8A; --blue2:#4F81BD; --light:#EAF0F7; --line:#DCE3EC;
+    --dark:#1F2A3A; --grey:#6E7884; --soft:#F5F8FC; --ok:#2C7A2C;
+    --warnbg:#FDF3F3; --warnln:#E3B7B7; --tipbg:#EEF4FB; --tipln:#BDD3EC;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#fff;}
+  body{
+    font-family:"Microsoft JhengHei","微軟正黑體",-apple-system,"Segoe UI",sans-serif;
+    color:var(--dark); line-height:1.85; font-size:16px;
+  }
+  /* 置中容器,內容佔 70% 寬 */
+  .wrap{width:70%; max-width:1080px; min-width:680px; margin:0 auto; padding:0 12px;}
+  @media (max-width:900px){ .wrap{width:92%; min-width:0;} }
+
+  header{
+    background:var(--blue); color:#fff; padding:46px 0 38px; text-align:center;
+  }
+  header h1{font-size:32px; font-weight:700; letter-spacing:1px;}
+  header .sub{opacity:.92; font-size:16px; margin-top:8px;}
+  header .ver{
+    display:inline-block; margin-top:16px; background:rgba(255,255,255,.18);
+    padding:5px 18px; border-radius:24px; font-size:14px;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* 分頁標籤 */
+  .tabs{
+    display:flex; justify-content:center; gap:10px;
+    background:var(--soft); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:10; padding:12px 0;
+  }
+  .tab-btn{
+    font-family:inherit; font-size:16px; font-weight:700; cursor:pointer;
+    border:1px solid var(--line); background:#fff; color:var(--blue);
+    padding:11px 30px; border-radius:30px; transition:.15s;
+  }
+  .tab-btn:hover{background:var(--light);}
+  .tab-btn.active{background:var(--blue); color:#fff; border-color:var(--blue);}
 
-  body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.75;
-    font-weight: 300;
-    background-image:
-      radial-gradient(circle at 12% 8%, rgba(140,98,57,0.04) 0%, transparent 40%),
-      radial-gradient(circle at 88% 22%, rgba(58,74,82,0.04) 0%, transparent 40%);
-  }
+  main{padding:38px 0 80px;}
+  section.page{display:none;}
+  section.page.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+  h2{
+    font-size:25px; color:var(--blue); text-align:center;
+    margin:6px 0 28px; font-weight:700;
+  }
+  h3{
+    font-size:19px; color:var(--dark); margin:34px 0 12px; font-weight:700;
+    padding-left:14px; border-left:5px solid var(--blue2);
+  }
+  h4{font-size:16px;color:var(--blue);margin:20px 0 6px;font-weight:700;}
+  p{margin:10px 0; text-align:left;}
+  ul,ol{margin:10px 0 10px 26px;}
+  li{margin:7px 0;}
 
-  /* ===== Header with strata bars ===== */
-  header {
-    padding: 72px 0 0;
-    position: relative;
+  code,kbd{
+    background:var(--light); color:var(--blue); padding:2px 8px;
+    border-radius:5px; font-family:Consolas,monospace; font-size:14.5px;
   }
-  .kicker {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--clay);
-    font-weight: 500;
-    margin-bottom: 18px;
+  pre{
+    background:#2b3440; color:#eef3f8; padding:18px 20px; border-radius:10px;
+    overflow-x:auto; font-family:Consolas,monospace; font-size:14.5px;
+    line-height:1.65; margin:14px 0; text-align:left;
   }
-  h1 {
-    font-family: 'Noto Serif TC', serif;
-    font-weight: 900;
-    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
-    line-height: 1.12;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    margin-bottom: 16px;
-  }
-  .subtitle {
-    font-size: 1.05rem;
-    color: var(--ink-soft);
-    max-width: 560px;
-    font-weight: 400;
-  }
-  .meta-row {
-    display: flex;
-    gap: 28px;
-    margin-top: 26px;
-    flex-wrap: wrap;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--ink-faint);
-  }
-  .meta-row span b { color: var(--ink-soft); font-weight: 500; }
+  pre code{background:none;color:inherit;padding:0;}
 
-  /* strata decoration */
-  .strata {
-    display: flex;
-    height: 14px;
-    margin: 44px 0 0;
-    border-radius: 3px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(42,36,29,0.12);
+  /* 步驟卡 */
+  .step{
+    background:var(--soft); border:1px solid var(--line);
+    border-left:5px solid var(--blue); border-radius:0 10px 10px 0;
+    padding:16px 22px; margin:14px 0; text-align:left;
   }
-  .strata div { flex: 1; }
-  .strata .s1 { background: var(--topsoil); flex: 0.8; }
-  .strata .s2 { background: var(--clay); flex: 1.4; }
-  .strata .s3 { background: var(--sand); flex: 1.1; }
-  .strata .s4 { background: var(--clay-light); flex: 0.7; }
-  .strata .s5 { background: var(--bedrock); flex: 1.6; }
+  .step .n{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;background:var(--blue);color:#fff;
+    border-radius:50%;font-weight:700;margin-right:10px;font-size:15px;vertical-align:middle;
+  }
+  .step .h{font-weight:700;font-size:17px;color:var(--dark);}
 
-  /* ===== Section ===== */
-  section { padding: 54px 0 0; }
-  .sec-head {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 26px;
-    padding-bottom: 14px;
-    border-bottom: 2px solid var(--ink);
-  }
-  .sec-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--paper);
-    background: var(--ink);
-    width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-    flex-shrink: 0;
-    transform: translateY(2px);
-  }
-  h2 {
-    font-family: 'Noto Serif TC', serif;
-    font-weight: 700;
-    font-size: 1.55rem;
-    color: var(--ink);
-    letter-spacing: 0.01em;
-  }
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:15px;}
+  th{background:var(--blue);color:#fff;padding:11px 13px;text-align:left;font-weight:700;}
+  td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  tr:nth-child(even) td{background:var(--soft);}
+  td.c,th.c{text-align:center;}
 
-  p { margin-bottom: 16px; color: var(--ink-soft); font-weight: 400; }
-  strong { color: var(--ink); font-weight: 500; }
+  .tip{background:var(--tipbg);border:1px solid var(--tipln);border-radius:10px;
+       padding:14px 20px;margin:16px 0;text-align:left;}
+  .tip b{color:var(--blue);}
+  .warn{background:var(--warnbg);border:1px solid var(--warnln);border-radius:10px;
+        padding:14px 20px;margin:16px 0;text-align:left;}
+  .warn b{color:#A33;}
+  .ok{color:var(--ok);font-weight:700;}
 
-  /* ===== Intro steps (what it does) ===== */
-  .flow {
-    background: rgba(255,255,255,0.5);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 28px 30px;
-    margin: 8px 0 4px;
-  }
-  .flow ol { list-style: none; counter-reset: flowc; }
-  .flow li {
-    counter-increment: flowc;
-    padding: 12px 0 12px 46px;
-    position: relative;
-    color: var(--ink-soft);
-    font-weight: 400;
-    border-bottom: 1px dashed var(--line);
-  }
-  .flow li:last-child { border-bottom: none; }
-  .flow li::before {
-    content: counter(flowc);
-    position: absolute; left: 0; top: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--clay);
-    border: 1.5px solid var(--clay);
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 500;
-  }
+  .cards{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0;}
+  .card{flex:1;min-width:200px;background:var(--soft);border:1px solid var(--line);
+        border-radius:12px;padding:18px 20px;text-align:left;}
+  .card .t{font-size:14px;color:var(--grey);}
+  .card .v{font-size:24px;font-weight:700;color:var(--blue);margin-top:4px;}
+  .card .d{font-size:13.5px;color:var(--grey);margin-top:6px;}
 
-  /* ===== Requirement table ===== */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0 18px;
-    font-size: 0.92rem;
-  }
-  th {
-    text-align: left;
-    font-family: 'Noto Sans TC', sans-serif;
-    font-weight: 700;
-    font-size: 0.82rem;
-    letter-spacing: 0.04em;
-    color: var(--ink);
-    padding: 10px 14px;
-    background: var(--paper-dark);
-    border-bottom: 2px solid var(--ink-faint);
-  }
-  td {
-    padding: 11px 14px;
-    border-bottom: 1px solid var(--line);
-    color: var(--ink-soft);
-    font-weight: 400;
-    vertical-align: top;
-  }
-  td:first-child { font-weight: 500; color: var(--ink); white-space: nowrap; }
-  .yes { color: var(--ok); font-weight: 700; }
+  .pill{display:inline-block;background:var(--blue2);color:#fff;border-radius:5px;
+        padding:1px 9px;font-size:13px;margin:0 2px;}
+  .center{text-align:center;}
+  hr.sep{border:0;border-top:1px solid var(--line);margin:30px 0;}
 
-  /* ===== Code blocks ===== */
-  .code {
-    background: var(--bedrock);
-    color: #e8e0d2;
-    border-radius: 8px;
-    padding: 18px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.86rem;
-    line-height: 1.7;
-    margin: 12px 0 20px;
-    overflow-x: auto;
-    position: relative;
-    white-space: pre;
-    box-shadow: 0 3px 12px rgba(58,74,82,0.18);
-  }
-  .code .tag { color: var(--sand); }
-  .code .cmt { color: var(--bedrock-light); }
-  .code-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  /* ===== Install hero ===== */
-  .install-hero {
-    background: linear-gradient(135deg, var(--clay) 0%, var(--topsoil) 100%);
-    color: #fff;
-    border-radius: 12px;
-    padding: 32px 34px;
-    margin: 14px 0 24px;
-    box-shadow: 0 6px 20px rgba(181,72,31,0.25);
-  }
-  .install-hero .big {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
-    line-height: 2;
-    color: #fff;
-  }
-  .install-hero .big b {
-    background: rgba(255,255,255,0.2);
-    padding: 2px 10px;
-    border-radius: 5px;
-    font-weight: 500;
-  }
-  .install-hero .arrow { opacity: 0.6; margin: 0 4px; }
-
-  /* what install does */
-  .does {
-    list-style: none;
-    counter-reset: dc;
-    margin: 4px 0;
-  }
-  .does li {
-    counter-increment: dc;
-    padding: 10px 0 10px 44px;
-    position: relative;
-    color: var(--ink-soft);
-    font-weight: 400;
-    font-size: 0.95rem;
-  }
-  .does li::before {
-    content: counter(dc);
-    position: absolute; left: 0; top: 9px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    background: var(--bedrock);
-    color: var(--paper);
-    width: 26px; height: 26px;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 500;
-  }
-  .does code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.84rem;
-    background: var(--paper-dark);
-    padding: 1px 7px;
-    border-radius: 4px;
-    color: var(--clay);
-  }
-
-  /* callout */
-  .callout {
-    border-left: 4px solid var(--sand);
-    background: rgba(217,164,65,0.1);
-    padding: 16px 20px;
-    border-radius: 0 8px 8px 0;
-    margin: 18px 0;
-    font-size: 0.92rem;
-    color: var(--ink-soft);
-  }
-  .callout.warn { border-left-color: var(--warn); background: rgba(181,72,31,0.08); }
-  .callout strong { color: var(--ink); }
-
-  /* field tags */
-  .triggers {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    margin: 14px 0 20px;
-  }
-  .trigger {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.88rem;
-    background: var(--bedrock);
-    color: var(--sand);
-    padding: 7px 16px;
-    border-radius: 6px;
-    font-weight: 500;
-  }
-
-  /* FAQ */
-  .faq-item {
-    border-bottom: 1px solid var(--line);
-    padding: 18px 0;
-  }
-  .faq-q {
-    font-weight: 700;
-    color: var(--ink);
-    font-size: 1rem;
-    margin-bottom: 8px;
-    display: flex;
-    gap: 10px;
-  }
-  .faq-q::before { content: "Q"; color: var(--clay); font-family: 'JetBrains Mono', monospace; font-weight: 500; }
-  .faq-a { color: var(--ink-soft); font-weight: 400; padding-left: 24px; font-size: 0.93rem; }
-  .faq-a::before { content: "→ "; color: var(--ink-faint); }
-
-  /* footer */
-  footer {
-    margin-top: 64px;
-    padding: 36px 0 60px;
-    border-top: 2px solid var(--ink);
-    font-size: 0.85rem;
-    color: var(--ink-faint);
-  }
-  footer .disclaimer {
-    background: var(--paper-dark);
-    border-radius: 8px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
-  }
-  footer .disclaimer strong { color: var(--warn); }
-
-  /* inline code */
-  p code, td code, .faq-a code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85em;
-    background: var(--paper-dark);
-    padding: 1px 6px;
-    border-radius: 4px;
-    color: var(--clay);
-  }
-
-  .note-small { font-size: 0.82rem; color: var(--ink-faint); margin-top: -8px; }
-
-  @media print {
-    body { background: #fff; }
-    .install-hero { box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .code { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .strata { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    section { page-break-inside: avoid; }
-  }
-
-  @media (max-width: 600px) {
-    .wrap { padding: 0 18px; }
-    header { padding-top: 48px; }
-    .meta-row { gap: 16px; }
-    .install-hero .big { font-size: 0.82rem; }
-  }
+  footer{background:var(--soft);border-top:1px solid var(--line);
+         color:var(--grey);font-size:13.5px;padding:24px 0;text-align:center;}
 </style>
 </head>
 <body>
+
+<header>
+  <h1>地質鑽探分析工具</h1>
+  <div class="sub">工程地質探勘資料庫 · 鑽孔柱狀圖自動判讀與簡報產生</div>
+  <div class="ver">使用說明　·　版本 v4.18</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="show(1,this)">① 如何安裝</button>
+  <button class="tab-btn" onclick="show(2,this)">② 如何使用 &amp; 結果呈現</button>
+</nav>
+
+<main>
+
+<!-- ===================== 分頁 1：安裝 ===================== -->
+<section class="page active" id="p1">
 <div class="wrap">
 
-  <header>
-    <div class="kicker">Geotechnical Analysis · MCP v4.11</div>
-    <h1>鑽探地質分析系統<br>使用說明</h1>
-    <p class="subtitle">輸入一個地址，自動取得鄰近歷史鑽探資料、柱狀圖與試驗數據，由 AI 判讀土層並產出地質分析報告。</p>
-    <div class="meta-row">
-      <span><b>版本</b> v4.11</span>
-      <span><b>環境</b> Claude Desktop + MCP</span>
-      <span><b>平台</b> Windows</span>
-      <span><b>資料源</b> 中央地質調查所</span>
-    </div>
-    <div class="strata">
-      <div class="s1"></div><div class="s2"></div><div class="s3"></div><div class="s4"></div><div class="s5"></div>
-    </div>
-  </header>
+  <h2>① 如何安裝</h2>
 
-  <!-- 1 這是什麼 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">1</div><h2>這是什麼</h2></div>
-    <p>在 Claude Desktop 裡輸入一個地址，系統會自動完成以下工作：</p>
-    <div class="flow">
-      <ol>
-        <li>找出該地址附近 200m 內的歷史鑽探資料</li>
-        <li>取得各鑽孔的柱狀圖（PNG 圖片）</li>
-        <li>取得各鑽孔的實驗室試驗資料（USCS、含水量、液塑性限度等）</li>
-        <li>由 AI 判讀土層，產出地質分析報告</li>
-      </ol>
-    </div>
-    <p class="note-small">資料來源：經濟部中央地質調查所公開資料庫。不需要帳號、不需要付費。</p>
-  </section>
+  <p class="center" style="color:var(--grey)">
+    本工具以 MCP Server 形式掛載於 <b>Claude Desktop</b>。
+    安裝程式會自動完成所有設定，你只需要雙擊一個檔案。
+  </p>
 
-  <!-- 2 安裝前需要什麼 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">2</div><h2>安裝前需要什麼</h2></div>
-    <table>
-      <thead><tr><th>項目</th><th>必要</th><th>說明</th></tr></thead>
-      <tbody>
-        <tr><td>Claude Desktop</td><td class="yes">✓</td><td>已安裝並可正常使用</td></tr>
-        <tr><td>Claude Max 訂閱</td><td class="yes">✓</td><td>需要 Max 才能使用 MCP 功能</td></tr>
-        <tr><td>Python</td><td class="yes">⚙</td><td>安裝程式自動偵測，沒有就自動裝（不用你管）</td></tr>
-        <tr><td>網路連線</td><td class="yes">✓</td><td>需連 python.org 與 geotech.gsmma.gov.tw</td></tr>
-      </tbody>
-    </table>
-    <div class="callout">
-      <strong>你不需要自己裝 Python。</strong>安裝程式會自動偵測：已有就直接用，沒有就自動從官網下載並靜默安裝（裝在使用者目錄，不需管理員權限）。只有公司防火牆擋住 python.org 時才需手動處理，屆時會顯示提示。
-    </div>
-  </section>
+  <div class="tip">
+    <b>安裝前提：</b>電腦需已安裝 <b>Claude Desktop</b>。桌面版（官網下載）或
+    Microsoft Store 沙盒版皆可——安裝程式會自動偵測兩種情境並寫入正確位置。
+    若尚未安裝 Claude Desktop，請先至 Anthropic 官網下載安裝。
+  </div>
 
-  <!-- 3 安裝步驟 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">3</div><h2>安裝步驟</h2></div>
-    <div class="install-hero">
-      <div class="big">
-        解壓縮 <span class="arrow">→</span> 雙擊 <b>install.bat</b> <span class="arrow">→</span> 等 2–5 分鐘 <span class="arrow">→</span> 重開 Claude Desktop <span class="arrow">→</span> 完成
-      </div>
-    </div>
-    <p>就這麼簡單。安裝程式會自動處理以下 5 件事：</p>
-    <ul class="does">
-      <li>檢查 Python（沒裝會停下來，顯示下載連結）</li>
-      <li>安裝相依套件 <code>pip install fastmcp playwright</code></li>
-      <li>安裝瀏覽器引擎 <code>playwright install chromium</code>（約 150MB）</li>
-      <li>複製 Server 到 <code>%USERPROFILE%\geotech_mcp\</code></li>
-      <li>寫入 Claude Desktop 設定（會先備份，不覆蓋你既有的設定）</li>
+  <h3>標準安裝（第一次使用）</h3>
+
+  <div class="step"><span class="n">1</span><span class="h">解壓縮</span>
+    <p>將整個 <code>geotech_v4.18</code> 資料夾解壓到任意位置（例如桌面或 D 槽）。
+    請保持資料夾完整，不要單獨搬移其中檔案。</p>
+  </div>
+
+  <div class="step"><span class="n">2</span><span class="h">雙擊 install.bat</span>
+    <p>直接雙擊資料夾內的 <code>install.bat</code>。會跳出一個黑色命令視窗開始安裝，
+    <b>過程中請勿關閉</b>。</p>
+  </div>
+
+  <div class="step"><span class="n">3</span><span class="h">自動安裝（共 5 步）</span>
+    <p>安裝程式會依序自動完成：</p>
+    <ul>
+      <li><b>[1/5] 檢查 Python</b>：電腦若無 Python，會自動從官網下載並靜默安裝
+        （<span class="pill">此步需連網</span>，約下載 25MB）。</li>
+      <li><b>[2/5] 安裝套件</b>：fastmcp、playwright、Pillow（影像壓縮用）。</li>
+      <li><b>[3/5] 安裝瀏覽器引擎</b>：Chromium，約 150MB（資料庫抓取需要）。</li>
+      <li><b>[4/5] 複製伺服器程式</b>到安裝目錄。</li>
+      <li><b>[5/5] 設定 Claude Desktop</b>：自動寫入連線設定（桌面版＋沙盒版都寫）。</li>
     </ul>
-    <div class="callout warn">
-      <strong>裝完務必「完全關閉」再重開 Claude Desktop</strong>（連右下角系統匣的圖示也要關，右鍵 Quit；按 ✕ 不算），MCP 連線才會生效。重開後即可直接使用，<strong>不需要其他設定</strong>。觸發規則、強制詢問簡報、報告模板都已內建在工具裡。
-    </div>
+  </div>
 
-    <div class="callout">
-      <strong>官網版與 Microsoft Store 版都支援。</strong>安裝程式會自動把設定寫到兩個位置（官網版的 <code>%APPDATA%\Claude\</code> 與 Store 版沙盒的 <code>Packages\Claude*\LocalCache\</code>），不論你的 Claude Desktop 是哪種裝法都能用。雙擊若閃退，改用 cmd 執行（開 cmd → 把 install.bat 拖進去 → Enter）。
-    </div>
+  <div class="step"><span class="n">4</span><span class="h">重啟 Claude Desktop</span>
+    <p>看到 <span class="ok">INSTALL COMPLETE v4.18</span> 後，
+    <b>完全關閉並重新開啟 Claude Desktop</b>。注意：不是只關視窗——
+    右下角系統匣（時鐘旁）的 Claude 圖示也要按右鍵結束，再重開，工具才會載入。</p>
+  </div>
 
-    <p style="margin-top:24px;"><strong>（選用）建立 Claude Project 加強規則遵循</strong></p>
-    <p>這步<strong>不是必須</strong>的，裝完就能用。若希望 Claude 更穩定遵守規則（例如每次都記得先問要不要簡報），可額外建 Project：上傳 <code>input_format.md</code> 與 <code>report_template.md</code> 到 Project 知識庫，自訂指令填「請嚴格遵循 input_format.md 的規則」。一般使用直接用即可。</p>
-  </section>
+  <div class="step"><span class="n">5</span><span class="h">完成</span>
+    <p>在對話框輸入含地址的查詢，或輸入關鍵字 <code>&lt;地質鑽探調查&gt;</code>
+    叫出輸入單即可開始（詳見分頁②）。</p>
+  </div>
 
-  <!-- 4 使用方式 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">4</div><h2>使用方式</h2></div>
-    <p>在 Claude Desktop 開一個新對話，輸入觸發詞加地址即可。最簡單的用法：</p>
-    <span class="code-label">最小範例</span>
-    <div class="code"><span class="tag">&lt;地質分析&gt;</span>
-地址：台北市大安區永康街31巷10號</div>
-    <p>加上更多選項：</p>
-    <span class="code-label">完整範例</span>
-    <div class="code"><span class="tag">【地質分析】</span>
-地址：台北市中山區松江路 131 巷 5 弄 3 號
-半徑：500m
-案名：松江大樓新建工程
-備註：考慮 B3 開挖，請特別標註 15m 深度內的軟弱層</div>
+  <h3>升級（已安裝過的電腦）</h3>
+  <p>要更新到新版時，做法完全一樣——<b>雙擊同一個 <code>install.bat</code></b>。
+  程式會自動判斷電腦已裝過，切換成「升級模式」：</p>
+  <ul>
+    <li>自動偵測你目前 server 的<b>實際安裝位置</b>（即使裝在 D 槽等非預設路徑，
+      也會讀 Claude 設定檔找到正確位置去更新，不會更新到錯地方）。</li>
+    <li>只替換伺服器程式，不重裝 Python／套件／Chromium，<b>速度快</b>。</li>
+    <li>替換前自動<b>備份舊版</b>，替換後自動<b>驗證語法</b>，失敗會自動<b>還原</b>。</li>
+  </ul>
+  <div class="tip"><b>升級後同樣要完全重啟 Claude Desktop</b>（含系統匣圖示）才生效。</div>
 
-    <p style="margin-top:24px;"><strong>欄位說明</strong></p>
-    <table>
-      <thead><tr><th>欄位</th><th>必填</th><th>預設</th><th>說明</th></tr></thead>
-      <tbody>
-        <tr><td>地址</td><td class="yes">✓</td><td>—</td><td>台灣地址或 WGS84 座標（如 25.0578, 121.5436）</td></tr>
-        <tr><td>半徑</td><td>—</td><td>200m</td><td>搜尋範圍，找不到自動擴大至 500m → 1000m</td></tr>
-        <tr><td>案名</td><td>—</td><td>無</td><td>顯示在報告封面</td></tr>
-        <tr><td>備註</td><td>—</td><td>無</td><td>任何特殊需求</td></tr>
-      </tbody>
-    </table>
+  <h3>離線安裝（選用，無網路環境）</h3>
+  <p>若安裝電腦無法連網，可改為完全離線安裝：</p>
+  <ol>
+    <li>於有網路的電腦至 python.org 下載 <code>python-3.12.x-amd64.exe</code>。</li>
+    <li>改名為 <code>python-installer.exe</code>，放進本資料夾（與 install.bat 同層）。</li>
+    <li>再雙擊 install.bat，它會優先使用本地安裝檔，不再連網。</li>
+  </ol>
 
-    <p style="margin-top:20px;"><strong>觸發詞</strong>（四種寫法擇一，沒寫觸發詞 Claude 不會啟動分析）</p>
-    <div class="triggers">
-      <span class="trigger">&lt;地質分析&gt;</span>
-      <span class="trigger">【地質分析】</span>
-      <span class="trigger">[地質分析]</span>
-      <span class="trigger">"地質分析"</span>
-    </div>
-
-    <div class="callout">
-      <strong>會先問你要不要做簡報：</strong>資料抓取與判讀完成後，Claude 會先回報資料摘要，然後主動問你「是否需要製作 PPT 簡報」。回「要」才會產出 6 張投影片報告；回「不用」就停在資料摘要。若想跳過詢問，可在備註寫「直接做簡報」。
-    </div>
-  </section>
-
-  <!-- 5 輸出說明 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">5</div><h2>輸出說明</h2></div>
-    <table>
-      <thead><tr><th>項目</th><th>內容</th></tr></thead>
-      <tbody>
-        <tr><td>鑽孔清單</td><td>各方位代表鑽孔，含孔號、距離、深度、鑽探公司</td></tr>
-        <tr><td>柱狀圖</td><td>各鑽孔原始柱狀圖（PNG 圖片）</td></tr>
-        <tr><td>試驗資料</td><td>USCS 分類、含水量、液塑性限度、粒徑分佈、剪力參數等</td></tr>
-        <tr><td>AI 土層判讀</td><td>結構化土層 JSON（後續版本）</td></tr>
-        <tr><td>PPT 報告</td><td>6 張投影片簡報（後續版本）</td></tr>
-      </tbody>
-    </table>
-    <span class="code-label">檔名格式</span>
-    <div class="code">地址_日期_鄰近鑽孔資料(半徑).pptx
-<span class="cmt"># 例：台北市中山區松江路131號_20260416_鄰近鑽孔資料(200m).pptx</span></div>
-  </section>
-
-  <!-- 6 常見問題 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">6</div><h2>常見問題</h2></div>
-
-    <div class="callout">
-      <strong>附帶兩個排查工具：</strong><code>diagnose.bat</code> 一鍵檢查 Python／套件／Chromium／server／設定檔六個環節（跑完截圖給管理員）；<code>repair_config.bat</code> 只重寫 Claude 設定（官網版＋Store 版位置都寫），比重跑 install.bat 快。
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">設定 → Developer 看不到 geotech / MCP 沒連上</div>
-      <div class="faq-a">依序試：① 確認「完全關閉」再重開（系統匣右鍵 Quit，不是按 ✕）② 跑 <code>repair_config.bat</code> 再完全重啟 ③ 還是不行就跑 <code>diagnose.bat</code> 截圖給管理員。</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">Claude 說「找不到工具」或「MCP server 未連線」</div>
-      <div class="faq-a">完全關閉 Claude Desktop（右下角系統匣也要關），重新開啟。</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">搜尋很久沒有回應</div>
-      <div class="faq-a">正常。系統需啟動 Chromium 去政府網站抓資料，第一次較慢（30–60 秒）。超過 2 分鐘無回應，可能是政府網站暫時無法連線，稍後再試。</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">顯示「no boreholes found」</div>
-      <div class="faq-a">該地址附近 1000m 內無歷史鑽探資料。可確認地址是否正確、手動指定更大半徑（如 <code>半徑：2000m</code>）、或改用座標輸入。</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">需要更新 Server</div>
-      <div class="faq-a">收到新版 <code>geotech_mcp_server.py</code> 後，再跑一次 <code>install.bat</code> 即可覆蓋更新。</div>
-    </div>
-  </section>
-
-  <!-- 7 手動設定 -->
-  <section>
-    <div class="sec-head"><div class="sec-num">7</div><h2>手動設定（安裝失敗時備用）</h2></div>
-    <p>如果 <code>install.bat</code> 自動設定失敗，可手動完成四步：</p>
-
-    <p style="margin-top:14px;"><strong>① 安裝 Python 套件</strong>（開啟 CMD 輸入）</p>
-    <div class="code">pip install fastmcp playwright
-playwright install chromium</div>
-
-    <p><strong>② 放置 Server 檔案</strong></p>
-    <div class="code">C:\Users\<span class="tag">&lt;你的使用者名稱&gt;</span>\geotech_mcp\geotech_mcp_server.py</div>
-
-    <p><strong>③ 設定 Claude Desktop</strong>（編輯下列檔案，不存在就新建）</p>
-    <div class="code">C:\Users\<span class="tag">&lt;你的使用者名稱&gt;</span>\AppData\Roaming\Claude\claude_desktop_config.json</div>
-    <p class="note-small">用記事本打開，填入以下內容（記得把 <code>&lt;你的使用者名稱&gt;</code> 換成你的 Windows 帳號）：</p>
-    <div class="code">{
-  <span class="tag">"mcpServers"</span>: {
-    <span class="tag">"geotech"</span>: {
-      <span class="tag">"command"</span>: "python",
-      <span class="tag">"args"</span>: ["C:\\Users\\&lt;你的使用者名稱&gt;\\geotech_mcp\\geotech_mcp_server.py"]
-    }
-  }
-}</div>
-
-    <p><strong>④ 重啟 Claude Desktop</strong>（完全關閉包括系統匣，再開啟）</p>
-  </section>
-
-  <footer>
-    <div class="disclaimer">
-      <strong>資料來源與免責</strong><br>
-      鑽探資料來自經濟部中央地質調查所公開資料庫，由各計畫執行單位上傳，品質不一。本系統產出之分析僅供<strong>初步參考</strong>，最終工程設計應依據<strong>原始鑽探報告正本</strong>。
-    </div>
-    鑽探地質分析系統 · MCP Server v4.11 · 2026/04　｜　如有問題請聯繫系統管理員
-  </footer>
+  <h3>安裝疑難排解</h3>
+  <table>
+    <tr><th style="width:38%">狀況</th><th>處理方式</th></tr>
+    <tr><td>工具沒出現／查詢沒反應</td>
+        <td>多半是 Claude Desktop 沒<b>完全重啟</b>。關閉所有視窗 →
+        系統匣 Claude 圖示右鍵結束 →（保險）工作管理員結束殘留的
+        <code>Claude</code> 與 <code>python.exe</code> → 重開。</td></tr>
+    <tr><td>install.bat 一閃就關</td>
+        <td>本版已修正編碼問題，正常會停在「Press any key」。若仍異常，
+        開 <kbd>cmd</kbd>，把 install.bat 拖進視窗按 Enter，錯誤訊息會留在畫面。</td></tr>
+    <tr><td>更新後想還原舊版</td>
+        <td>安裝目錄內有自動備份檔 <code>geotech_mcp_server.py.backup_*</code>，
+        複製覆蓋回 <code>geotech_mcp_server.py</code> 再重啟即可。</td></tr>
+    <tr><td>Python 下載失敗</td>
+        <td>檢查網路，或改用上方「離線安裝」放入 python-installer.exe。</td></tr>
+  </table>
 
 </div>
+</section>
+
+
+<!-- ===================== 分頁 2：使用與結果 ===================== -->
+<section class="page" id="p2">
+<div class="wrap">
+
+  <h2>② 如何使用 &amp; 結果呈現</h2>
+
+  <h3>方式 A（最推薦）：用關鍵字叫出標準輸入單</h3>
+  <p>在對話框輸入這個關鍵字（<b>務必含角括號</b>）：</p>
+  <pre><code>&lt;地質鑽探調查&gt;</code></pre>
+  <p>系統會回覆一張「標準輸入單」讓你複製：</p>
+  <pre><code>--------------------------------------------
+地址(必填，需完整地址)：
+半徑(預設200m)：
+孔數(預設8孔)：
+簡報(預設否)：
+--------------------------------------------</code></pre>
+  <p>把它貼回對話框、填好四欄、直接送出，系統就會開始查詢。各欄規則：</p>
+  <table>
+    <tr><th style="width:18%">欄位</th><th class="c" style="width:14%">必填</th><th>不填時的預設 / 說明</th></tr>
+    <tr><td><b>地址</b></td><td class="c">必填</td><td>不可空白，需完整地址（縣市＋區＋路＋號）。</td></tr>
+    <tr><td>半徑</td><td class="c">選填</td><td>預設 <b>200m</b>。郊區鑽孔稀疏時可填 500 或 1000；找不到時系統會自動擴大。</td></tr>
+    <tr><td>孔數</td><td class="c">選填</td><td>預設 <b>8 孔</b>（8 個方位各取代表孔）；想精簡可填數字（例 4），只取最近 N 孔。</td></tr>
+    <tr><td>簡報</td><td class="c">選填</td><td>預設 <b>否</b>（只給資料表格）。要產生 PPT 簡報才填「是」。</td></tr>
+  </table>
+
+  <h3>方式 B：直接用一句話講</h3>
+  <p>不想用輸入單，也可以直接描述。地址是唯一必要資訊，其餘用講的補：</p>
+  <pre><code>查 臺北市中正區南海路35號 的地質鑽探資料</code></pre>
+  <p>常見講法對照：</p>
+  <table>
+    <tr><th style="width:42%">你想做的事</th><th>怎麼說</th></tr>
+    <tr><td>標準查詢（8 孔、附圖）</td><td>查 ○○路○號 的鑽孔資料</td></tr>
+    <tr><td>擴大搜尋範圍</td><td>查 ○○路○號，半徑 1000 公尺</td></tr>
+    <tr><td>只要最近幾孔</td><td>查 ○○路○號，最多 4 孔</td></tr>
+    <tr><td>含實驗室試驗資料</td><td>查 ○○路○號，含試驗資料</td></tr>
+    <tr><td>直接做簡報（不再詢問）</td><td>查 ○○路○號，直接做成簡報</td></tr>
+    <tr><td>要 CSV 表格</td><td>查 ○○路○號，土層表給我一份 CSV</td></tr>
+  </table>
+
+  <hr class="sep">
+
+  <h2 style="margin-top:10px">結果呈現</h2>
+  <p class="center" style="color:var(--grey)">查詢完成後，系統的輸出依序如下。</p>
+
+  <h3>一定會輸出：鑽孔資料表格</h3>
+  <p>不論任何查詢，系統<b>至少會以表格呈現</b>找到的各孔資料，欄位包含：</p>
+  <table>
+    <tr><th class="c">孔號</th><th class="c">方位</th><th class="c">距離(m)</th><th class="c">深度(m)</th><th class="c">地表高程(m)</th><th class="c">柱狀圖頁數</th></tr>
+    <tr><td class="c">BL01-1</td><td class="c">S</td><td class="c">54</td><td class="c">20.0</td><td class="c">6.20</td><td class="c">1</td></tr>
+    <tr><td class="c">WA-2</td><td class="c">E</td><td class="c">119</td><td class="c">40.0</td><td class="c">6.30</td><td class="c">2</td></tr>
+    <tr><td class="c">BH-1</td><td class="c">SE</td><td class="c">120</td><td class="c">50.0</td><td class="c">6.62</td><td class="c">3</td></tr>
+  </table>
+  <p style="color:var(--grey);font-size:14px">（上為格式示意，實際內容依查詢結果。）</p>
+
+  <h3>接著：土層初步判讀</h3>
+  <p>系統會判讀各孔柱狀圖，整理土層分布（由淺至深的土層構成、SPT-N 值或範圍、
+  軟硬程度、地下水位概況）。N 值精度說明見下方。</p>
+
+  <h3>視需要：PPT 簡報（4 頁，無封面）</h3>
+  <p>當輸入單「簡報」填「是」、或明確要求製作簡報時，系統會產生簡報，內容含：</p>
+  <ol>
+    <li><b>鑽孔位置與基地水平關係</b>：基地置中，各孔依方位與距離標示，
+      實心點＝有柱狀圖、空心點＝無；附半徑圈、指北針、比例尺與鑽孔清單表。</li>
+    <li><b>土層綜合剖面</b>：代表孔並排，依土層<b>上色分層</b>（回填／砂／黏土／卵礫石），
+      標註各層描述與 N 值，承載層跨孔連線。</li>
+    <li><b>代表孔柱狀圖</b>：直接嵌入真實柱狀圖原圖，不重繪。</li>
+    <li><b>資料總表與判讀</b>：鑽孔總表＋土層分布判讀重點。</li>
+  </ol>
+  <p>簡報為 <span class="pill">4:3</span> <span class="pill">藍色系</span>
+  <span class="pill">微軟正黑體</span>，左下角含公司 LOGO（母片）。</p>
+
+  <h3>視需要：CSV 檔</h3>
+  <p>要求「給 CSV」時，系統會把孔位表或土層表整理成 CSV 檔供下載，方便匯入
+  Excel 或後續分析。</p>
+
+  <hr class="sep">
+
+  <h3>關於柱狀圖的清晰度（重要）</h3>
+  <div class="tip">
+    為了讓多孔資料能<b>一次傳完</b>（不受單次 1MB 上限影響），柱狀圖預設轉為
+    <b>單色壓縮版</b>。實測<b>土層描述、SPT-N 值、土壤分類、顏色欄</b>皆清晰可判讀；
+    唯一會糊掉的是水位「<b>日期</b>」小字（不影響判讀，水位高度在表頭仍可讀）。
+  </div>
+  <p>若某張圖需要看得更清楚，可直接說「<b>這孔改用彩色版重抓</b>」，即可取得
+  彩色 256 色版本（檔案較大、容錯較高）。</p>
+
+  <h3>關於 N 值的精度（誠實說明）</h3>
+  <table>
+    <tr><th style="width:28%">情況</th><th>呈現方式</th></tr>
+    <tr><td>距場址最近的代表孔</td>
+        <td>逐筆精讀，N 值為直接讀出的<b>精確值</b>。</td></tr>
+    <tr><td>其餘多數孔</td>
+        <td>可靠讀出土層分層，但單色圖上部分小字數字辨識有限，
+        N 值多以<b>範圍</b>表示（趨勢值）。</td></tr>
+  </table>
+  <div class="warn">
+    <b>工程提醒：</b>N 值是液化分析、承載力計算的關鍵輸入。若需逐筆精確 N 值，
+    建議對要使用的孔（尤其最深孔）<b>改抓彩色版重新判讀</b>，不要直接採用範圍值做設計。
+    本工具輸出僅供初步參考，最終設計請由負責技師覆核。
+  </div>
+
+  <h3>真實生成簡報時的計算原則</h3>
+  <p>製作位置圖與剖面圖時，系統依內建規範進行<b>實際計算</b>而非目測擺放：</p>
+  <ul>
+    <li><b>位置圖</b>：以基地座標為原點，將各孔座標統一座標系統後
+      （TW67／TW97 須正式轉換，不可用近似平移），計算相對方位與距離，
+      並與資料庫值<b>交叉驗證</b>；誤差過大會停下檢查，不硬畫。</li>
+    <li><b>剖面圖</b>：各孔共用深度比例尺，層厚等比例對應深度，依層位上色並附圖例。</li>
+  </ul>
+
+</div>
+</section>
+
+</main>
+
+<footer>
+  地質鑽探分析工具 v4.18　·　築遠工程顧問有限公司　·　本工具輸出僅供初步參考，最終設計請由負責技師覆核。
+</footer>
+
+<script>
+  function show(n, btn){
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+    document.getElementById('p'+n).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+</script>
+
 </body>
 </html>
