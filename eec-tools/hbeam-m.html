@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#ffffff; --ink:#1a2533; --muted:#5b6b7c;
-    --accent:#1f6feb; --accent-soft:#eaf2ff; --accent2:#0a3d62;
+    --accent:#1f6feb; --accent-soft:#eaf2ff; --accent2:#0a3d62; --input-bg:#f0f6ff;
     --line:#dfe6ee; --head:#f4f7fb; --zebra:#fafcfe;
     --special:#fff6e0; --special-line:#e6c87a;
     --ok:#1f8a4c; --no:#c0392b; --order:#b8860b;
@@ -26,10 +26,11 @@
   .tab.active{background:var(--bg); color:var(--accent); border-color:var(--accent); border-bottom:2px solid var(--bg); margin-bottom:-1px;}
   .wrap{padding:12px;}
   label{font-size:13px; font-weight:600; color:var(--muted);}
-  select,input[type=number]{font-family:inherit; font-size:16px; padding:10px 12px; border:1px solid var(--line);
-    border-radius:8px; background:#fff; color:var(--ink); width:100%;}
-  select:focus,input:focus{outline:none; border-color:var(--accent);}
-  input[type=range]{width:100%;}
+  select,input[type=number],input[type=text]{font-family:inherit; font-size:16px; padding:10px 12px; border:1px solid #b9d2f5;
+    border-radius:8px; background:var(--input-bg); color:var(--ink); width:100%;}
+  select:focus,input:focus{outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(31,111,235,.18);}
+  input:disabled,select:disabled{background:var(--head); border-color:var(--line); color:var(--muted);}
+  input[type=range]{width:100%; background:transparent; border:none; box-shadow:none;}
   .selrow{margin-bottom:10px;}
   .selrow label{display:block; margin-bottom:5px;}
   .badge{font-size:13px; color:var(--muted); margin:2px 0 10px;}
@@ -53,6 +54,18 @@
   /* ----- 梁設計 ----- */
   .card{border:1px solid var(--line); border-radius:11px; padding:13px 14px; margin-bottom:11px; background:#fff;}
   .card h2{margin:0 0 10px; font-size:15px; color:var(--accent2); border-left:4px solid var(--accent); padding-left:9px;}
+
+  /* 整合輸入卡：簡圖置頂 + 緊湊雙欄輸入，一螢幕內完成 */
+  .inputcard{padding:10px 11px;}
+  .diagram{margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line);}
+  .igrid{display:grid; grid-template-columns:1fr 1fr; gap:7px 9px;}
+  .igrid .span-all{grid-column:1 / -1;}
+  .ifield{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .ifield label{font-size:11px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ifield label span{color:var(--muted); font-weight:400; font-size:10px; margin-left:3px;}
+  .ifield input[type=number],.ifield select{font-size:16px; padding:7px 8px; border-radius:7px; width:100%;}
+  .ifield input[type=range]{margin-top:2px;}
+  .ihint{font-size:11px; color:var(--muted); margin-top:8px; line-height:1.45;}
   .field{display:flex; flex-direction:column; gap:4px; margin-bottom:10px;}
   .field:last-child{margin-bottom:0;}
   .field label{font-weight:600; color:var(--ink); font-size:13px;}
@@ -68,7 +81,15 @@
   .check{padding:10px 13px; border-radius:9px; font-weight:700; margin-bottom:8px; font-size:14px;}
   .check .ratio{display:block; font-weight:400; color:var(--muted); font-size:12px; margin-top:3px;}
   .check.pass{background:var(--okbg); color:var(--ok); border:1px solid var(--ok);}
+  .check.warn{background:#fff6e6; color:#b8860b; border:1px solid #d9a93a;}
   .check.fail{background:var(--nobg); color:var(--no); border:1px solid var(--no);}
+  /* optimizer result table (mobile: horizontal scroll) */
+  #optResult .tablebox{overflow-x:auto; border:1px solid var(--line); border-radius:9px;}
+  #optResult table{border-collapse:collapse; width:100%; font-size:12px; white-space:nowrap;}
+  #optResult th,#optResult td{padding:7px 8px; text-align:right; border-bottom:1px solid var(--line);}
+  #optResult th{background:var(--head); font-weight:700;}
+  #optResult td.spec{text-align:left; font-weight:600;}
+  #optResult td.cur{text-align:left; color:var(--muted); white-space:normal; min-width:90px;}
   .formula{font-family:"Consolas","Courier New",monospace; font-size:11.5px; color:var(--muted); background:var(--head);
     padding:8px 11px; border-radius:6px; margin-top:8px; white-space:pre-wrap; line-height:1.5; overflow-x:auto;}
   .hint{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5;}
@@ -117,59 +138,55 @@
 
   <!-- 梁設計 -->
   <div class="panel" id="panel-beam">
-    <div class="card">
-      <h2>① 幾何 + 載重配置</h2>
+    <div class="card inputcard">
       <div class="diagram" id="beamDiagram"></div>
-      <div class="field"><label>小梁跨距 L <span class="unit">(m)</span></label><input type="number" id="span" value="6" step="0.1" min="0.5"></div>
-      <div class="field"><label>小梁間距 S <span class="unit">(m，貢獻寬)</span></label><input type="number" id="trib" value="3" step="0.1" min="0.1"></div>
-      <div class="field"><label>側撐間距 Lb <span class="unit">(m，0=全側撐)</span></label><input type="number" id="lb" value="0" step="0.1" min="0"></div>
+      <div class="igrid">
+        <div class="ifield"><label>跨距 L<span>m</span></label><input type="number" id="span" value="6" step="0.1" min="0.5"></div>
+        <div class="ifield"><label>間距 S<span>m</span></label><input type="number" id="trib" value="3" step="0.1" min="0.1"></div>
+        <div class="ifield"><label>側撐 Lb<span>m,0=全</span></label><input type="number" id="lb" value="0" step="0.1" min="0"></div>
+        <div class="ifield"><label>板厚 t<span>cm</span></label><input type="number" id="slab" value="15" step="1" min="0"></div>
+        <div class="ifield"><label>附加 DL<span>kgf/m²</span></label><input type="number" id="dl" value="150" step="10" min="0"></div>
+        <div class="ifield"><label>活載 LL<span>kgf/m²</span></label><input type="number" id="ll" value="200" step="10" min="0"></div>
+        <div class="ifield"><label>附加線載<span>kgf/m</span></label><input type="number" id="wadd" value="0" step="10" min="0"></div>
+        <div class="ifield"><label>RC 單位重<span>kgf/m³</span></label><input type="number" id="rcw" value="2400" step="50" min="0"></div>
+        <div class="ifield"><label>P<sub>DL</sub><span>tf</span></label><input type="number" id="pdl" value="0" step="0.1" min="0"></div>
+        <div class="ifield"><label>P<sub>LL</sub><span>tf</span></label><input type="number" id="pll" value="0" step="0.1" min="0"></div>
+        <div class="ifield"><label>鋼材 Fy</label>
+          <select id="fy">
+            <option value="2.5">SN400B/A36 (2.5)</option>
+            <option value="3.3">SN490B (3.3)</option>
+            <option value="3.5">A572 Gr50 (3.5)</option>
+            <option value="4.3">SM570 (4.3)</option>
+          </select></div>
+        <div class="ifield"><label>含梁自重</label><select id="selfwt"><option value="1">是</option><option value="0">否</option></select></div>
+        <div class="ifield span-all"><label>集中荷重位置 a＝<span id="posLabel" style="color:var(--accent2);font-weight:700">3.00</span> m（距左端）</label><input type="range" id="pos" min="0" max="100" value="50" step="1"></div>
+      </div>
+      <div class="ihint">面載重（含板自重）乘間距 S 換算梁線載重；板厚不扣梁寬。集中荷重 P 施加於位置 a。</div>
     </div>
 
     <div class="card">
-      <h2>② 載重輸入</h2>
-      <div class="seclabel">面載重（含板）乘間距 S 換算梁線載重。</div>
-      <div class="field"><label>RC 樓板厚 t <span class="unit">(cm，不扣梁寬)</span></label><input type="number" id="slab" value="15" step="1" min="0"></div>
-      <div class="field"><label>附加靜載 DL <span class="unit">(kgf/m²)</span></label><input type="number" id="dl" value="150" step="10" min="0"></div>
-      <div class="field"><label>活載重 LL <span class="unit">(kgf/m²)</span></label><input type="number" id="ll" value="200" step="10" min="0"></div>
-      <div class="field"><label>附加線載重 <span class="unit">(kgf/m，選填)</span></label><input type="number" id="wadd" value="0" step="10" min="0"></div>
-      <div class="field"><label>RC 單位重 <span class="unit">(kgf/m³)</span></label><input type="number" id="rcw" value="2400" step="50" min="0"></div>
-      <div class="field"><label>鋼材等級 (Fy)</label>
-        <select id="fy">
-          <option value="2.5">SN400B / A36 (Fy=2.5)</option>
-          <option value="3.3">SN490B (Fy=3.3)</option>
-          <option value="3.5">A572 Gr50 (Fy=3.5)</option>
-          <option value="4.3">SM570 (Fy=4.3)</option>
-        </select></div>
-      <div class="field"><label>含梁自重？</label><select id="selfwt"><option value="1">是（自動加入）</option><option value="0">否</option></select></div>
-      <div class="seclabel h">集中荷重（簡支梁上一點）</div>
-      <div class="field"><label>集中荷重 P<sub>DL</sub> <span class="unit">(tf)</span></label><input type="number" id="pdl" value="0" step="0.1" min="0"></div>
-      <div class="field"><label>集中荷重 P<sub>LL</sub> <span class="unit">(tf)</span></label><input type="number" id="pll" value="0" step="0.1" min="0"></div>
-      <div class="field"><label>集中荷重位置 a＝<span id="posLabel">3.00</span> m（距左端）</label><input type="range" id="pos" min="0" max="100" value="50" step="1"></div>
-    </div>
-
-    <div class="card">
-      <h2>③ 載重組合與內力（LRFD）</h2>
+      <h2>內力（LRFD）</h2>
       <div class="seclabel">取較大者：1.4D ；1.2D + 1.6L</div>
       <div class="result-grid" id="forceRes"></div>
       <div class="formula" id="forceFormula"></div>
     </div>
 
     <div class="card">
-      <h2>④ 選取小梁斷面</h2>
+      <h2>選取小梁斷面</h2>
       <div class="field"><label>系列</label><select id="bgrp"></select></div>
       <div class="field"><label>斷面</label><select id="bsec"></select></div>
       <button class="calc" id="runBtn">計算檢核</button>
     </div>
 
     <div class="card" id="strengthCard" style="display:none">
-      <h2>⑤ 強度檢核</h2>
+      <h2>強度檢核（φMn、φVn）</h2>
       <div id="strengthChecks"></div>
       <div class="result-grid" id="strengthRes"></div>
       <div class="formula" id="strengthFormula"></div>
     </div>
 
     <div class="card" id="deflCard" style="display:none">
-      <h2>⑥ 撓度檢核（服務載重）</h2>
+      <h2>撓度檢核（服務載重）</h2>
       <div class="field"><label>構件類型（AISC DG3 / IBC 1604.3）</label>
         <select id="defPreset">
           <option value="360,240">樓版梁：活載 L/360、全載 L/240</option>
@@ -187,8 +204,42 @@
       <div class="formula" id="deflFormula"></div>
     </div>
 
+    <div class="card" id="vibCard" style="display:none">
+      <h2>振動舒適度（AISC DG11 走動）</h2>
+      <div class="field"><label>用途（綠/橙/紅 判定）</label>
+        <select id="vibUse">
+          <option value="0.005|0.0075|0.03">辦公室　綠&lt;0.5 / 橙0.5–0.75 / 紅&gt;0.75</option>
+          <option value="0.005|0.0075|0.04">住家　綠&lt;0.5 / 橙0.5–0.75 / 紅&gt;0.75</option>
+          <option value="0.015|0.015|0.03">商場／無固定座位　限 1.5%</option>
+          <option value="0.05|0.05|0.03">韻律／體育活動　限 5%</option>
+        </select></div>
+      <div class="field"><label>阻尼比 β</label>
+        <select id="vibBeta">
+          <option value="0.02">0.02　裸樓版／少裝修</option>
+          <option value="0.03">0.03　一般辦公（含天花/隔間）</option>
+          <option value="0.04">0.04　住家（隔間/軟裝較多）</option>
+          <option value="0.05">0.05　多隔間/書架</option>
+        </select></div>
+      <div class="field"><label>持續活載佔比</label>
+        <select id="vibLL"><option value="0.1">10%（辦公）</option><option value="0.2">20%（住宅/較重）</option><option value="0">0%（僅靜載）</option></select></div>
+      <div class="field"><label>樓板複合作用</label>
+        <select id="vibComp"><option value="1" selected>考慮（DG11 轉換 Itr）</option><option value="0">不考慮（僅鋼梁 Ix）</option></select></div>
+      <div class="field"><label>混凝土 f'c <span class="unit">(kgf/cm²)</span></label><input type="number" id="vibFc" value="280" step="10" min="100"></div>
+      <input type="hidden" id="vibBeff" value="自動">
+      <div id="vibChecks"></div>
+      <div class="result-grid" id="vibRes"></div>
+      <div class="formula" id="vibFormula"></div>
+    </div>
+
+    <div class="card" id="optCard" style="display:none">
+      <h2>最便宜斷面建議（前三）</h2>
+      <div class="seclabel">同時通過 強度＋撓度＋振動；H ≤ 目前斷面；排除無供貨；以 kg/m 最輕排序，可跨系列。</div>
+      <button class="calc" id="optBtn">搜尋最便宜斷面</button>
+      <div id="optResult" style="margin-top:12px"></div>
+    </div>
+
     <div class="card">
-      <div class="hint"><b>假設：</b>簡支單跨。彎矩採 AISC F2 章 LTB（依 Lb、Lp、Lr 分三段，Cb=1.0 保守），φMn=0.9·Mn。剪力 φVn=0.9·0.6·Fy·Aw。內力含均布＋集中荷重疊加取最大。撓度用未折減服務載重。LTB 之 J、Cw 為手冊／計算值，rT 視為 rts。本工具供配置規劃／初步選斷面，正式送審須由負責人覆核。</div>
+      <div class="hint"><b>假設：</b>簡支單跨。彎矩採 AISC F2 章 LTB（依 Lb、Lp、Lr 分三段，Cb=1.0 保守），φMn=0.9·Mn。剪力 φVn=0.9·0.6·Fy·Aw。內力含均布＋集中荷重疊加取最大。撓度用未折減服務載重。振動採 AISC DG11 走動準則，預設考慮樓板複合作用（轉換 Itr，動態 Ec×1.35、板有效寬 AISC I3.1a、混凝土受拉壓皆計）；辦公/住家綠&lt;0.5、橙0.5–0.75（可感但一般可接受，非法規禁止）、紅&gt;0.75%g，斷面代換以 0.75% 為依據。LTB 之 J、Cw 為手冊／計算值。本工具供配置規劃／初步選斷面，正式送審須由負責人覆核。</div>
     </div>
   </div>
 </div>
@@ -349,6 +400,16 @@ function deflMax(w, P, a, L, E, I_in){
 }
 
 let curSecMass=0;
+// pure force envelope for a given supported self-weight (kgf/m); no DOM
+function forcesFor(I, wSelf){
+  const ll=lineLoads(I, wSelf);
+  const wD=ll.wD, wL=ll.wL;
+  const Pd=I.Pdl*1000, Pl=I.Pll*1000;
+  const env14=envelope(1.4*wD,1.4*Pd,I.a,I.L);
+  const env12=envelope(1.2*wD+1.6*wL,1.2*Pd+1.6*Pl,I.a,I.L);
+  const Mu=Math.max(env14.Mmax,env12.Mmax), Vu=Math.max(env14.Vmax,env12.Vmax);
+  return {I,wD,wL,Pd,Pl,Mu,Vu};
+}
 function calcForces(){
   const I=getInputs();
   const {wD,wL,slabSelf}=lineLoads(I,curSecMass);
@@ -383,71 +444,200 @@ $('defPreset').addEventListener('change',e=>{
   if(window._bf&&$('strengthCard').style.display!=='none')runCheck();
 });
 ['defLL','defTot'].forEach(id=>$(id).addEventListener('input',()=>{$('defPreset').value='custom'; if($('deflCard').style.display!=='none')runCheck();}));
+$('vibUse').addEventListener('change',e=>{
+  const parts=e.target.value.split('|');
+  if(parts[2]) $('vibBeta').value=parts[2];   // 帶入建議 β
+  if($('vibCard').style.display!=='none')runCheck();
+});
+['vibBeta','vibLL','vibComp'].forEach(id=>$(id).addEventListener('change',()=>{ if($('vibCard').style.display!=='none')runCheck(); }));
+$('vibFc').addEventListener('input',()=>{ if($('vibCard').style.display!=='none')runCheck(); });
 
 $('runBtn').addEventListener('click',runCheck);
-function runCheck(){
-  const sec=DATA[+bgrp.value].rows[+bsec.value];
-  curSecMass=sec.m;
-  calcForces();
-  const F=window._bf, I=F.I, Fy=I.Fy;
-  // strength — AISC F2 LTB (Cb=1.0 conservative)
+
+// ---- pure strength (AISC F2 LTB) ----
+function calcStrength(sec, Fy, Lb_m, F){
   const E=2040;
-  const Lb_m = I.Lb>0 ? I.Lb : 0;          // 0 = 全側撐
-  const ho=(sec.H-sec.tf)/10;              // cm, flange-centroid distance
-  const rts=sec.rT;                        // cm (≈rts)
-  const Mp=Fy*sec.Zx;                      // tf·cm
-  const Lp=1.76*sec.ry*Math.sqrt(E/Fy);    // cm
-  const cc=1.0, termJ=sec.J*cc/(sec.Sx*ho);
-  const Lr=1.95*rts*(E/(0.7*Fy))*Math.sqrt(termJ+Math.sqrt(termJ*termJ+6.76*Math.pow(0.7*Fy/E,2))); // cm
+  const ho=(sec.H-sec.tf)/10, rts=sec.rT;
+  const Mp=Fy*sec.Zx;
+  const Lp=1.76*sec.ry*Math.sqrt(E/Fy);
+  const termJ=sec.J/(sec.Sx*ho);
+  const Lr=1.95*rts*(E/(0.7*Fy))*Math.sqrt(termJ+Math.sqrt(termJ*termJ+6.76*Math.pow(0.7*Fy/E,2)));
   let Mn, ltbState;
   if(Lb_m===0){ Mn=Mp; ltbState='全側撐 → 塑性 Mp'; }
   else{
     const Lb=Lb_m*100, Cb=1.0;
     if(Lb<=Lp){ Mn=Mp; ltbState=`Lb≤Lp(${(Lp/100).toFixed(2)}m) → 塑性 Mp`; }
-    else if(Lb<=Lr){ Mn=Math.min(Cb*(Mp-(Mp-0.7*Fy*sec.Sx)*(Lb-Lp)/(Lr-Lp)),Mp);
-      ltbState=`Lp<Lb≤Lr → 非彈性 LTB`; }
-    else{ const Fcr=Cb*Math.PI*Math.PI*E/Math.pow(Lb/rts,2)*Math.sqrt(1+0.078*termJ*Math.pow(Lb/rts,2));
-      Mn=Math.min(Fcr*sec.Sx,Mp); ltbState=`Lb>Lr(${(Lr/100).toFixed(2)}m) → 彈性 LTB`; }
+    else if(Lb<=Lr){ Mn=Math.min(Cb*(Mp-(Mp-0.7*Fy*sec.Sx)*(Lb-Lp)/(Lr-Lp)),Mp); ltbState='Lp<Lb≤Lr → 非彈性 LTB'; }
+    else{ const Fcr=Cb*Math.PI*Math.PI*E/Math.pow(Lb/rts,2)*Math.sqrt(1+0.078*termJ*Math.pow(Lb/rts,2)); Mn=Math.min(Fcr*sec.Sx,Mp); ltbState=`Lb>Lr(${(Lr/100).toFixed(2)}m) → 彈性 LTB`; }
   }
-  const phiMn=0.9*Mn/100;                  // tf·m
-  const Mu_t=F.Mu/1000;
-  const Aw=sec.H*sec.tw/100;               // cm²
-  const phiVn=0.9*0.6*Fy*Aw;              // tf
-  const Vu_t=F.Vu/1000;
-  const mOK=phiMn>=Mu_t, vOK=phiVn>=Vu_t;
-  $('strengthCard').style.display='block';
-  $('strengthChecks').innerHTML=chk('彎矩',mOK,Mu_t,phiMn,'tf·m','Mu','φMn')+chk('剪力',vOK,Vu_t,phiVn,'tf','Vu','φVn');
-  $('strengthRes').innerHTML=[
-    ['φMn (φ=0.9)',phiMn.toFixed(2)+' tf·m',ltbState],['Mu',Mu_t.toFixed(2)+' tf·m',''],
-    ['φVn (φ=0.9)',phiVn.toFixed(2)+' tf','0.6·Fy·Aw'],['Vu',Vu_t.toFixed(2)+' tf',''],
-  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
-  const redu = (Lb_m>0 && Mn<Mp) ? `\n側撐折減：Mn/Mp = ${(Mn/Mp).toFixed(3)}（Mp=${(Mp/100).toFixed(2)} → Mn=${(Mn/100).toFixed(2)} tf·m）`:'';
-  $('strengthFormula').textContent=
-    `【彎矩 AISC F2，Cb=1.0】\nMp=Fy·Zx=${Fy}×${sec.Zx}/100=${(Mp/100).toFixed(2)} tf·m\n`+
-    `Lp=1.76·ry·√(E/Fy)=${(Lp/100).toFixed(2)} m ; Lr=${(Lr/100).toFixed(2)} m ; Lb=${Lb_m===0?'0(全側撐)':Lb_m+' m'}\n`+
-    `${ltbState}${redu}\nφMn=0.9×Mn=${phiMn.toFixed(2)} tf·m\n`+
-    `【剪力】Aw=H·tw=${sec.H}×${sec.tw}/100=${Aw.toFixed(2)} cm² ; φVn=0.9×0.6×${Fy}×${Aw.toFixed(2)}=${phiVn.toFixed(2)} tf`;
-
-  // deflection — service (unfactored)
-  const Ix=sec.Ix;
+  const phiMn=0.9*Mn/100, Mu_t=F.Mu/1000;
+  const Aw=sec.H*sec.tw/100, phiVn=0.9*0.6*Fy*Aw, Vu_t=F.Vu/1000;
+  return {Mp,Mn,Lp,Lr,phiMn,Mu_t,Aw,phiVn,Vu_t,ltbState,
+          mOK:phiMn>=Mu_t, vOK:phiVn>=Vu_t};
+}
+// ---- pure deflection ----
+function calcDefl(sec, F, I, limLL, limTot){
+  const E=2040, Ix=sec.Ix, Lcm=I.L*100;
   const dLL=deflMax(F.wL, F.Pl, I.a, I.L, E, Ix);
   const dTOT=deflMax(F.wD+F.wL, F.Pd+F.Pl, I.a, I.L, E, Ix);
-  const Lcm=I.L*100;
-  const limLL=parseFloat($('defLL').value)||360, limTot=parseFloat($('defTot').value)||240;
   const aLL=Lcm/limLL, aTot=Lcm/limTot;
-  const llOK=dLL<=aLL, totOK=dTOT<=aTot;
-  $('deflCard').style.display='block';
-  $('deflChecks').innerHTML=chk('活載撓度',llOK,dLL,aLL,'cm','δ_LL','L/'+limLL)+chk('全載撓度',totOK,dTOT,aTot,'cm','δ_全','L/'+limTot);
-  $('deflRes').innerHTML=[
-    ['δ 活載',dLL.toFixed(3)+' cm','限 '+aLL.toFixed(3)],['δ 全載',dTOT.toFixed(3)+' cm','限 '+aTot.toFixed(3)],
-    ['Ix',Ix.toLocaleString()+' cm⁴',''],['L/δ 活載',dLL>0?(Lcm/dLL).toFixed(0):'∞','需 ≥ '+limLL],
+  return {dLL,dTOT,aLL,aTot,Ix,Lcm,llOK:dLL<=aLL, totOK:dTOT<=aTot};
+}
+// ---- pure vibration (AISC DG11 Ch4 walking, single-beam panel, composite Itr) ----
+function compositeItr(sec, I, fc){
+  // DG11 vibration: dynamic Ec = 1.35×Ec ; slab effective in tension+compression
+  const Es=2040.0;                              // tf/cm²
+  const Ec=12000*Math.sqrt(fc)/1000;            // tf/cm² (Taiwan Ec=12000√f'c kgf/cm²)
+  const n=Es/(1.35*Ec);                         // dynamic modular ratio
+  const Lcm=I.L*100, Scm=I.S*100, t=I.slab;     // cm
+  const beff=Math.min(Lcm/4, Scm);              // AISC I3.1a: L/8 each side (=L/4) or spacing
+  const btr=beff/n, Ac=btr*t;
+  const Hcm=sec.H/10;                           // steel depth cm
+  const As=sec.A;                               // steel area cm²
+  const ys=Hcm/2;                               // steel centroid from steel bottom
+  const yc=Hcm + t/2;                           // slab centroid
+  const yna=(As*ys+Ac*yc)/(As+Ac);
+  const Itr=sec.Ix + As*Math.pow(yna-ys,2) + (btr*Math.pow(t,3)/12) + Ac*Math.pow(yc-yna,2);
+  return {Itr,beff,n,Ec,yna};
+}
+function calcVib(sec, F, I, beta, greenLim, redLim, llFrac, composite, fc){
+  const wsup = F.wD + llFrac*F.wL;              // kgf/m
+  let Ix=sec.Ix, comp=null;
+  if(composite){ comp=compositeItr(sec,I,fc); Ix=comp.Itr; }
+  const E=200000.0, Ixmm=Ix*1e4, L=I.L*1000.0, g=9810.0;
+  const w_Nmm = wsup*9.81/1000.0;
+  const delta = 5*w_Nmm*Math.pow(L,4)/(384*E*Ixmm);
+  const fn = 0.18*Math.sqrt(g/delta);
+  const W_kN = (wsup*9.81)*(I.L)/1000.0;
+  const Po=0.29;
+  const ap_g = Po*Math.exp(-0.35*fn)/(beta*W_kN);
+  // status: pass <green ; warn green..red ; fail >red. ok(供代換用)=ap<=redLim
+  let status = ap_g<=greenLim ? 'pass' : (ap_g<=redLim ? 'warn' : 'fail');
+  return {wsup,delta,fn,W_kN,ap_g,greenLim,redLim,Ix,comp,status, ok:ap_g<=redLim};
+}
+
+function runCheck(){
+  const sec=DATA[+bgrp.value].rows[+bsec.value];
+  curSecMass=sec.m;
+  calcForces();
+  const F=window._bf, I=F.I, Fy=I.Fy;
+  const Lb_m = I.Lb>0 ? I.Lb : 0;
+  const S=calcStrength(sec,Fy,Lb_m,F);
+  $('strengthCard').style.display='block';
+  $('strengthChecks').innerHTML=chk('彎矩',S.mOK,S.Mu_t,S.phiMn,'tf·m','Mu','φMn')+chk('剪力',S.vOK,S.Vu_t,S.phiVn,'tf','Vu','φVn');
+  $('strengthRes').innerHTML=[
+    ['φMn (φ=0.9)',S.phiMn.toFixed(2)+' tf·m',S.ltbState],['Mu',S.Mu_t.toFixed(2)+' tf·m',''],
+    ['φVn (φ=0.9)',S.phiVn.toFixed(2)+' tf','0.6·Fy·Aw'],['Vu',S.Vu_t.toFixed(2)+' tf',''],
   ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
-  $('deflFormula').textContent=`未折減服務載重（AISC：撓度為使用性，不乘載重因數）。\nδ = 均布 5wL⁴/384EI 與點荷疊加沿跨度取最大，E=2040 tf/cm², Ix=${Ix} cm⁴\n活載 δ=${dLL.toFixed(3)} ≤ L/${limLL}=${aLL.toFixed(3)} → ${llOK?'OK':'NG'}\n全載 δ=${dTOT.toFixed(3)} ≤ L/${limTot}=${aTot.toFixed(3)} → ${totOK?'OK':'NG'}`;
+  const redu = (Lb_m>0 && S.Mn<S.Mp) ? `\n側撐折減：Mn/Mp = ${(S.Mn/S.Mp).toFixed(3)}（Mp=${(S.Mp/100).toFixed(2)} → Mn=${(S.Mn/100).toFixed(2)} tf·m）`:'';
+  $('strengthFormula').textContent=
+    `【彎矩 AISC F2，Cb=1.0】\nMp=Fy·Zx=${Fy}×${sec.Zx}/100=${(S.Mp/100).toFixed(2)} tf·m\n`+
+    `Lp=${(S.Lp/100).toFixed(2)} m ; Lr=${(S.Lr/100).toFixed(2)} m ; Lb=${Lb_m===0?'0(全側撐)':Lb_m+' m'}\n`+
+    `${S.ltbState}${redu}\nφMn=0.9×Mn=${S.phiMn.toFixed(2)} tf·m\n`+
+    `【剪力】Aw=H·tw=${sec.H}×${sec.tw}/100=${S.Aw.toFixed(2)} cm² ; φVn=0.9×0.6×${Fy}×${S.Aw.toFixed(2)}=${S.phiVn.toFixed(2)} tf`;
+
+  const limLL=parseFloat($('defLL').value)||360, limTot=parseFloat($('defTot').value)||240;
+  const D=calcDefl(sec,F,I,limLL,limTot);
+  $('deflCard').style.display='block';
+  $('deflChecks').innerHTML=chk('活載撓度',D.llOK,D.dLL,D.aLL,'cm','δ_LL','L/'+limLL)+chk('全載撓度',D.totOK,D.dTOT,D.aTot,'cm','δ_全','L/'+limTot);
+  $('deflRes').innerHTML=[
+    ['δ 活載',D.dLL.toFixed(3)+' cm','限 '+D.aLL.toFixed(3)],['δ 全載',D.dTOT.toFixed(3)+' cm','限 '+D.aTot.toFixed(3)],
+    ['Ix',D.Ix.toLocaleString()+' cm⁴',''],['L/δ 活載',D.dLL>0?(D.Lcm/D.dLL).toFixed(0):'∞','需 ≥ '+limLL],
+  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
+  $('deflFormula').textContent=`未折減服務載重。δ = 均布 5wL⁴/384EI 與點荷疊加沿跨取最大，E=2040 tf/cm², Ix=${D.Ix} cm⁴\n活載 δ=${D.dLL.toFixed(3)} ≤ L/${limLL}=${D.aLL.toFixed(3)} → ${D.llOK?'OK':'NG'}\n全載 δ=${D.dTOT.toFixed(3)} ≤ L/${limTot}=${D.aTot.toFixed(3)} → ${D.totOK?'OK':'NG'}`;
+
+  // vibration
+  const [gLim,rLim] = $('vibUse').value.split('|').map(parseFloat);
+  const beta=parseFloat($('vibBeta').value)||0.03;
+  const llFrac=parseFloat($('vibLL').value); const llF=isNaN(llFrac)?0.1:llFrac;
+  const composite=$('vibComp').value==='1';
+  const fc=parseFloat($('vibFc').value)||280;
+  const V=calcVib(sec,F,I,beta,gLim,rLim,llF,composite,fc);
+  $('vibCard').style.display='block';
+  const hasAmber = rLim>gLim;
+  $('vibChecks').innerHTML=chk3('走動振動',V.status,V.ap_g*100,gLim*100,rLim*100,hasAmber);
+  const ItrNote = composite ? `轉換 Itr=${Math.round(V.Ix).toLocaleString()}（鋼 ${sec.Ix.toLocaleString()}，×${(V.Ix/sec.Ix).toFixed(2)}）` : '僅鋼梁 Ix';
+  $('vibRes').innerHTML=[
+    ['自然頻率 fn',V.fn.toFixed(2)+' Hz',V.fn>=3?'':'⚠ <3Hz 偏低'],
+    ['峰值加速度 ap/g',(V.ap_g*100).toFixed(3)+' %g',hasAmber?`綠<${(gLim*100).toFixed(2)} 橙<${(rLim*100).toFixed(2)}`:'限 '+(rLim*100).toFixed(1)+'%'],
+    ['有效慣性矩',composite?Math.round(V.Ix).toLocaleString()+' cm⁴':sec.Ix.toLocaleString()+' cm⁴',composite?'複合':'鋼梁'],
+    ['Δ 自重撓度',V.delta.toFixed(2)+' mm',''],
+  ].map(([a,b,c])=>`<div class="res"><div class="lab">${a}</div><div class="val">${b}</div><div class="sub">${c}</div></div>`).join('');
+  const compLine = composite&&V.comp ? `複合作用：f'c=${fc} → Ec=${V.comp.Ec.toFixed(0)} tf/cm²，動態 n=${V.comp.n.toFixed(1)}，板有效寬 beff=${V.comp.beff.toFixed(0)} cm；${ItrNote}\n` : '不考慮複合作用，採鋼梁 Ix。\n';
+  const statusWord = V.status==='pass'?'舒適（綠）':(V.status==='warn'?'可感但一般可接受（橙）':'超標（紅）');
+  const amberNote = hasAmber ? `\n※ 0.5–0.75%g（橙區）非法規禁止，僅為舒適度建議；一般可抓 0.75% 為實務上限。斷面代換以 0.75% 為合格依據。` : '';
+  $('vibFormula').textContent=`【AISC DG11 走動，單梁簡化】\n${compLine}`+
+    `支承振動質量 wsup = wD + ${llF}·wL = ${V.wsup.toFixed(0)} kgf/m\n`+
+    `Δ = 5·wsup·L⁴/(384·E·I) = ${V.delta.toFixed(2)} mm ; fn = 0.18√(g/Δ) = ${V.fn.toFixed(2)} Hz\n`+
+    `W = wsup·L = ${V.W_kN.toFixed(1)} kN ; β=${beta}\n`+
+    `ap/g = 0.29·e^(−0.35×${V.fn.toFixed(2)})/(${beta}×${V.W_kN.toFixed(1)}) = ${(V.ap_g*100).toFixed(3)}%g → ${statusWord}${amberNote}`;
+
+  $('optCard').style.display='block';
+  $('optResult').innerHTML='';
+}
+
+// ---- optimizer ----
+$('optBtn').addEventListener('click',runOptimize);
+function runOptimize(){
+  const curSec=DATA[+bgrp.value].rows[+bsec.value];
+  const F=window._bf, I=F.I, Fy=I.Fy;
+  const Lb_m=I.Lb>0?I.Lb:0;
+  const limLL=parseFloat($('defLL').value)||360, limTot=parseFloat($('defTot').value)||240;
+  const beta=parseFloat($('vibBeta').value)||0.03;
+  const [gLim,rLim]=$('vibUse').value.split('|').map(parseFloat);
+  const llFrac=parseFloat($('vibLL').value); const llF=isNaN(llFrac)?0.1:llFrac;
+  const composite=$('vibComp').value==='1'; const fc=parseFloat($('vibFc').value)||280;
+  const Hmax=curSec.H;
+  const avail=s=>!!(s.cur_prod&&String(s.cur_prod).trim()!=='');  // 至少一間供貨
+  const cands=[];
+  DATA.forEach(g=>g.rows.forEach(s=>{
+    if(s.H>Hmax) return;            // 深度不可增加
+    if(!avail(s)) return;           // 排除無供貨（含訂製→需現行型錄有列）
+    // recompute forces with this candidate's self weight
+    const wSelf=I.selfwt?s.m:0;
+    const Floc=forcesFor(I, wSelf);
+    const St=calcStrength(s,Fy,Lb_m,Floc);
+    if(!(St.mOK&&St.vOK)) return;
+    const De=calcDefl(s,Floc,I,limLL,limTot);
+    if(!(De.llOK&&De.totOK)) return;
+    const Vi=calcVib(s,Floc,I,beta,gLim,rLim,llF,composite,fc);
+    if(!Vi.ok) return;   // ok = ap ≤ redLim(0.75% 辦公/住家)
+    cands.push({s,m:s.m,St,De,Vi});
+  }));
+  cands.sort((a,b)=>a.m-b.m);
+  // dedup identical specs (shouldn't repeat) and take top 3
+  const top=cands.slice(0,3);
+  if(top.length===0){ $('optResult').innerHTML='<div class="check fail"><span>✘ 在 H ≤ '+Hmax+' mm 且有供貨範圍內，找不到同時通過強度／撓度／振動的斷面</span></div>'; return; }
+  const cur_m=curSec.m;
+  let html='<div class="tablebox"><table><thead><tr><th>排名</th><th>規格</th><th>重 kg/m</th><th>vs現用</th><th>H mm</th><th>φMn/Mu</th><th>δ全/限</th><th>ap/g</th><th>現行型錄</th></tr></thead><tbody>';
+  top.forEach((c,i)=>{
+    const lighter=((1-c.m/cur_m)*100);
+    const vs = c.m<cur_m?`輕 ${lighter.toFixed(0)}%`:(c.m>cur_m?`重 ${(-lighter).toFixed(0)}%`:'同');
+    const apColor = c.Vi.status==='warn' ? 'color:#b8860b;font-weight:700' : (c.Vi.status==='pass'?'color:var(--ok)':'');
+    const apMark = c.Vi.status==='warn' ? '△' : '';
+    html+=`<tr><td>${i+1}</td><td class="spec">${c.s.spec}</td><td>${c.m.toFixed(1)}</td><td>${vs}</td><td>${c.s.H}</td>`+
+      `<td>${(c.St.phiMn/c.St.Mu_t).toFixed(2)}</td><td>${(c.De.dTOT/c.De.aTot).toFixed(2)}</td>`+
+      `<td style="${apColor}">${apMark}${(c.Vi.ap_g*100).toFixed(2)}%</td><td class="cur">${c.s.cur_prod}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  const limNote = rLim>gLim
+    ? `振動以 ap/g ≤ ${(rLim*100).toFixed(2)}% 為代換合格依據（橙 △：${(gLim*100).toFixed(2)}–${(rLim*100).toFixed(2)}%，可感但一般可接受，非法規禁止）`
+    : `振動限 ${(rLim*100).toFixed(1)}%`;
+  html+=`<div class="hint">φMn/Mu、δ全/限 為 需求/容量（&lt;1 表有餘裕）。${limNote}。已排除 H&gt;${Hmax}mm 與無現行供貨之斷面；重量最輕者列前。現用斷面 ${curSec.spec}（${cur_m.toFixed(1)} kg/m）。</div>`;
+  $('optResult').innerHTML=html;
 }
 function chk(name,ok,demand,cap,unit,dl,cl){
   const r=cap>0?demand/cap:0;
   return `<div class="check ${ok?'pass':'fail'}"><span>${ok?'✔':'✘'} ${name}檢核 ${ok?'合格':'不合格'}</span>
     <span class="ratio">${dl}/${cl} = ${demand.toFixed(2)}/${cap.toFixed(2)} ${unit}　比值 ${r.toFixed(2)}</span></div>`;
+}
+function chk3(name,status,ap,gLim,rLim,hasAmber){
+  const cls=status==='pass'?'pass':(status==='warn'?'warn':'fail');
+  const icon=status==='pass'?'✔':(status==='warn'?'△':'✘');
+  const word=status==='pass'?'舒適':(status==='warn'?'可感·一般可接受':'超標');
+  const limTxt = hasAmber ? `綠<${gLim.toFixed(2)} / 橙<${rLim.toFixed(2)} %g` : `限 ${rLim.toFixed(1)}%g`;
+  return `<div class="check ${cls}"><span>${icon} ${name} ${word}</span>
+    <span class="ratio">ap/g = ${ap.toFixed(3)} %g（${limTxt}）</span></div>`;
 }
 curSecMass=DATA[+bgrp.value].rows[+bsec.value].m;
 drawDiagram(); calcForces();
