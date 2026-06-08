@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隔震元件試驗規範 — 四方比較檢討表（台灣／美國／日本）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1c1e; --ink-soft:#454a4f; --paper:#f4f1ea; --card:#fbfaf6;
+    --line:#d7d1c4; --line-hard:#b9b2a1;
+    --major:#a3231f; --major-bg:#f7e3e1;
+    --diff:#9a6510; --diff-bg:#f7ecd6;
+    --add:#0f6e63; --add-bg:#dcefec;
+    --same:#5a6066; --same-bg:#e8e6df;
+    --accent:#1f3a5f;
+  }
+  *{box-sizing:border-box;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Noto Sans TC", system-ui, "PingFang TC","Microsoft JhengHei", sans-serif;
+    font-size:14px; line-height:1.55;
+  }
+  .wrap{ max-width:1280px; margin:0 auto; padding:34px 22px 80px; }
+  header.doc{ border-bottom:3px solid var(--ink); padding-bottom:18px; margin-bottom:6px; }
+  .eyebrow{ font-size:12px; letter-spacing:.22em; color:var(--accent); font-weight:700; text-transform:uppercase; }
+  h1{ font-family:"Noto Serif TC", serif; font-weight:900; font-size:30px; margin:6px 0 4px; letter-spacing:.01em; }
+  .sub{ color:var(--ink-soft); font-size:13.5px; }
+  .meta{ display:flex; flex-wrap:wrap; gap:10px 26px; margin-top:14px; font-size:12.5px; color:var(--ink-soft); }
+  .meta b{ color:var(--ink); font-weight:700; }
+
+  .callout{ background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent);
+    padding:14px 16px; margin:18px 0 8px; border-radius:4px; font-size:13px; }
+  .callout h3{ margin:0 0 6px; font-family:"Noto Serif TC",serif; font-size:15px; }
+  .callout ul{ margin:6px 0 0; padding-left:18px; } .callout li{ margin:3px 0; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 8px; }
+  .tag{ display:inline-block; font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:999px; white-space:nowrap; }
+  .t-major{ background:var(--major-bg); color:var(--major); border:1px solid var(--major); }
+  .t-diff{ background:var(--diff-bg); color:var(--diff); border:1px solid var(--diff); }
+  .t-add{ background:var(--add-bg); color:var(--add); border:1px solid var(--add); }
+  .t-same{ background:var(--same-bg); color:var(--same); border:1px solid var(--line-hard); }
+
+  table{ width:100%; border-collapse:collapse; margin-top:10px; background:var(--card);
+    border:1px solid var(--line-hard); }
+  thead th{ position:sticky; top:0; z-index:5; background:var(--ink); color:#f4f1ea;
+    font-family:"Noto Serif TC",serif; font-weight:700; font-size:13px; text-align:left;
+    padding:11px 12px; border-right:1px solid #3a3d40; }
+  thead th:last-child{ border-right:none; }
+  tbody td{ padding:11px 12px; border-top:1px solid var(--line); border-right:1px solid var(--line);
+    vertical-align:top; font-size:13px; }
+  tbody td:last-child{ border-right:none; }
+  tbody tr:nth-child(even){ background:#f6f4ee; }
+  tr.section td{ background:var(--accent); color:#fff; font-family:"Noto Serif TC",serif;
+    font-weight:700; font-size:13.5px; letter-spacing:.04em; padding:8px 12px; }
+  .no{ color:var(--ink-soft); font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .topic{ font-weight:700; }
+  .dash{ color:var(--line-hard); font-weight:700; }
+  .rev{ font-size:12.5px; }
+  .rev .tag{ margin-bottom:4px; }
+  code{ background:#ece8df; padding:1px 4px; border-radius:3px; font-size:12px; }
+
+  /* column widths */
+  col.c-no{ width:38px; } col.c-topic{ width:138px; }
+  col.c-spec{ width:18%; } col.c-tw{ width:13%; } col.c-us{ width:13%; } col.c-jp{ width:15%; } col.c-rev{ width:auto; }
+
+  footer.doc{ margin-top:26px; border-top:1px solid var(--line-hard); padding-top:14px;
+    font-size:12px; color:var(--ink-soft); }
+  .warn{ background:var(--major-bg); border:1px solid var(--major); color:#5e1614; padding:10px 14px;
+    border-radius:4px; font-size:12.5px; margin-top:12px; }
+  @media (max-width:820px){ body{font-size:13px;} .wrap{padding:20px 12px 60px;} h1{font-size:23px;} thead th, tbody td{padding:8px 8px; font-size:12px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="doc">
+    <div class="eyebrow">台北信義案 · 隔震元件試驗規範</div>
+    <h1>試驗規範 v3 — 台灣／美國／日本規範四方逐條比較檢討</h1>
+    <div class="sub">本案試驗規範 v3 × 建築物耐震設計規範§9（113.03修訂） × ASCE 7-22 Chapter 17 × 日本（JIS K 6410 系列／告示1446号）</div>
+    <div class="meta">
+      <span><b>固定設計位移</b> 40 cm（400 mm）</span>
+      <span><b>固定最大總位移</b> 60 cm（600 mm）</span>
+      <span><b>基準</b> 全案固定定值（governing），各廠商產品須符合</span>
+      <span><b>無對應規定</b> 以「--」表示</span>
+    </div>
+  </header>
+
+  <div class="callout">
+    <h3>讀表前提醒（與本次更新條件連動）</h3>
+    <ul>
+      <li>改採「多廠商產品中立 ＋ 固定設計基準」路線：設計位移 <b>400 mm</b>、最大總位移 <b>600 mm</b> 為全案 governing 定值，規範本文<b>以定值表示、不再出現 DD／DTM 符號</b>。</li>
+      <li>守門句（建議保留）：凡廠商產品於本案分析所得之設計位移或最大總位移超過上列定值者，須重新選定元件或以實際值為準。</li>
+      <li>動態基準速率改為 <b>650 mm/s（下限）</b>，≤ BATS 水平速度上限 1,000 mm/s；§4.2 舊式 <code>vmax=…=1,414</code> 與下限 628 應刪除，並保留速度相依外推。</li>
+      <li>本版新增<b>日本（JIS／告示）</b>對照欄：日本無單一統一試驗法規——積層橡膠系（LRB／NRB／HDR）依 <b>JIS K 6410</b> 系列，球面滑動（FPS）無對應 JIS，依 <b>告示1446号 第3＋大臣認定書＋JSSI 指針</b>；詳見表末「日本規範對照（補充）」。</li>
+    </ul>
+  </div>
+
+  <div class="legend">
+    <span class="tag t-major">重大／不合規</span>
+    <span class="tag t-diff">差異需確認</span>
+    <span class="tag t-add">本案加值／自訂</span>
+    <span class="tag t-same">各規範一致</span>
+  </div>
+
+  <table>
+    <colgroup>
+      <col class="c-no"><col class="c-topic"><col class="c-spec"><col class="c-tw"><col class="c-us"><col class="c-jp"><col class="c-rev">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>#</th><th>項目</th><th>本案試驗規範 v3</th><th>台灣耐震規範 §9（113.03）</th><th>ASCE 7-22 Ch17</th><th>日本（JIS／告示）</th><th>檢討</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr class="section"><td colspan="7">A　總則與架構</td></tr>
+
+      <tr>
+        <td class="no">1</td><td class="topic">法源依據</td>
+        <td>§1.1 以耐震§9 為主，ASCE 7-22、ISO 22762 參考適用；衝突時取較嚴格者。</td>
+        <td>本身即法源（§9）。</td>
+        <td>本身即母規範。</td>
+        <td>積層ゴム→JIS K 6410 系列；すべり→告示1446号 第3＋大臣認定</td><td class="rev"><span class="tag t-add">加值</span>本案多源並用且明訂「取嚴」。台規為母規範、ASCE 為參考、ISO 22762 參考；<span class="tag t-diff">差異</span>日本無單一母規範——橡膠系走 JIS K 6410 系列、FPS 走告示1446号＋大臣認定＋JSSI。本案以單一規範統攝多廠商，較日本「按部材分流到不同法源」集中。</td>
+      </tr>
+      <tr>
+        <td class="no">2</td><td class="topic">適用範圍</td>
+        <td>§1.2 全部隔震元件，含原型（實體）、動態、出廠保證、業主抽驗。</td>
+        <td>§9.5.1 實體試驗為主。</td>
+        <td>§17.8 qualification／prototype／production。</td>
+        <td>部材種別により JIS／認定に分かれる</td><td class="rev"><span class="tag t-add">加值</span>本案涵蓋面最廣（原型＋動態＋出廠＋業主抽驗四層）。台規／ASCE 聚焦原型與製造試驗；日本依部材種別分屬 JIS（製品試験）或大臣認定（型式・受渡）。「業主獨立抽驗」一層為台美日均無之自訂層。</td>
+      </tr>
+      <tr>
+        <td class="no">3</td><td class="topic">事前核可／設計審查</td>
+        <td>§1.3 試驗計畫書須業主書面同意後執行。</td>
+        <td>§9.6.2 設計審查（工址準則、初步、整體分析）。</td>
+        <td>§17.7 獨立同儕審查，至少 1 名 RDP。</td>
+        <td>型式（大臣）認定制度；JSSI 指針</td><td class="rev"><span class="tag t-diff">差異</span>本案有「計畫書核可」，但缺 ASCE 式獨立同儕審查明文（見 #25）。台規 §9.6.2、ASCE §17.7 均有審查；日本以大臣型式認定＋JSSI 指針作第三者性能評價。本案宜補同儕審查。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">B　元件分類</td></tr>
+
+      <tr>
+        <td class="no">4</td><td class="topic">行為分類（五類）</td>
+        <td>§2.1 依復位力＋阻尼機制分 1A／1B／2／3／4／5，不同類不得互相代表。</td>
+        <td class="dash">--</td>
+        <td>§17.2.8.1 僅要求依「型式與尺寸」分組，無機制 taxonomy。</td>
+        <td>JIS は積層ゴムを規定；統一機構分類なし（すべりは認定書別）</td><td class="rev"><span class="tag t-add">加值</span>本案五類最細緻，為多廠商產品中立所需。台規分類較粗、ASCE 以力—變形特性描述、日本 JIS 僅規範積層ゴム（滑動依各認定書、無統一分類）。本案分類在四方中最完整。</td>
+      </tr>
+      <tr>
+        <td class="no">5</td><td class="topic">同類別分組</td>
+        <td>§2.2 自訂門檻（外徑≤25%、橡膠厚≤20%、插件比≤10%、摩擦≤15%、曲率≤10% 等），取最大尺寸為代表。</td>
+        <td class="dash">--</td>
+        <td>§17.8.2.7 相似性準則（尺寸 +15%／−30%、同材料、Eloop≥85% 等），符合者<b>可完全免原型</b>。</td>
+        <td class="dash">--</td><td class="rev"><span class="tag t-diff">差異</span>本案門檻自訂且具體。ASCE 以相似性可「免原型」、台規無此機制、日本以「認定範圍＋製品個別」管理（無明文分組差異%）。本案（減至 1 件）與 ASCE（免做）邏輯不同，須確認採何者。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">C　原型試驗（靜態）</td></tr>
+
+      <tr>
+        <td class="no">6</td><td class="topic">試體數量</td>
+        <td>§3.1 每組≥2 件；憑認證（日本國交大臣認定等）+業主同意可減為 1 件，但仍須試驗。</td>
+        <td>§9.5.1 至少 2 件，同型式同尺寸。</td>
+        <td>§17.8.2 每型式尺寸 2 件足尺。</td>
+        <td>JIS K 6410-2 の供試体規定；認定試験は認定要領</td><td class="rev"><span class="tag t-same">一致</span>基數本案／台／美一致（≥2）。<span class="tag t-add">加值</span>「減至 1 件＋認證」為本案折衷；ASCE 走相似性可免、台規無此機制、日本 JIS K 6410-2 依供試体規定、認定試験另依認定要領（大臣認定可涵蓋部分試驗）。</td>
+      </tr>
+      <tr>
+        <td class="no">7</td><td class="topic">垂直載重試驗</td>
+        <td>§3.3.1 0→QD+½QL+QE→0；垂直勁度≥設計值 80%。</td>
+        <td>§9.5.2.1.1 + §9.5.4.2 同；≥80%。</td>
+        <td class="dash">--（含於原型序列，無獨立條文）</td>
+        <td>JIS K 6410-2（圧縮特性）</td><td class="rev"><span class="tag t-same">一致</span>本案＝台規。ASCE 有對應壓縮要求；日本以 JIS K 6410-2 壓縮特性涵蓋。四方一致。</td>
+      </tr>
+      <tr>
+        <td class="no">8</td><td class="topic">常態（風力）載重試驗</td>
+        <td>§3.3.2 QD+QL、風力位移、20 循環；不降伏／不滑動。</td>
+        <td>§9.5.2.1.2 + §9.5.4.3 20 循環；設計風力下不降伏。</td>
+        <td>§17.8.2.2(1) 20 次全反向風力循環。</td>
+        <td class="dash">--</td><td class="rev"><span class="tag t-same">一致</span>本案／台／美循環數一致（20），本案另補「不滑動」涵蓋滑動類。<span class="tag t-diff">差異</span>日本 JIS 無明確 20 循環風力試驗對應（--），為本案／台／美較完整之項。</td>
+      </tr>
+      <tr>
+        <td class="no">9</td><td class="topic">不同變形特性試驗</td>
+        <td>§3.3.3 0.25→0.5→0.75→1.0→1.25→1.0 DD，各 3 循環（共 18）。</td>
+        <td>§9.5.2.1.3 0.25／0.5／0.75／1.0／1.25／1.0 DD，各 3 循環。</td>
+        <td>§17.8.2.2(2a) 0.25／0.5／0.67／1.0 DM，各 3 循環。</td>
+        <td>JIS K 6410-2（せん断特性・Kd／Qd）</td><td class="rev"><span class="tag t-diff">差異</span>本案＝台規（含 1.25 級）。ASCE 無 1.25 級但有 0.67 級；日本以 JIS K 6410-2 剪切特性（Kd／Qd）涵蓋，惟採規格化加載步驟、級配與本案不同。引用 ASCE 或 JIS 廠商資料時須注意級配對應。</td>
+      </tr>
+      <tr>
+        <td class="no">10</td><td class="topic">特性檢核標準</td>
+        <td>§3.3.3b 各循環與三循環均值差≤±10%、兩試體均值差≤10%、末組與設計值≤±15%、阻尼／消能≥85%。</td>
+        <td>§9.5.4.4–4.6 同上數值。</td>
+        <td>§17.8.4 採不同準則（kd/Eloop 落 λ 範圍、勁度變化≤20% 等）。</td>
+        <td>JIS K 6410-2／-3 の判定基準・規格値</td><td class="rev"><span class="tag t-diff">差異</span>本案數值＝台規。ASCE 以 λ 區間判定（見 #24）；日本以 JIS K 6410-2／-3 規格值或認定值判定。本案採固定差異%（±15% 等），與 JIS 規格值邏輯相近、與 ASCE 的 λ 邏輯不同。</td>
+      </tr>
+      <tr>
+        <td class="no">11</td><td class="topic">性能穩定性試驗</td>
+        <td>§3.3.4 QD、DD、10 循環；任一循環勁度與首循差≤20%、消能≥首循 70%。</td>
+        <td>§9.5.2.1.4 + §9.5.4.7 10 循環＠DD；≤20%、≥70%。</td>
+        <td>§17.8.2.2(4) 30·SM1/(SMS·BM) 但≥10 循環＠0.75DM；§17.8.4(4)(6) ≤20%。</td>
+        <td>JIS K 6410-2（繰返し特性）</td><td class="rev"><span class="tag t-diff">差異</span>本案＝台規（固定 10 循環＠400 mm）。ASCE 循環數為公式、位移 0.75DM；日本以 JIS K 6410-2 反覆特性涵蓋（循環數依 JIS）。基準與循環定義三家各異。</td>
+      </tr>
+      <tr>
+        <td class="no">12</td><td class="topic">穩定度試驗</td>
+        <td>§3.3.5 高軸 QD+½QL+QE／低軸 QD−QE。側向位移統一為 <b>600 mm</b>（已修正原表 2／表 5 之矛盾）。第四類另須殘餘位移 ≤ 30 mm。</td>
+        <td>§9.5.2.1.5 高／低軸，位移＝<b>DTM（最大總位移）</b>。</td>
+        <td>§17.8.2.5 ＠<b>DTM</b>，最大／最小垂直載重各一全反向循環。</td>
+        <td>JIS K 6410-2（限界性能）；FPS は認定書の限界滑動量</td><td class="rev"><span class="tag t-same">已修正</span>位移統一為 600 mm（＝最大總位移），符合台規 §9.5.2.1.5 與 ASCE §17.8.2.5 之 DTM。日本：橡膠走 JIS K 6410-2 限界性能、FPS 走認定書之限界滑動量。殘餘 30 mm（0.05×600）為本案自訂（台美日均未給此數值門檻）。</td>
+      </tr>
+      <tr>
+        <td class="no">13</td><td class="topic">試驗地點／見證</td>
+        <td>§3.4 地點不限，須設備校正證明；業主有權見證，14 工作天前通知。</td>
+        <td class="dash">--（解說建議由國內公信機構辦理）</td>
+        <td>§17.8 製造商不熟時 RDP 可要求見證原型試驗。</td>
+        <td class="dash">--</td><td class="rev"><span class="tag t-add">加值</span>本案程序明確（通知期、校正證明、見證權）。台規／ASCE 對見證著墨少；日本以認定試驗機構與受渡檢查程序處理。本案在程序面四方中最明確。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">D　動態試驗</td></tr>
+
+      <tr>
+        <td class="no">14</td><td class="topic">動態試驗要求</td>
+        <td>Ch4 強制：方法一（本案執行）或方法二（過往報告）擇一。</td>
+        <td class="dash">--（台規 §9 為準靜態框架，未強制動態）</td>
+        <td>§17.8.2.3 須動態（除非有相似動態資料）。</td>
+        <td>JIS K 6410-3（高性能・依存性）；FPS は認定書の速度依存</td><td class="rev"><span class="tag t-add">加值</span>本案補足台規缺口、對齊 ASCE 精神。日本對速度依存最成熟：橡膠走 JIS K 6410-3（高性能・依存性）、FPS 走認定書速度依存值。本案要求廠商提供動態資料，與日本制度方向一致。</td>
+      </tr>
+      <tr>
+        <td class="no">15</td><td class="topic">方法一：速率／頻率／位移</td>
+        <td>§4.2 基準試驗速率 <b>650 mm/s（下限）</b>；試驗位移 ≥ 400 mm；保留速度相依外推。</td>
+        <td class="dash">--</td>
+        <td>§17.8.2.2(2b)／§17.8.2.3 動態加載＠有效週期 TM。</td>
+        <td>--（試験機依存）</td><td class="rev"><span class="tag t-diff">差異</span>650 mm/s ＜ BATS 上限 1,000，可行，解掉速度瓶頸。台規／ASCE 未明訂單一速率（依 vmax）、日本亦無統一速率（依試驗機與認定）。注意 T<3.9 s 產品真實 vmax>650，故 650 為下限，須速度相依外推至真實值。</td>
+      </tr>
+      <tr>
+        <td class="no">16</td><td class="topic">方法二：過往報告替代</td>
+        <td>§4.3 三年內／同分類／位移≥DD／軸力 70–130%／速率≥400 mm/s／≥3 份且≥2 批次／≥1 第三方／勁度均值±15%、偏差≤20%、阻尼≥85%。</td>
+        <td class="dash">--</td>
+        <td>§17.8.2.7 相似單元資料可替代原型。</td>
+        <td>認定書・型式試験データの流用（FPS）</td><td class="rev"><span class="tag t-add">加值</span>本案較 ASCE 相似性更量化、更嚴。日本普遍以大臣認定書／型式試驗數據流用（尤其 FPS）。本案「3 份／2 批次／第三方／一致性%」門檻較日本依認定書流用更嚴格可稽。</td>
+      </tr>
+      <tr>
+        <td class="no">17</td><td class="topic">速度依存性</td>
+        <td>§4.3(e)+§4.4 須提交分析文件；若低估元件特性≥20% 須補試。</td>
+        <td class="dash">--</td>
+        <td>§17.2.8.4 以 λtest 因子量化速率／發熱／scragging。</td>
+        <td>JIS K 6410-3／認定書（速度・面圧依存）</td><td class="rev"><span class="tag t-diff">差異</span>本案以「文件＋補試」處理、ASCE 以 λ 因子量化、日本以 JIS K 6410-3／認定書（速度・面圧依存）規範。本案未採 λ 框架（見 #24），量化嚴謹度介於兩者之間。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">E　出廠性能保證試驗</td></tr>
+
+      <tr>
+        <td class="no">18</td><td class="topic">全數（100%）試驗</td>
+        <td>Ch5 全部元件須做，不得以任何文件替代。</td>
+        <td>§9.5.5 每個元件皆須。</td>
+        <td>§17.8.5 100% 元件。</td>
+        <td>受渡（製品）検査；JIS／認定要領による</td><td class="rev"><span class="tag t-same">一致</span>本案／台／美皆 100%。日本以受渡（製品）檢查＋JIS／認定要領達成全數品管。四方在「全數」原則上一致。</td>
+      </tr>
+      <tr>
+        <td class="no">19</td><td class="topic">壓力試驗</td>
+        <td>§5.4.1 1.5(QD+QL)，持壓 5 分鐘。</td>
+        <td>§9.5.5.1.1 1.5(QD+QL)，5 分鐘。</td>
+        <td class="dash">--（ASCE 生產試驗為壓剪組合）</td>
+        <td>JIS K 6410-2（圧縮）</td><td class="rev"><span class="tag t-same">一致</span>本案＝台規。ASCE 有對應；日本以 JIS K 6410-2 壓縮涵蓋。四方一致。</td>
+      </tr>
+      <tr>
+        <td class="no">20</td><td class="topic">壓剪組合試驗</td>
+        <td>§5（v3 分流）：橡膠類壓剪組合＠400 mm、3 循環；滑動／曲面類壓剪滑動＠200 mm＋速度修正，判 μ。</td>
+        <td>§9.5.5.1.2 QD、DD、3 循環；±15%、≥85%。</td>
+        <td>§17.8.5 壓剪，位移≥<b>⅔ DM（下界）</b>，均值落 λspec 區間。</td>
+        <td>JIS K 6410-2（圧縮せん断）；FPS は認定書（摩擦・限界滑動量）</td><td class="rev"><span class="tag t-add">加值</span>v3 已分流：橡膠類壓剪組合＠400 mm／3 循環；滑動曲面類壓剪滑動＠200 mm＋速度修正、判 μ。<span class="tag t-diff">差異</span>ASCE 出廠位移較低（⅔DM）；日本橡膠走 JIS K 6410-2 壓縮剪切、FPS 走認定書摩擦係數與限界滑動量。本案分流後與日本「橡膠 JIS／滑動認定」二分邏輯方向一致。</td>
+      </tr>
+      <tr>
+        <td class="no">21</td><td class="topic">不合格處理</td>
+        <td>§5.6 不得出貨、查因、業主同意後重製、全數複驗。</td>
+        <td class="dash">--</td>
+        <td class="dash">--</td>
+        <td class="dash">--</td><td class="rev"><span class="tag t-add">加值</span>本案自訂程序完整（查因→重製→複驗）。台規／ASCE 著墨少；日本依認定要領與受渡檢查處置。本案在處置流程上四方中最明確。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">F　業主出廠抽驗</td></tr>
+
+      <tr>
+        <td class="no">22</td><td class="topic">業主獨立抽驗</td>
+        <td>Ch6 業主指定 1 件、第三方機構（利益迴避）、費用廠商負擔、縮減版原型、不合格三步驟。位移上限 400 mm。</td>
+        <td class="dash">--</td>
+        <td class="dash">--（§17.7 為同儕審查，性質不同）</td>
+        <td>--（発注者独自QA）</td><td class="rev"><span class="tag t-add">加值</span>全為本案自訂之業主 QA；第三方（獨立機構）＋利益迴避要求佳。台規／ASCE 無此層、日本亦無對應（屬發注者獨自 QA）。抽驗位移上限 400 mm，與 #12 之 600 mm 已分別定義、不衝突。</td>
+      </tr>
+
+      <tr class="section"><td colspan="7">G　特性決定與整體框架</td></tr>
+
+      <tr>
+        <td class="no">23</td><td class="topic">有效勁度／等效阻尼比公式</td>
+        <td>引用 §9.5.3。</td>
+        <td>§9.5.3 keff（9-12）、βeff（9-13）。</td>
+        <td>§17.8.3 keff（17.8-1）、βeff（17.8-2）。</td>
+        <td>JIS K 6410-1/-2 の定義（Kd, heq）</td><td class="rev"><span class="tag t-same">一致</span>本案＝台規公式 keff=(|F⁺|+|F⁻|)/(|Δ⁺|+|Δ⁻|)。ASCE 同形；日本 JIS K 6410-1/-2 定義 Kd、heq，形式一致。四方公式一致。</td>
+      </tr>
+      <tr>
+        <td class="no">24</td><td class="topic">上下界性質／λ 因子</td>
+        <td class="dash">--（採台規式設計值±容差）</td>
+        <td class="dash">--</td>
+        <td>§17.2.8.4–8.6 λmax／λmin 建立上下界（老化、製造容差、試驗）。</td>
+        <td>--（JIS は規格値；ばらつきは認定・製品許容差）</td><td class="rev"><span class="tag t-major">重大</span>本案與台規均無 λ 上下界框架；ASCE 最完整。日本以 JIS 規格值＋認定／製品許容差涵蓋變異（非 λ 體系）。建議本案至少要求廠商提供上下界性質，否則多廠商比較與保守性不足。</td>
+      </tr>
+      <tr>
+        <td class="no">25</td><td class="topic">獨立同儕審查</td>
+        <td>§1.3 業主核可計畫書。</td>
+        <td>§9.6.2 設計審查（機構建議含專技、隔震理論／實驗經驗者）。</td>
+        <td>§17.7 獨立同儕（≥1 RDP），審查準則、原型計畫、最終設計。</td>
+        <td>大臣認定（第三者性能評価）；JSSI</td><td class="rev"><span class="tag t-diff">差異</span>本案無「獨立同儕審查」明文。台規 §9.6.2、ASCE §17.7 有；日本以大臣型式認定（第三者性能評價）＋JSSI 指針達第三者審查效果。建議本案補列同儕審查。</td>
+      </tr>
+      <tr>
+        <td class="no">26</td><td class="topic">雙向（bilateral）載重試驗</td>
+        <td class="dash">--</td>
+        <td class="dash">--</td>
+        <td>§17.8.2.4 若雙向勁度差&gt;15% 須加做雙向試驗。</td>
+        <td class="dash">--</td><td class="rev"><span class="tag t-diff">差異</span>四方中僅 ASCE 明訂；台規、日本 JIS 均未明訂（--）。對曲面（FPS）／滑動類影響較大，建議評估是否納入。</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>狀態更新：</b>#12 穩定度位移已統一為 600 mm、#15 動態速率已定 650 mm/s（≤ BATS 上限）、#22 抽驗位移 400 mm — 三項重大／差異均已收斂。其餘待辦見各列檢討欄。
+  </div>
+
+  <h2 style="font-family:'Noto Serif TC',serif;font-size:18px;margin:30px 0 6px;border-top:1px solid var(--line-hard);padding-top:18px;">日本規範對照（補充）</h2>
+  <p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;">日本無單一統一之免震部材試驗法規：積層橡膠系（LRB／NRB／HDR）由 JIS K 6410 系列涵蓋；球面滑動（FPS）無對應 JIS，依平成12年建設省告示第1446号 第3＋國土交通大臣認定書＋JSSI 指針。</p>
+  <table>
+    <colgroup><col style="width:14%"><col style="width:16%"><col style="width:40%"><col style="width:30%"></colgroup>
+    <thead><tr><th>元件</th><th>類別</th><th>試驗依據</th><th>試驗值出處</th></tr></thead>
+    <tbody>
+      <tr><td><b>LRB</b></td><td>積層橡膠</td><td>JIS K 6410-1／-2（／-3）</td><td>JIS 標準值</td></tr>
+      <tr><td><b>NRB／HDR</b></td><td>積層橡膠</td><td>同上</td><td>JIS 標準值</td></tr>
+      <tr><td><b>FPS</b></td><td>滑動支承</td><td>告示1446号 第3 ＋ 認定書 ＋ JSSI 指針</td><td>各產品認定書</td></tr>
+      <tr><td><b>阻尼器類</b></td><td>阻尼</td><td>同 FPS（認定書＋JSSI 指針）</td><td>各產品認定書</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;margin:14px 0 4px;"><b>執行重點</b></p>
+  <ol style="font-size:13px;margin:0 0 8px;padding-left:20px;">
+    <li style="margin:4px 0;"><b>LRB</b>：直接調 JIS K 6410-2，比對廠商報告的 Kd、Qd、面壓依存、反覆耐久。</li>
+    <li style="margin:4px 0;"><b>FPS</b>：向廠商要大臣認定書，從中讀摩擦係數、速度依存、面壓依存、限界滑動量；JIS 那條留白並註明「無對應 JIS，依認定書」。</li>
+  </ol>
+  <footer class="doc">
+    本表為規範研擬階段之比較整理，所引條文以原規範文字為準；條號對應與工程判斷仍須由<b>本案責任結構技師</b>覆核確認後，方可作為定稿或送審依據。<br>
+    來源：本案試驗規範 v3、建築物耐震設計規範及解說 §9（113.03 修訂版）、ASCE/SEI 7-22 Chapter 17 與 C17 解說。
+  </footer>
+</div>
+</body>
+</html>
