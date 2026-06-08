@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隔震元件試驗規範 ／ 免震部材 試験基準（v3 中日對照）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1a1c1e;--soft:#52585e;--paper:#f5f2ec;--card:#fffdf8;--line:#ddd6c8;--accent:#1f3a5f;--accent2:#0f6e63;--zhbg:#fcfbf6;--jabg:#f3f6f8;}
+  *{box-sizing:border-box;} body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","Noto Sans JP",system-ui,sans-serif;font-size:14px;line-height:1.65;}
+  .wrap{max-width:1180px;margin:0 auto;padding:30px 20px 80px;}
+  header.doc{border-bottom:3px solid var(--ink);padding-bottom:16px;margin-bottom:10px;}
+  .eyebrow{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;}
+  h1{font-family:"Noto Serif TC",serif;font-weight:800;font-size:26px;margin:6px 0 2px;}
+  h1 .ja{font-family:"Noto Sans JP",sans-serif;font-weight:700;}
+  .meta{color:var(--soft);font-size:12.5px;margin-top:6px;}
+  .banner{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);padding:12px 16px;margin:16px 0;border-radius:4px;font-size:13px;}
+  .banner b{color:var(--accent);}
+  .toc{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 0 8px;font-size:12.5px;}
+  .toc a{color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--card);}
+  .chap{font-family:"Noto Serif TC",serif;font-weight:800;font-size:18px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:5px;margin:26px 0 4px;display:flex;gap:18px;}
+  .chap .ja{opacity:.92;font-weight:600;font-family:"Noto Sans JP",sans-serif;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:10px 0;background:var(--card);}
+  .col{padding:14px 16px;}
+  .col:first-child{background:var(--zhbg);border-right:1px solid var(--line);}
+  .col:last-child{background:var(--jabg);font-family:"Noto Sans JP","Noto Sans TC",sans-serif;}
+  .col h3{margin:0 0 8px;font-size:14.5px;font-weight:700;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:5px;}
+  .col:last-child h3{color:var(--accent2);}
+  .col p{margin:6px 0;} .col ul{margin:6px 0;padding-left:18px;} .col li{margin:2px 0;}
+  table.mini{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px;}
+  table.mini th{background:#e8eef3;border:1px solid var(--line);padding:5px 7px;text-align:left;font-weight:700;}
+  .col:last-child table.mini th{background:#e5efec;}
+  table.mini td{border:1px solid var(--line);padding:5px 7px;vertical-align:top;}
+  footer{margin-top:30px;border-top:1px solid var(--line);padding-top:14px;font-size:12px;color:var(--soft);}
+  @media(max-width:760px){.row{grid-template-columns:1fr;}.col:first-child{border-right:none;border-bottom:1px solid var(--line);}.chap{flex-direction:column;gap:2px;}}
+</style></head>
+<body><div class="wrap">
+<header class="doc">
+  <div class="eyebrow">台北信義案 · 中日對照 ／ 中日対訳</div>
+  <h1>隔震元件試驗規範　<span class="ja">／　免震部材 試験基準</span></h1>
+  <div class="meta">依建築物耐震設計規範第九章 ／ 台湾「建築物耐震設計規範」第9章 準拠　·　v3（Draft）　·　中華民國115年06月 ／ 2026年6月</div>
+</header>
+<div class="banner"><b>設計基準 ／ 設計基準：</b>設計位移 400 mm、最大總位移 600 mm（governing）。各廠商產品實際分析值超過此定值者，須重新選定或以實際值為準。 ／ 設計変位 400 mm、最大考慮地震変位 600 mm（governing）。製品の実際解析値が上記を超える場合は再選定または実際値を適用。</div>
+<div class="toc">
+  <a href="#c1">一 總則／総則</a><a href="#c2">二 分類／分類</a><a href="#c3">三 原型試驗／原型試験</a><a href="#c4">四 動態試驗／動的試験</a><a href="#c5">五 出廠保證／出荷前確認</a><a href="#c6">六 業主抽驗／抜取検査</a>
+</div>
+<div class="chap" id="c1"><span class="zh">第一章　總則</span><span class="ja">第1章　総則</span></div>
+<div class="row">
+  <div class="col"><h3>1.1　依據</h3><p>本試驗規範依據下列文件訂定，各文件有衝突時，以較嚴格之規定為準：</p><ul><li>建築物耐震設計規範及解說（113年3月修訂版）第九章</li><li>ASCE 7-22 Chapter 17（參考適用）</li><li>ISO 22762（參考適用）</li></ul></div>
+  <div class="col"><h3>1.1　適用根拠</h3><p>本試験基準は、以下の文書に基づき策定する。各文書間に矛盾が生じた場合は、より厳格な規定を優先して適用する。</p><ul><li>建築物耐震設計規範及び解説（113年3月改訂版）第9章</li><li>ASCE 7-22 Chapter 17（参考適用）</li><li>ISO 22762（参考適用）</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>1.2　適用範圍</h3><p>本規範適用於本工程所採用之全部隔震元件，包含原型試驗（實體試驗）、動態試驗、出廠性能保證試驗及業主出廠抽驗。</p></div>
+  <div class="col"><h3>1.2　適用範囲</h3><p>本基準は、本工事に使用する全ての免震部材に適用する。対象となる試験は、原型試験（静的試験）、動的試験、出荷性能確認試験および発注者による抜取検査とする。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>1.3　試驗計畫書</h3><p>廠商須於施工前提交試驗計畫書，經業主書面同意後方可執行試驗。試驗計畫書至少包含：</p><ul><li>元件型式說明與行為分類歸屬</li><li>試驗分組依據文件（含最大尺寸選定說明）</li><li>尺寸效應說明文件</li><li>速度依存性分析文件</li><li>試驗機構與設備校正證明</li><li>試驗時程</li><li>動態試驗執行方式（方法一或方法二，詳第四章）</li><li>國際型式認證文件（如適用）</li></ul></div>
+  <div class="col"><h3>1.3　試験計画書</h3><p>製造者は、施工前に試験計画書を提出し、発注者の書面による承認を得た後に試験を実施する。試験計画書には、少なくとも以下の内容を含めること。</p><ul><li>部材の種別および挙動分類の区分</li><li>試験グループ分けの根拠資料（最大寸法選定の説明を含む）</li><li>寸法効果に関する説明資料</li><li>速度依存性分析資料</li><li>試験機関および試験機の校正証明書</li><li>試験日程</li><li>動的試験の実施方法（方法1または方法2、第4章参照）</li><li>国際型式認定文書（該当する場合）</li></ul></div>
+</div>
+<div class="chap" id="c2"><span class="zh">第二章　隔震元件分類</span><span class="ja">第2章　免震部材の分類</span></div>
+<div class="row">
+  <div class="col"><h3>2.1　行為分類原則</h3><p>本工程採用之隔震元件，依其復位力來源與阻尼機制分類如下。不同類別之元件力學行為相異，不得互相代表，須分別進行原型試驗。</p><p><b>第一類：橡膠彈性復位／材料內阻尼型</b>　以積層橡膠之彈性變形提供復位力，阻尼由橡膠材料黏彈性提供。第一類A：等效阻尼比 ≤ 10%（NRB）；第一類B：等效阻尼比 > 10%（HDR）。</p><p><b>第二類：橡膠彈性復位／插件塑性阻尼型</b>　復位力來自橡膠彈性變形，阻尼源自金屬插件（如鉛心）之塑性變形（LRB）。</p><p><b>第三類：橡膠彈性復位／滑動摩擦阻尼型</b>　阻尼由內部滑動界面摩擦提供，摩擦係數對速率、壓力、溫度顯著依存。</p><p><b>第四類：曲面幾何復位／滑動摩擦阻尼型</b>　復位力來自曲面重力分量，與軸力及曲率半徑相關，低軸力時復位能力顯著降低（FPS）。</p><p><b>第五類：複合型</b>　併用兩種以上機制，分組歸屬經業主核定。</p></div>
+  <div class="col"><h3>2.1　挙動に基づく分類</h3><p>本工事に使用する免震部材は、復元力の発生機構および減衰機構に基づき以下のとおり分類する。異なる分類の部材は相互に代替できず、それぞれ独立して原型試験を実施する。</p><p><b>第1類：積層ゴム弾性復元／材料内部減衰型</b>　復元力は積層ゴムの弾性変形、減衰はゴムの粘弾性による。第1類A：等価減衰定数 ≤ 10%（NRB）；第1類B：> 10%（HDR）。</p><p><b>第2類：積層ゴム弾性復元／プラグ塑性変形減衰型</b>　復元力はゴムの弾性変形、減衰は金属プラグ（鉛プラグ等）の塑性変形による（LRB）。</p><p><b>第3類：積層ゴム弾性復元／摺動摩擦減衰型</b>　減衰は内部摺動界面の摩擦による。摩擦係数は速度・面圧・温度に顕著に依存。</p><p><b>第4類：曲面形状による幾何学的復元／摺動摩擦減衰型</b>　復元力は曲面の重力成分で、鉛直荷重・曲率半径に依存し、低軸力時に復元能力が著しく低下（FPS）。</p><p><b>第5類：複合型</b>　2種以上の機構を併用し、グループ区分は発注者承認による。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>2.2　同類別內之分組原則</h3><p>同類別元件得依下列條件分組，每組以最大尺寸之元件作為試驗代表，並提供尺寸效應說明文件。</p><p><b>第一～三類（積層橡膠系）：</b></p><ul><li>外徑差異 ≤ 25%</li><li>橡膠總厚度差異 ≤ 20%</li><li>第二類另須：插件／橡膠層截面積比差異 ≤ 10%</li><li>第三類另須：滑動面設計摩擦係數差異 ≤ 15%</li></ul><p><b>第四類（曲面幾何復位）：</b></p><ul><li>有效曲率半徑差異 ≤ 10%</li><li>設計摩擦係數差異 ≤ 15%（兩條件須同時滿足）</li></ul><p><b>第五類：</b>分組條件由廠商依主要機制提出，經業主書面同意後適用。</p></div>
+  <div class="col"><h3>2.2　同一分類内の寸法グループ分け</h3><p>同一分類の部材は以下の条件でグループ分けでき、各グループの試験代表体は最大寸法の部材とし、寸法効果説明資料を提出する。</p><p><b>第1〜3類（積層ゴム系）：</b></p><ul><li>外径の差 ≤ 25%</li><li>総ゴム厚さの差 ≤ 20%</li><li>第2類の追加：プラグ／積層ゴム断面積比の差 ≤ 10%</li><li>第3類の追加：摺動面の設計摩擦係数の差 ≤ 15%</li></ul><p><b>第4類（曲面形状）：</b></p><ul><li>有効曲率半径の差 ≤ 10%</li><li>設計摩擦係数の差 ≤ 15%（2条件を同時に満たすこと）</li></ul><p><b>第5類：</b>グループ分け条件は製造者が主要機構に基づき提案し、発注者の書面承認後に適用。</p></div>
+</div>
+<div class="chap" id="c3"><span class="zh">第三章　原型試驗（靜態）</span><span class="ja">第3章　原型試験（静的試験）</span></div>
+<div class="row">
+  <div class="col"><h3>3.1　試體數量</h3><p>每組取最大尺寸之試體至少 2 件。持認證文件者得申請減為 1 件，須：本案規格在認證範圍內、申請載明並經業主同意、仍須進行原型試驗（不得完全替代）。可接受：日本國土交通大臣認定書或同等國際認證。</p></div>
+  <div class="col"><h3>3.1　試験体数量</h3><p>各グループから最大寸法の試験体を少なくとも2体用いる。認定保有時は1体への削減を申請可：本工事規格が認定範囲内、申請を明記し発注者承認、原型試験は必須（完全代替不可）。認められる認定：国土交通大臣認定書または同等の国際認定文書。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.2　試驗依據</h3><p>試驗依據耐震設計規範 §9.5.2.1（位移與垂直載重條件）執行。</p></div>
+  <div class="col"><h3>3.2　試験根拠</h3><p>試験は台湾耐震設計規範 §9.5.2.1（変位および鉛直荷重条件）に準拠して実施する。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.3.1　垂直載重試驗</h3><p><b>試驗條件：</b>由零單調加載至 QD＋½QL＋QE，再卸回零。</p><p><b>結果標準：</b></p><ul><li>試體穩定無明顯破壞</li><li>垂直勁度 ≥ 設計值 80%</li></ul></div>
+  <div class="col"><h3>3.3.1　鉛直荷重試験</h3><p><b>試験条件：</b>ゼロから QD＋½QL＋QE まで単調増載し、ゼロまで除荷する。</p><p><b>合否判定：</b></p><ul><li>試験体が安定し、明らかな損傷がないこと</li><li>鉛直剛性が設計値の80%以上</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.3.2　常態載重試驗</h3><p><b>試驗條件：</b>垂直載重 QD＋QL；側向位移為風力對應位移；20 循環。</p><p><b>結果標準：</b></p><ul><li>第一、二類：切線勁度正值，不得降伏</li><li>第三、四類：不得滑動（起動摩擦力 ≥ 設計風力）</li></ul></div>
+  <div class="col"><h3>3.3.2　常時荷重試験</h3><p><b>試験条件：</b>鉛直荷重 QD＋QL；水平変位は風荷重対応変位；20サイクル。</p><p><b>合否判定：</b></p><ul><li>第1・2類：接線剛性が正値、降伏を生じないこと</li><li>第3・4類：滑動を生じないこと（起動摩擦力 ≥ 設計風荷重）</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.3.3　不同變形特性試驗</h3><p><b>試驗條件：</b>垂直載重 QD；側向位移 100→200→300→400→500→400 mm，各 3 循環（共 18）。</p><p><b>結果標準：</b></p><ul><li>各循環有效勁度與三循環均值差 ≤ ±10%</li><li>兩試體均值差 ≤ 10%</li><li>末組均值與設計值差 ≤ ±15%</li><li>平均等效阻尼比及消能 ≥ 設計值 85%</li></ul><table class="mini"><thead><tr><th>元件類別</th><th>切線勁度</th></tr></thead><tbody><tr><td>第一、二類</td><td>正值，不得降伏</td></tr><tr><td>第三、四類</td><td>正值，不得滑動</td></tr></tbody></table></div>
+  <div class="col"><h3>3.3.3　変形特性確認試験</h3><p><b>試験条件：</b>鉛直荷重 QD；水平変位 100→200→300→400→500→400 mm、各3サイクル（計18）。</p><p><b>合否判定：</b></p><ul><li>各サイクルと3サイクル平均の差 ≤ ±10%</li><li>2体平均の差 ≤ 10%</li><li>最終組平均と設計値の差 ≤ ±15%</li><li>平均等価減衰定数・消費エネルギー ≥ 設計値85%</li></ul><table class="mini"><thead><tr><th>部材種別</th><th>接線剛性</th></tr></thead><tbody><tr><td>第1・2類</td><td>正値、降伏不可</td></tr><tr><td>第3・4類</td><td>正値、滑動不可</td></tr></tbody></table></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.3.4　性能穩定性試驗</h3><p><b>試驗條件：</b>垂直載重 QD；側向位移 400 mm；10 循環。</p><p><b>結果標準：</b></p><ul><li>任一循環勁度與首循差 ≤ 20%</li><li>任一循環消能 ≥ 首循 70%</li></ul></div>
+  <div class="col"><h3>3.3.4　性能安定性試験</h3><p><b>試験条件：</b>鉛直荷重 QD；水平変位 400 mm；10サイクル。</p><p><b>合否判定：</b></p><ul><li>任意サイクルと第1サイクルの差 ≤ 20%</li><li>任意サイクルの消費エネルギー ≥ 第1サイクル70%</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.3.5　隔震元件穩定度試驗</h3><table class="mini"><thead><tr><th>工況</th><th>垂直載重</th><th>側向位移(mm)</th><th>循環</th></tr></thead><tbody><tr><td>高軸力</td><td>QD＋½QL＋QE</td><td>600</td><td>3</td></tr><tr><td>低軸力</td><td>QD－QE</td><td>600</td><td>3</td></tr></tbody></table><p><b>結果標準：</b></p><ul><li>試體穩定無明顯破壞</li><li>第四類另須記錄殘餘位移 ≤ 30 mm（0.05×600）</li></ul></div>
+  <div class="col"><h3>3.3.5　免震部材安定性試験</h3><table class="mini"><thead><tr><th>荷重ケース</th><th>鉛直荷重</th><th>水平変位(mm)</th><th>回数</th></tr></thead><tbody><tr><td>高軸力</td><td>QD＋½QL＋QE</td><td>600</td><td>3</td></tr><tr><td>低軸力</td><td>QD－QE</td><td>600</td><td>3</td></tr></tbody></table><p><b>合否判定：</b></p><ul><li>試験体が安定し明らかな損傷がないこと</li><li>第4類は残留変位 ≤ 30 mm（0.05×600）を記録</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>（彙整）第三章試驗項目</h3><table class="mini"><thead><tr><th>項目</th><th>垂直載重</th><th>位移(mm)</th><th>循環</th><th>備註</th></tr></thead><tbody><tr><td>垂直載重</td><td>0→QD＋½QL＋QE→0</td><td>—</td><td>—</td><td>單調</td></tr><tr><td>常態載重</td><td>QD＋QL</td><td>風力對應</td><td>20</td><td>三四類不得滑動</td></tr><tr><td>不同變形</td><td>QD</td><td>100→500→400</td><td>18</td><td>6 級</td></tr><tr><td>性能穩定</td><td>QD</td><td>400</td><td>10</td><td>—</td></tr><tr><td>穩定度</td><td>高:QD＋½QL＋QE／低:QD－QE</td><td>600（最大總位移）</td><td>各3</td><td>—</td></tr></tbody></table></div>
+  <div class="col"><h3>（一覧）第3章 試験項目</h3><table class="mini"><thead><tr><th>項目</th><th>鉛直荷重</th><th>変位(mm)</th><th>回数</th><th>備考</th></tr></thead><tbody><tr><td>圧縮</td><td>0→QD＋½QL＋QE→0</td><td>—</td><td>—</td><td>単調</td></tr><tr><td>常時荷重</td><td>QD＋QL</td><td>風荷重対応</td><td>20</td><td>3・4類滑動不可</td></tr><tr><td>変形特性</td><td>QD</td><td>100→500→400</td><td>18</td><td>6段</td></tr><tr><td>性能安定</td><td>QD</td><td>400</td><td>10</td><td>—</td></tr><tr><td>安定性</td><td>高:QD＋½QL＋QE／低:QD－QE</td><td>600（最大考慮地震変位）</td><td>各3</td><td>—</td></tr></tbody></table></div>
+</div>
+<div class="row">
+  <div class="col"><h3>3.4　試驗地點</h3><p>試驗地點不限，但試驗機構須提供有效設備校正證明。業主有權見證，廠商須於試驗前至少 14 個工作天通知。</p></div>
+  <div class="col"><h3>3.4　試験場所</h3><p>試験場所は限定しないが、試験機関は有効な校正証明書を提出する。発注者は立会権を有し、製造者は試験の少なくとも14執務日前に通知する。</p></div>
+</div>
+<div class="chap" id="c4"><span class="zh">第四章　動態試驗</span><span class="ja">第4章　動的試験</span></div>
+<div class="row">
+  <div class="col"><h3>4.1　基本要求</h3><p>各類元件除靜態原型試驗外，均須提供動態試驗資料，以方法一或方法二擇一執行，並於試驗計畫書載明。</p></div>
+  <div class="col"><h3>4.1　基本要件</h3><p>全分類の部材は静的原型試験に加え動的試験資料を提出し、方法1または方法2のいずれかを選択して試験計画書に明記する。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>4.2　方法一：本案執行動態試驗（優先）</h3><ul><li>基準試驗速率：650 mm/s（下限）；不得超過試驗機台水平速度上限（例：NCREE BATS 1,000 mm/s）</li><li>試驗位移 ≥ 400 mm</li><li>至少兩頻率點，涵蓋 650 mm/s 對應頻率點及其 1/2</li><li>每循環記錄最大力、位移、有效勁度、消能、實際速率</li><li>實際速率與真實地震速率之差異須以速度相依外推說明（§4.4）</li></ul></div>
+  <div class="col"><h3>4.2　方法1：本工事における動的試験（優先）</h3><ul><li>基準試験速度：650 mm/s（下限）；試験機の水平速度上限（例：NCREE BATS 1,000 mm/s）を超えないこと</li><li>試験変位 400 mm 以上</li><li>少なくとも2点（650 mm/s 対応振動数およびその1/2）</li><li>各サイクルで最大力・変位・等価剛性・消費エネルギー・実速度を記録</li><li>実速度と真の地震時速度の差異は速度依存性の外挿で報告（§4.4）</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>4.3　方法二：提交過往動態試驗報告（替代）</h3><p>廠商無法執行動態試驗時得提交過往報告，須同時滿足：</p><ul><li>(a) 報告距簽約日 ≤ 3 年</li><li>(b) 同分類、位移 ≥ 400 mm、軸力為設計軸力 70–130%、速率 ≥ 400 mm/s</li><li>(c) 每類 ≥ 3 份、≥ 2 批次、≥ 1 份第三方</li><li>(d) 勁度均值差 ≤ ±15%、偏差 ≤ 20%、阻尼比 ≥ 85%</li><li>(e) 提交速度依存性分析文件</li></ul></div>
+  <div class="col"><h3>4.3　方法2：過去の動的試験報告書の提出（代替）</h3><p>動的試験を実施できない場合、過去報告書で代替可。以下を同時に満足：</p><ul><li>(a) 契約締結日から3年以内</li><li>(b) 同分類、変位 400 mm 以上、軸力は設計軸力の70〜130%、速度 400 mm/s 以上</li><li>(c) 各分類3件以上、2ロット以上、第三者1件以上</li><li>(d) 等価剛性平均差 ≤ ±15%、偏差 ≤ 20%、減衰定数 ≥ 85%</li><li>(e) 速度依存性分析資料の提出</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>（速度依存性重點）</h3><table class="mini"><thead><tr><th>類別</th><th>重點</th></tr></thead><tbody><tr><td>第一類A</td><td>橡膠剛度速率依存（通常較低，仍須說明）</td></tr><tr><td>第一類B</td><td>阻尼比速率・溫度依存（最顯著）；≥3 速率點，最高 ≥ 400 mm/s</td></tr><tr><td>第二類</td><td>插件降伏力 Qd 速率依存</td></tr><tr><td>第三類</td><td>靜／動摩擦係數差異</td></tr><tr><td>第四類</td><td>摩擦係數速率・壓力依存</td></tr><tr><td>第五類</td><td>依主要機制</td></tr></tbody></table></div>
+  <div class="col"><h3>（速度依存性の重点）</h3><table class="mini"><thead><tr><th>分類</th><th>重点</th></tr></thead><tbody><tr><td>第1類A</td><td>ゴム剛性の速度依存（通常小、説明必須）</td></tr><tr><td>第1類B</td><td>減衰定数の速度・温度依存（最顕著）；3点以上、最高 ≥ 400 mm/s</td></tr><tr><td>第2類</td><td>プラグ降伏耐力 Qd の速度依存</td></tr><tr><td>第3類</td><td>静／動摩擦係数の差異</td></tr><tr><td>第4類</td><td>摩擦係数の速度・面圧依存</td></tr><tr><td>第5類</td><td>主要機構に準ずる</td></tr></tbody></table></div>
+</div>
+<div class="row">
+  <div class="col"><h3>4.4　共同要求</h3><ul><li>實際速率與基準速率（650 mm/s）之比較</li><li>若低於真實地震速率，須說明保守性</li><li>低估 ≥ 20% 時業主得要求補充動態試驗</li></ul></div>
+  <div class="col"><h3>4.4　共通要件</h3><ul><li>実速度と基準速度（650 mm/s）の比較</li><li>真の地震時速度を下回る場合は保守性を評価</li><li>20%以上の過小評価時、発注者は補完的動的試験を要求可</li></ul></div>
+</div>
+<div class="chap" id="c5"><span class="zh">第五章　出廠性能保證試驗（分流）</span><span class="ja">第5章　出荷前性能確認試験（分類別）</span></div>
+<div class="row">
+  <div class="col"><h3>5.1　依據與性質</h3><p>依 §9.5.5 執行，安裝前必要程序，由廠商安排。各元件依第二章分類適用 §5.4 共同項目與 §5.5 對應分類試驗；不同類別不得互換條件與判準。</p></div>
+  <div class="col"><h3>5.1　根拠および性質</h3><p>§9.5.5 に準拠、設置前必須、製造者が手配。各部材は第2章分類に応じ §5.4 共通項目と §5.5 該当分類試験を適用；分類間で条件・判定を置換不可。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.2　全數試驗原則</h3><p>全部隔震元件均須於安裝前完成出廠性能保證試驗，不得以任何文件替代。</p></div>
+  <div class="col"><h3>5.2　全数試験原則</h3><p>全免震部材は設置前に出荷前性能確認試験を完了；いかなる文書でも代替不可。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.3　試驗分流總表</h3><table class="mini"><thead><tr><th>類別</th><th>性能試驗</th><th>速度模式</th><th>主要驗收標的</th></tr></thead><tbody><tr><td>1A／B、2（橡膠）</td><td>壓力＋壓剪組合</td><td>準靜態可</td><td>Keff、消能／阻尼比</td></tr><tr><td>3（滑動）</td><td>壓力＋壓剪滑動</td><td>準靜態＋速度修正</td><td>μ（穩定循環）</td></tr><tr><td>4（曲面）</td><td>壓力＋壓剪滑動</td><td>準靜態＋速度修正</td><td>μ、殘餘位移</td></tr><tr><td>5（複合）</td><td>依主機制</td><td>依主機制</td><td>依主機制</td></tr></tbody></table></div>
+  <div class="col"><h3>5.3　試験分類フロー総表</h3><table class="mini"><thead><tr><th>種別</th><th>性能試験</th><th>速度モード</th><th>主要判定対象</th></tr></thead><tbody><tr><td>1A／B・2（ゴム）</td><td>圧縮＋圧縮せん断複合</td><td>準静的可</td><td>Keff、消費E／減衰定数</td></tr><tr><td>3（摺動）</td><td>圧縮＋圧縮せん断摺動</td><td>準静的＋速度修正</td><td>μ（安定サイクル）</td></tr><tr><td>4（曲面）</td><td>圧縮＋圧縮せん断摺動</td><td>準静的＋速度修正</td><td>μ、残留変位</td></tr><tr><td>5（複合）</td><td>主要機構に準ず</td><td>主要機構に準ず</td><td>主要機構に準ず</td></tr></tbody></table></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.4　共同項目：壓力試驗</h3><p><b>條件：</b>1.5(QD＋QL)、持壓 5 分鐘、無側向位移。</p><p><b>外觀驗收（依類別）：</b></p><ul><li>橡膠基礎（1A／B、2、3）：不得膨脹突出、脫離、裂縫</li><li>第三類另須：滑動面不得塗層剝離或永久變形</li><li>第四類：滑動面不得塗層剝離、刮傷、永久變形、內涵外洩</li><li>第五類：依主機制</li></ul></div>
+  <div class="col"><h3>5.4　共通項目：圧縮試験</h3><p><b>条件：</b>1.5(QD＋QL)、5分間保持、水平変位なし。</p><p><b>外観合否（分類別）：</b></p><ul><li>積層ゴム系（1A／B・2・3）：膨出・剥離・亀裂なきこと</li><li>第3類追加：摺動面のコーティング剥離・永久変形なきこと</li><li>第4類：摺動面のコーティング剥離・傷・永久変形・充填材漏洩なきこと</li><li>第5類：主要機構に準ず</li></ul></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.5　分類性能試驗</h3><p><b>位移基準：</b>設計位移 400 mm、最大總位移 600 mm。</p><p><b>5.5.1 橡膠類（1A／B、2）—壓剪組合：</b>條件 QD／400 mm／3 循環／準靜態可。判準：勁度 ±15%、消能／阻尼 ≥ 85%、切線勁度正值、首循記錄但不判準。</p><p><b>5.5.2 滑動・曲面類（3、4）—壓剪滑動：</b>條件 QD／200 mm（½×400）／3 循環／準靜態可＋速度修正。判準：穩定循環 μ（或 Qd）±15%〔待責任技師核定〕、切線勁度正值、首循（含起動）記錄但不判準、第四類殘餘 ≤ 30 mm。</p><p><b>5.5.3 複合類（5）：</b>依主機制比照 5.5.1 或 5.5.2，分流經業主同意。</p></div>
+  <div class="col"><h3>5.5　分類別性能試験</h3><p><b>変位基準：</b>設計変位 400 mm、最大考慮地震変位 600 mm。</p><p><b>5.5.1 積層ゴム類（1A／B・2）—圧縮せん断複合：</b>条件 QD／400 mm／3サイクル／準静的可。判定：剛性 ±15%、消費E／減衰 ≥ 85%、接線剛性正値、第1サイクルは記録するが判定外。</p><p><b>5.5.2 摺動・曲面類（3・4）—圧縮せん断摺動：</b>条件 QD／200 mm（½×400）／3サイクル／準静的可＋速度修正。判定：安定サイクル μ（または Qd）±15%〔責任技師確定〕、接線剛性正値、第1サイクル（起動含む）は記録するが判定外、第4類は残留 ≤ 30 mm。</p><p><b>5.5.3 複合類（5）：</b>主要機構に応じ 5.5.1 または 5.5.2 に準じ、分類は発注者承認。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.6　滑動類專屬規定</h3><p><b>5.6.1 速度修正：</b>速度依存性於原型（動態）階段釘定；出廠允許準靜態，須套用原型導出之速度修正係數換算至地震速率後判定，方法與數值載於計畫書並經審查核定。</p><p><b>5.6.2 磨耗預算：</b>廠商申報滑動界面磨耗（累積容許滑移量）預算；出廠＋原型累積試驗滑移量 ≤ 預算 10%〔待責任技師核定〕，且不得致任一驗收不合格。</p></div>
+  <div class="col"><h3>5.6　摺動類固有規定</h3><p><b>5.6.1 速度修正：</b>速度依存性は原型（動的）段階で確定；出荷前は準静的可だが、原型由来の速度修正係数で地震時速度に換算して判定、方法と数値は計画書に明記し審査承認。</p><p><b>5.6.2 摩耗予算：</b>製造者は摺動界面の摩耗（累積許容すべり量）予算を申告；出荷前＋原型の累積すべり量 ≤ 予算10%〔責任技師確定〕、かついずれの判定も不合格にしないこと。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.7　試驗記錄</h3><p>每件元件記錄至少含：編號／型式／尺寸／行為分類、日期地點、載重位移條件、速度模式及實際速率、壓力試驗外觀（含照片）、力—位移曲線、Keff 或 μ／Qd・消能・阻尼比、第三四類速度修正後值與累積滑移量、合格判定。出貨前提交業主存查。</p></div>
+  <div class="col"><h3>5.7　試験記録</h3><p>各部材記録に最低：番号／種別／寸法／挙動分類、日時・場所、荷重・変位条件、速度モード・実速度、圧縮試験外観（写真含む）、荷重－変位曲線、Keff または μ／Qd・消費E・減衰定数、第3・4類は速度修正後値と累積すべり量、合否判定。出荷前に発注者へ提出・保管。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>5.8　不合格處理</h3><p>不合格元件不得出貨；查因、提處理方案、經業主同意後重製或修補，並重新進行全數性能保證試驗。</p></div>
+  <div class="col"><h3>5.8　不合格時の対応</h3><p>不合格部材は出荷不可；原因究明・対処方案提出、発注者承認後に再製造または補修し、全数の性能確認試験を再実施。</p></div>
+</div>
+<div class="chap" id="c6"><span class="zh">第六章　業主出廠抽驗</span><span class="ja">第6章　発注者による出荷前抜取検査</span></div>
+<div class="row">
+  <div class="col"><h3>6.1　性質與目的</h3><p>獨立於廠商性能保證試驗之品質驗證；不取代之，兩者均為必要程序。</p></div>
+  <div class="col"><h3>6.1　性質および目的</h3><p>製造者の性能確認試験とは独立した品質検証；代替せず、両者とも必須。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>6.2–6.5　時機／數量／地點／費用</h3><p>出貨前執行，預定出貨日前 ≥ 21 工作天通知。業主指定 1 件，型式尺寸由業主定。須於獨立第三方機構（利益迴避）執行（如 NCREE 或同等）。全部費用由廠商負擔並列入報價。</p></div>
+  <div class="col"><h3>6.2–6.5　時期／数量／場所／費用</h3><p>出荷前に実施、予定出荷日の21執務日前までに通知。発注者が1体を指定（種別・寸法は発注者決定）。独立した第三者機関（利害関係なし、例：NCREE 等）で実施。全費用は製造者負担で見積に明記。</p></div>
+</div>
+<div class="row">
+  <div class="col"><h3>6.6　試驗項目與條件</h3><p>縮減版原型試驗，各項目位移上限 400 mm，不推至 600 mm。</p><table class="mini"><thead><tr><th>位移級（×400 mm）</th><th>位移(mm)</th><th>循環</th></tr></thead><tbody><tr><td>0.25</td><td>100</td><td>3</td></tr><tr><td>0.50</td><td>200</td><td>3</td></tr><tr><td>0.75</td><td>300</td><td>3</td></tr><tr><td>1.00</td><td>400</td><td>3</td></tr><tr><td>1.25</td><td>500</td><td>3</td></tr><tr><td>1.00（回降）</td><td>400</td><td>3</td></tr></tbody></table></div>
+  <div class="col"><h3>6.6　試験項目および条件</h3><p>縮小版原型試験、各項目の変位上限 400 mm、600 mm まで載荷しない。</p><table class="mini"><thead><tr><th>変位ステップ（×400 mm）</th><th>変位(mm)</th><th>回数</th></tr></thead><tbody><tr><td>0.25</td><td>100</td><td>3</td></tr><tr><td>0.50</td><td>200</td><td>3</td></tr><tr><td>0.75</td><td>300</td><td>3</td></tr><tr><td>1.00</td><td>400</td><td>3</td></tr><tr><td>1.25</td><td>500</td><td>3</td></tr><tr><td>1.00（低減）</td><td>400</td><td>3</td></tr></tbody></table></div>
+</div>
+<div class="row">
+  <div class="col"><h3>6.7–6.8　合格標準／不合格處理</h3><p>合格標準同第三章 3.3。不合格：①擴大抽驗 2 件；②任一不合格則全數複驗；③系統性偏差（差異 > 15%）須重提設計計算書，業主確認安全後方可續工。</p></div>
+  <div class="col"><h3>6.7–6.8　合否判定／不合格時の対応</h3><p>合否判定は第3章3.3と同一。不合格：①追加2体；②1体でも不合格なら全数再検査；③系統的偏差（差異 > 15%）時は設計計算書を再提出、発注者の安全確認後に施工継続。</p></div>
+</div>
+<footer>本對照為 v3 版內容；日文以先前日文草稿之譯法為準。〔待責任技師核定〕：摩擦係數容差 ±15%、磨耗預算占比 10%。所有條文與譯文仍須由本案責任結構技師覆核後方得作為定稿或送審依據。 ／ 本対訳は v3 の内容に基づき、和訳は従前の和文草案の訳法に準拠。〔責任技師確定〕：摩擦係数許容差 ±15%、摩耗予算割合 10%。全条文・訳文は責任構造技術者の確認を要する。</footer>
+</div></body></html>
