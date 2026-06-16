@@ -232,6 +232,19 @@ body {
 .emg-label { font-size: 12px; color: #ff9a8a; font-weight: 700; margin-bottom: 6px; }
 .emg-tel { display: block; color: #8ec5e8; font-size: 15px; text-decoration: none; padding: 4px 0; font-weight: 600; }
 .emg-note { font-size: 11px; color: #aaa; line-height: 1.5; margin-top: 4px; }
+.wx-box { margin: 12px 16px 0; padding: 12px 14px; background: rgba(142,197,232,0.08); border: 1px solid rgba(142,197,232,0.22); border-radius: 10px; }
+.wx-loading { font-size: 12px; color: var(--muted); }
+.wx-main { font-size: 17px; font-weight: 700; color: var(--paper); }
+.wx-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.wx-umb { color: #8ec5e8; font-weight: 700; margin-left: 6px; }
+.memo-box { margin: 12px 16px 4px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; }
+.memo-head { font-size: 12px; font-weight: 700; color: var(--paper); margin-bottom: 10px; }
+.memo-field { margin-bottom: 8px; }
+.memo-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.memo-room, .memo-note { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; color: var(--paper); font-size: 14px; padding: 8px 10px; font-family: inherit; }
+.memo-note { resize: vertical; }
+.memo-add { margin-top: 4px; background: transparent; border: 1px dashed rgba(255,255,255,0.25); color: var(--muted); border-radius: 7px; padding: 7px 12px; font-size: 12px; cursor: pointer; width: 100%; }
+.memo-add:hover { color: var(--paper); border-color: rgba(255,255,255,0.4); }
 @media (max-width: 1024px) {
   .header-title { font-size: 14px; }
   .tab-btn { font-size: 12px; padding: 10px 11px; }
@@ -326,6 +339,7 @@ const DAYS = {
     driveTime: '約 1.5 小時車程',
     driveDetail: '関空→伏見 約50分｜伏見→祇園 約15分｜祇園→大津 約25分',
     color: '#c0392b', center: { lat: 34.95, lng: 135.72 }, zoom: 11, exportable: true,
+    wxCoord: { lat: 35.00, lng: 135.86, name: '大津' },
     stops: [
       { lat: 34.434,  lng: 135.244,  name: '關西國際機場', desc: '長榮 BR178，06:30 起飛，10:10 抵達',
         detail: '【集合】6/25(四) 04:30｜桃園機場 第二航廈 長榮航空【20號】櫃台。<br>【航班】去程 BR178 桃園 06:30 → 関空 10:10。<br>【領隊】A車 張維達 先生 0912-875165（日本 +81 080-7127-5815）｜B車 郭芳辰 小姐 0938-591413（日本 +81 090-7846-3198）。<br>建於大阪灣人工島上，是日本首座24小時運作的國際機場。',
@@ -359,6 +373,7 @@ const DAYS = {
     driveTime: '約 3.5 小時車程',
     driveDetail: '大津→清水寺 約30分｜清水寺→美山町 約70分｜美山町→舞鶴 約45分｜舞鶴→宮津美居 Spa 約40分（上山至飯店）',
     color: '#2980b9', center: { lat: 35.2, lng: 135.6 }, zoom: 10, exportable: true,
+    wxCoord: { lat: 35.58, lng: 135.23, name: '宮津・天橋立' },
     stops: [
       { lat: 34.9947, lng: 135.7847, placeId: 'ChIJB_vchdMIAWARujTEUIZlr2I', name: '世界遺產 清水寺 — 二、三年坂', desc: '建於798年，清水舞台139根大圓木支撐，未用一根釘子',
         detail: '創建於公元798年，是京都最古老的寺院之一，1994年列入世界文化遺產。最著名的「清水舞台」由139根高聳的椹木大圓木交錯支撐，完全未使用一根釘子，展現古代工匠的卓越技藝。舞台懸空12公尺，俯瞰京都市景令人屏息。大殿供奉的千手觀音像平時密藏，每33年才對外公開一次。下山途中的二年坂、三年坂是充滿京都風情的石板老街，兩旁有抹茶甜點、清水燒陶器等特色小舖。',
@@ -380,6 +395,7 @@ const DAYS = {
     driveTime: '約 4.5 小時車程',
     driveDetail: '飯店→伊根 約30分｜伊根→天橋立 約30分｜天橋立→大阪 約2.5小時',
     color: '#27ae60', center: { lat: 35.3, lng: 135.35 }, zoom: 9, exportable: true,
+    wxCoord: { lat: 35.58, lng: 135.23, name: '天橋立→大阪' },
     stops: [
       { lat: 35.6757, lng: 135.2875, placeId: 'ChIJ5dKjhYaf_18RWgwkvOIyeZs', name: '★ 米其林 伊根灣舟屋 — 海上遊覽船', desc: '230間舟屋圍繞靜謐伊根灣，從海上欣賞江戶時代漁村聚落',
         detail: '伊根町位於京都府最北端的丹後半島，沿著寧靜的伊根灣海岸綿延約5公里，聚集了多達230間獨特的「舟屋」建築群。舟屋是一種起源於江戶時代中期的特殊漁民住居，一樓直接臨海停泊漁船，二樓作為起居空間，整排臨水而建，倒映在平靜海面上的景象如詩如畫。2005年被指定為日本重要傳統建造物群保存地區，並獲米其林評鑑星級景點肯定。搭乘遊覽船從海上欣賞，隨船飛翔的海鷗群更添生動。',
@@ -419,6 +435,7 @@ const DAYS = {
     meta: ['飯店早餐', '今日不派車', '午晚餐自理'],
     driveTime: null, driveDetail: null,
     color: '#8e44ad', center: { lat: 34.693, lng: 135.502 }, zoom: 13, exportable: false,
+    wxCoord: { lat: 34.68, lng: 135.50, name: '大阪' },
     stops: [
       { lat: 34.6798, lng: 135.5067, placeId: 'ChIJ45f83nTnAGARBh4qKIeKuEY', name: '大阪本町都 CITY（住宿）', desc: '今晚續住同一飯店，自由活動進出方便',
         detail: '第一團 DAY4 續住大阪本町都 CITY（MIYAKO CITY OSAKA HOMMACHI），與 DAY3 同一間，行李免搬動。全日自由活動不派車，可由此飯店為據點出發。地址：〒541-0057 大阪市中央区北久宝寺町1-8-7｜TEL 81-6-6263-0385',
@@ -461,6 +478,7 @@ const DAYS = {
     driveTime: '約 1 小時車程',
     driveDetail: '大阪市區→關西機場 約50-60分',
     color: '#d35400', center: { lat: 34.55, lng: 135.35 }, zoom: 10, exportable: true,
+    wxCoord: { lat: 34.68, lng: 135.50, name: '大阪→關空' },
     stops: [
       { lat: 34.6798, lng: 135.5067, placeId: 'ChIJ45f83nTnAGARBh4qKIeKuEY', name: '大阪本町都 CITY — 退房', desc: '享用飯店早餐，整理行李，專車前往關西機場',
         detail: '於大阪本町都 CITY 享用飯店早餐後辦理退房。出發前可在飯店附近的便利商店補充零食伴手禮。地址：〒541-0057 大阪市中央区北久宝寺町1-8-7｜TEL 81-6-6263-0385',
@@ -752,12 +770,26 @@ function renderSidebar(dayNum) {
     ? `<button class="export-btn" onclick="exportToGoogleMaps(${dayNum})">🗺 匯出至 Google Maps</button>`
     : '';
 
+  const dateMap = { 1:'2026-06-25', 2:'2026-06-26', 3:'2026-06-27', 4:'2026-06-28', 5:'2026-06-29' };
+  const wxHtml = day.wxCoord
+    ? `<div class="wx-box" id="wx-box"><div class="wx-loading">☁ 載入 ${day.wxCoord.name} 天氣…</div></div>`
+    : '';
+  const memoHtml = `
+    <div class="memo-box">
+      <div class="memo-head">📝 我的備忘（${day.label}・僅存本機）</div>
+      <div class="memo-field"><label>房號</label><input type="text" class="memo-room" data-key="room-${dayNum}" placeholder="入住後填入"></div>
+      <div id="memo-notes-${dayNum}"></div>
+      <button class="memo-add" onclick="addMemoNote(${dayNum})">＋ 新增一則備忘</button>
+    </div>`;
+
   header.innerHTML = `
     <div class="day-label" style="color:${day.color}">${day.label}</div>
     <div class="day-title">${day.title}</div>
     <div class="day-meta">${day.meta.map(m => `<span class="meta-pill">${m}</span>`).join('')}</div>
-    ${driveHtml}${exportHtml}
+    ${driveHtml}${exportHtml}${wxHtml}${memoHtml}
   `;
+  if (day.wxCoord) fetchWeather(day.wxCoord, dateMap[dayNum]);
+  loadMemo(dayNum);
 
   // 預先計算每個 stop 的顯示編號（與 switchDay 邏輯一致）
   const sidebarStopNums = [];
@@ -837,6 +869,78 @@ function toggleSidebar() {
 function toggleEmergency() {
   document.getElementById('emergency-overlay').classList.toggle('open');
   document.getElementById('emergency-panel').classList.toggle('open');
+}
+
+// === 天氣（Open-Meteo，免金鑰，依座標）===
+async function fetchWeather(coord, dateStr) {
+  const box = document.getElementById('wx-box');
+  if (!box) return;
+  const wcode = {
+    0:'☀️ 晴', 1:'🌤 大致晴', 2:'⛅ 多雲時晴', 3:'☁️ 陰',
+    45:'🌫 霧', 48:'🌫 霧凇', 51:'🌦 毛毛雨', 53:'🌦 毛毛雨', 55:'🌧 毛毛雨',
+    61:'🌧 小雨', 63:'🌧 中雨', 65:'🌧 大雨', 66:'🌧 凍雨', 67:'🌧 凍雨',
+    71:'🌨 小雪', 73:'🌨 中雪', 75:'❄️ 大雪', 80:'🌦 陣雨', 81:'🌧 陣雨', 82:'⛈ 強陣雨',
+    95:'⛈ 雷雨', 96:'⛈ 雷雨冰雹', 99:'⛈ 雷雨冰雹'
+  };
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lng}`
+      + `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max`
+      + `&timezone=Asia%2FTokyo&start_date=${dateStr}&end_date=${dateStr}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.daily || !data.daily.time || data.daily.time.length === 0) {
+      box.innerHTML = `<div class="wx-loading">天氣：出發前一週才有預報（${coord.name}）</div>`;
+      return;
+    }
+    const code = data.daily.weather_code[0];
+    const tmax = Math.round(data.daily.temperature_2m_max[0]);
+    const tmin = Math.round(data.daily.temperature_2m_min[0]);
+    const pop = data.daily.precipitation_probability_max[0];
+    const desc = wcode[code] || '☁️';
+    const umbrella = (pop >= 50 || (code >= 51 && code <= 99)) ? '<span class="wx-umb">☂️ 建議帶傘</span>' : '';
+    box.innerHTML = `<div class="wx-main">${desc}　${tmin}°–${tmax}°C</div>`
+      + `<div class="wx-sub">${coord.name}・降雨機率 ${pop != null ? pop : '—'}%　${umbrella}</div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="wx-loading">天氣載入失敗，請確認網路（${coord.name}）</div>`;
+  }
+}
+
+// === 個人備忘（localStorage，只存本機）===
+function memoGet(key) { try { return localStorage.getItem('eec_fg_' + key) || ''; } catch(e){ return ''; } }
+function memoSet(key, val) { try { localStorage.setItem('eec_fg_' + key, val); } catch(e){} }
+
+function loadMemo(dayNum) {
+  const roomInput = document.querySelector(`.memo-room[data-key="room-${dayNum}"]`);
+  if (roomInput) {
+    roomInput.value = memoGet('room-' + dayNum);
+    roomInput.oninput = () => memoSet('room-' + dayNum, roomInput.value);
+  }
+  // 載入該天已存的備忘則數
+  const countRaw = memoGet('notecount-' + dayNum);
+  const count = countRaw ? parseInt(countRaw) : 0;
+  const wrap = document.getElementById('memo-notes-' + dayNum);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < count; i++) renderMemoNote(dayNum, i);
+}
+
+function renderMemoNote(dayNum, idx) {
+  const wrap = document.getElementById('memo-notes-' + dayNum);
+  if (!wrap) return;
+  const div = document.createElement('div');
+  div.className = 'memo-field';
+  div.innerHTML = `<textarea class="memo-note" rows="2" placeholder="備忘…"></textarea>`;
+  const ta = div.querySelector('textarea');
+  ta.value = memoGet(`note-${dayNum}-${idx}`);
+  ta.oninput = () => memoSet(`note-${dayNum}-${idx}`, ta.value);
+  wrap.appendChild(div);
+}
+
+function addMemoNote(dayNum) {
+  const countRaw = memoGet('notecount-' + dayNum);
+  const count = countRaw ? parseInt(countRaw) : 0;
+  memoSet('notecount-' + dayNum, count + 1);
+  renderMemoNote(dayNum, count);
 }
 </script>
 
