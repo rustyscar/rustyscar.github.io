@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>築遠_京阪天橋立（第一團）｜6/25-6/29 行程地圖</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --font: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', 'Heiti TC', sans-serif;
+  --ink: #1a1714;
+  --paper: #f7f4ef;
+  --muted: #9a8e83;
+  --border: rgba(255,255,255,0.1);
+  --day1: #c0392b;
+  --day2: #2980b9;
+  --day3: #27ae60;
+  --day4: #8e44ad;
+  --day5: #d35400;
+}
+body {
+  font-family: var(--font);
+  background: var(--ink);
+  color: var(--paper);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.header {
+  background: #111;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.header-title { font-size: 15px; font-weight: 700; }
+.header-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tab-bar {
+  background: #0d0d0d;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: none;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.tab-btn.active { color: var(--paper); font-weight: 700; }
+.tab-btn[data-day="1"] .tab-dot { background: var(--day1); }
+.tab-btn[data-day="2"] .tab-dot { background: var(--day2); }
+.tab-btn[data-day="3"] .tab-dot { background: var(--day3); }
+.tab-btn[data-day="4"] .tab-dot { background: var(--day4); }
+.tab-btn[data-day="5"] .tab-dot { background: var(--day5); }
+.tab-btn[data-day="1"].active { border-bottom-color: var(--day1); }
+.tab-btn[data-day="2"].active { border-bottom-color: var(--day2); }
+.tab-btn[data-day="3"].active { border-bottom-color: var(--day3); }
+.tab-btn[data-day="4"].active { border-bottom-color: var(--day4); }
+.tab-btn[data-day="5"].active { border-bottom-color: var(--day5); }
+.main { flex: 1; display: flex; overflow: hidden; position: relative; min-height: 0; }
+#map { flex: 1; height: 100%; }
+.map-controls {
+  position: absolute;
+  top: 10px; left: 10px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(15,13,12,0.93);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  width: 240px;
+}
+.search-icon { padding: 0 8px 0 12px; font-size: 15px; flex-shrink: 0; opacity: 0.5; }
+#search-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--paper); font-family: var(--font);
+  font-size: 14px; padding: 11px 4px 11px 0;
+}
+#search-input::placeholder { color: rgba(247,244,239,0.3); }
+.search-clear {
+  padding: 0 10px; background: none; border: none;
+  color: rgba(247,244,239,0.4); font-size: 16px; cursor: pointer; display: none;
+}
+.map-btn {
+  width: 42px; height: 42px;
+  background: rgba(15,13,12,0.93);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-size: 20px;
+  transition: all 0.2s;
+}
+.map-btn.gps-active { border-color: #4a90d9; box-shadow: 0 0 0 2px rgba(74,144,217,0.35); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.map-btn.locating { animation: pulse 1s infinite; }
+.sidebar {
+  width: 340px;
+  flex-shrink: 0;
+  background: rgba(14,12,11,0.97);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+.sidebar-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: rgba(14,12,11,0.99);
+  z-index: 10;
+}
+.day-label { font-size: 11px; letter-spacing: 0.2em; font-weight: 700; margin-bottom: 5px; }
+.day-title { font-size: 18px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
+.day-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.meta-pill {
+  font-size: 12px; padding: 4px 11px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12); color: rgba(247,244,239,0.65);
+}
+.drive-box {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+}
+.drive-main {
+  font-size: 14px; font-weight: 700; color: var(--paper);
+  display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+}
+.drive-detail { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.export-btn {
+  width: 100%; margin-top: 10px;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: var(--paper);
+  font-family: var(--font);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background 0.15s;
+}
+.export-btn:active { background: rgba(255,255,255,0.1); }
+.stops-list { padding: 8px 0 32px; }
+.stop-item {
+  display: flex; gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.stop-item:active, .stop-item.active-stop { background: rgba(255,255,255,0.06); }
+.stop-left { flex-shrink: 0; width: 36px; padding-top: 2px; }
+.stop-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: white;
+}
+.stop-content { flex: 1; }
+.stop-name { font-size: 15px; font-weight: 700; color: var(--paper); line-height: 1.4; margin-bottom: 5px; }
+.stop-desc { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 8px; }
+.stop-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.sbadge { font-size: 12px; padding: 3px 10px; border-radius: 4px; font-weight: 500; }
+.sbadge-meal  { background: rgba(201,151,58,0.18); color: #e0b86a; }
+.sbadge-hotel { background: rgba(42,79,122,0.3);   color: #7ab0d4; }
+.sbadge-tip   { background: rgba(58,107,66,0.28);  color: #7ec490; }
+.sbadge-warn  { background: rgba(184,58,42,0.22);  color: #eca090; }
+.sbadge-tour1 { background: rgba(192,57,43,0.28);  color: #ff9a8a; border: 1px solid rgba(255,154,138,0.35); }
+.sbadge-tour2 { background: rgba(41,128,185,0.28); color: #8ec5e8; border: 1px solid rgba(142,197,232,0.35); }
+.sbadge-lounge { background: rgba(120,90,180,0.25); color: #b8a0e0; }
+.sidebar-toggle {
+  display: none;
+  position: absolute; bottom: 20px; right: 16px; z-index: 999;
+  background: var(--ink); border: 1px solid rgba(255,255,255,0.22);
+  color: var(--paper); border-radius: 50%; width: 52px; height: 52px;
+  font-size: 22px; cursor: pointer; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+.gmnoprint { z-index: 1 !important; }
+.emergency-btn {
+  position: absolute; bottom: 20px; left: 16px; z-index: 999;
+  background: #c0392b; border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; border-radius: 24px; padding: 11px 16px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.emergency-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.5);
+}
+.emergency-overlay.open { display: block; }
+.emergency-panel {
+  display: none; position: fixed; z-index: 1001;
+  left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 90%; max-width: 360px; max-height: 80vh; overflow-y: auto;
+  background: var(--ink); color: var(--paper);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 14px;
+  padding: 18px; box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+}
+.emergency-panel.open { display: block; }
+.emg-head { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.emg-close { cursor: pointer; font-size: 18px; opacity: 0.7; }
+.emg-section { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+.emg-section:last-child { border-bottom: none; margin-bottom: 0; }
+.emg-label { font-size: 12px; color: #ff9a8a; font-weight: 700; margin-bottom: 6px; }
+.emg-tel { display: block; color: #8ec5e8; font-size: 15px; text-decoration: none; padding: 4px 0; font-weight: 600; }
+.emg-note { font-size: 11px; color: #aaa; line-height: 1.5; margin-top: 4px; }
+.wx-box { margin: 12px 16px 0; padding: 12px 14px; background: rgba(142,197,232,0.08); border: 1px solid rgba(142,197,232,0.22); border-radius: 10px; }
+.wx-loading { font-size: 12px; color: var(--muted); }
+.wx-main { font-size: 17px; font-weight: 700; color: var(--paper); }
+.wx-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.wx-umb { color: #8ec5e8; font-weight: 700; margin-left: 6px; }
+.memo-box { margin: 12px 16px 4px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; }
+.memo-head { font-size: 12px; font-weight: 700; color: var(--paper); margin-bottom: 10px; }
+.memo-field { margin-bottom: 8px; }
+.memo-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.memo-room, .memo-note { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; color: var(--paper); font-size: 14px; padding: 8px 10px; font-family: inherit; }
+.memo-note { resize: vertical; }
+.memo-add { margin-top: 4px; background: transparent; border: 1px dashed rgba(255,255,255,0.25); color: var(--muted); border-radius: 7px; padding: 7px 12px; font-size: 12px; cursor: pointer; width: 100%; }
+.memo-add:hover { color: var(--paper); border-color: rgba(255,255,255,0.4); }
+@media (max-width: 1024px) {
+  .header-title { font-size: 14px; }
+  .tab-btn { font-size: 12px; padding: 10px 11px; }
+  .search-wrapper { width: 190px; }
+  .sidebar {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 90%;
+    transform: translateX(100%); transition: transform 0.28s ease;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.6);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">築遠_京阪天橋立（第一團）</div>
+  <div class="header-sub">2026/6/25(四)～6/29(一)｜長榮 BR178 去・BR177 回｜點標記或右側景點看詳情</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-day="1" onclick="switchDay(1)"><span class="tab-dot"></span>DAY1 6/25 抵達京都</button>
+  <button class="tab-btn" data-day="2" onclick="switchDay(2)"><span class="tab-dot"></span>DAY2 6/26 清水寺・合掌秘境</button>
+  <button class="tab-btn" data-day="3" onclick="switchDay(3)"><span class="tab-dot"></span>DAY3 6/27 伊根・天橋立</button>
+  <button class="tab-btn" data-day="4" onclick="switchDay(4)"><span class="tab-dot"></span>DAY4 6/28 大阪自由</button>
+  <button class="tab-btn" data-day="5" onclick="switchDay(5)"><span class="tab-dot"></span>DAY5 6/29 返台</button>
+</div>
+
+<div class="main">
+  <div id="map"></div>
+
+  <div class="map-controls">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input id="search-input" type="text" placeholder="搜尋地點...">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <button class="map-btn" id="gps-btn" onclick="toggleGps()">📍</button>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header" id="sidebar-header"></div>
+    <div class="stops-list" id="stops-list"></div>
+  </div>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="emergency-btn" onclick="toggleEmergency()">🆘 緊急聯絡</button>
+
+  <div class="emergency-overlay" id="emergency-overlay" onclick="toggleEmergency()"></div>
+  <div class="emergency-panel" id="emergency-panel">
+    <div class="emg-head">🆘 緊急聯絡資訊<span class="emg-close" onclick="toggleEmergency()">✕</span></div>
+    <div class="emg-section">
+      <div class="emg-label">領隊（A車）張維達 先生</div>
+      <a class="emg-tel" href="tel:+818071275815">日本 +81-80-7127-5815</a>
+      <a class="emg-tel" href="tel:0912875165">台灣 0912-875165</a>
+    </div>
+    <div class="emg-section">
+      <div class="emg-label">領隊（B車）郭芳辰 小姐</div>
+      <a class="emg-tel" href="tel:+819078463198">日本 +81-90-7846-3198</a>
+      <a class="emg-tel" href="tel:0938591413">台灣 0938-591413</a>
+    </div>
+    <div class="emg-section">
+      <div class="emg-label">台北駐大阪辦事處 急難救助專線</div>
+      <a class="emg-tel" href="tel:+819087944568">日本境內 090-8794-4568</a>
+      <div class="emg-note">漫遊撥 +81-90-8794-4568。專供車禍、緊急就醫、搶劫、被捕等急難，非緊急勿撥。</div>
+      <a class="emg-tel" href="tel:+81662278623">辦公室（非急難）06-6227-8623</a>
+    </div>
+    <div class="emg-section">
+      <div class="emg-label">旅外國人緊急服務專線（台灣外交部）</div>
+      <a class="emg-tel" href="tel:+886800085095">+886-800-085-095</a>
+      <div class="emg-note">在日本可經當地國際電話冠碼撥打；國內親友可直撥 0800-085-095。</div>
+    </div>
+    <div class="emg-section">
+      <div class="emg-label">日本緊急電話</div>
+      <a class="emg-tel" href="tel:110">警察 110</a>
+      <a class="emg-tel" href="tel:119">火災・救護車 119</a>
+    </div>
+    <div class="emg-section">
+      <div class="emg-label">送機人員（桃園二航廈）</div>
+      <a class="emg-tel" href="tel:0921809207">0921-809-207</a>
+      <div class="emg-note">聯繫不上送機人員改撥緊急調度 0932-365-795。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS = {
+  1: {
+    label: 'DAY 1', title: '抵達京都 — 千本鳥居・祇園夜色',
+    meta: ['✈ 桃園 06:30', '関空 10:10 抵達', '住：大津王子或同級'],
+    driveTime: '約 1.5 小時車程',
+    driveDetail: '関空→伏見 約50分｜伏見→祇園 約15分｜祇園→大津 約25分',
+    color: '#c0392b', center: { lat: 34.95, lng: 135.72 }, zoom: 11, exportable: true,
+    wxCoord: { lat: 35.00, lng: 135.86, name: '大津' },
+    stops: [
+      { lat: 34.434,  lng: 135.244,  name: '關西國際機場', desc: '長榮 BR178，06:30 起飛，10:10 抵達',
+        detail: '【集合】6/25(四) 04:30｜桃園機場 第二航廈 長榮航空【20號】櫃台。<br>【航班】去程 BR178 桃園 06:30 → 関空 10:10。<br>【領隊】A車 張維達 先生 0912-875165（日本 +81 080-7127-5815）｜B車 郭芳辰 小姐 0938-591413（日本 +81 090-7846-3198）。<br>建於大阪灣人工島上，是日本首座24小時運作的國際機場。',
+        icon: '✈',  badges: [{ text: '集合 6/25 04:30 二航廈20號櫃台', cls: 'sbadge-warn' }, { text: '午：機上簡餐＋花壽司餐盒', cls: 'sbadge-meal' }] },
+      { lat: 34.9677, lng: 135.7792, placeId: 'ChIJIW0uPRUPAWAR6eI6dRzKGns', name: '伏見稻荷大社 — 千本鳥居', desc: '朱紅色鳥居神秘隧道直通稻荷山頂，京都最具代表性絕景',
+        detail: '創建於西元711年，是全日本約三萬座稻荷神社的總本山，主祀掌管農業與商業的稻荷神。最著名的是本殿後方由上千座朱紅色鳥居連綿而成的神秘隧道，一路蜿蜒直通稻荷山頂。建議不必走到山頂，在入口後的第一段鳥居群即是拍照最美的位置，人潮相對較少。',
+        icon: '⛩',  badges: [{ text: '建議不爬山頂，中段最美', cls: 'sbadge-tip' }] },
+      { lat: 35.0038, lng: 135.775,  name: '祇園 — 花見小路', desc: '石板小徑兩旁茶屋料理店，偶然邂逅踩木屐的年輕舞妓',
+        detail: '京都最具代表性的花街，南北貫穿祇園地區的石板小徑兩旁，林立著格子窗的茶屋、料亭與高級料理店。這裡是日本僅存的花街文化保存地之一，傍晚時分偶爾可見身著華麗和服、踩著高木屐的舞妓穿梭其中。建議傍晚6點後造訪，氣氛最為迷人，但請勿強行拍攝舞妓，保持禮貌。',
+        icon: '🌸', badges: [{ text: '晚：相撲鍋吃到飽（¥3,500）', cls: 'sbadge-meal' }] },
+      { lat: 35.0048, lng: 135.8889, placeId: 'ChIJscfrFd8MAWARaCIXqAxmI4w', name: '大津王子飯店（住宿）', desc: '琵琶湖畔，京都市東南方',
+        detail: '位於琵琶湖西岸，是近畿地區最大湖泊旁的高層飯店，部分房型可直接欣賞琵琶湖全景。大津市雖屬滋賀縣，但距離京都市中心僅約20分鐘車程，交通便利。飯店設施完善，含餐廳、溫泉及游泳池。飯店提供免費接駁巴士往返大津站。地址：520-8520 滋賀県大津市におの浜 4-7-7｜TEL 81-77-521-1111',
+        icon: '🏨', badges: [{ text: '住宿', cls: 'sbadge-hotel' }] },
+      { lat: 34.9978, lng: 135.8835, placeId: 'ChIJ8RKf2hYNAWARLWnGodvesLA', name: 'craft beer house B.B', desc: '飯店步行約15分，全日本精釀啤酒11～12種常備',
+        detail: '位於膳所站附近，是大津王子飯店步行圈內唯一的精釀啤酒專門店。常備11～12種來自全日本各地的クラフトビール，可點8杯試飲組合一次比較。啤酒醃漬炸雞與自製雞火腿是招牌下酒菜，深受熟客喜愛。老闆親切，店內氣氛輕鬆。⚠️ 週一、二、日公休，請出發前確認。',
+        icon: '🍺', badges: [{ text: '週三～六 18:30～23:30', cls: 'sbadge-tip' }, { text: '週一二日公休', cls: 'sbadge-warn' }],
+        bar: true },
+      { lat: 34.97953, lng: 135.902174, placeId: 'ChIJSzuOn7oNAWARFRM7EyJ68KY', name: 'Beer Cafe Mi Casa', desc: '飯店步行約20分，精釀啤酒選擇獨特，老闆熱情',
+        detail: '位於大津王子飯店南側松原町，距飯店約2公里。是極受好評的精釀啤酒小酒館，老闆 Kakeru 親切健談，啤酒選擇以非麥芽基底（如水果系、特殊發酵）為特色，與一般 IPA 主流路線區隔明顯。氣氛低調，音樂選曲佳，是適合慢慢喝、聊天的小店。Google 評分 4.7。',
+        icon: '🍺', badges: [{ text: '週三~五 17:00~24:00', cls: 'sbadge-tip' }, { text: '週六日 15:00~24:00', cls: 'sbadge-tip' }],
+        bar: true },
+      { lat: 35.008353, lng: 135.864945, placeId: 'ChIJl2QM2ScNAWAR8ak7Kma6598', name: 'HANABI（居酒屋）', desc: '飯店步行約25分，女老闆深諳滋賀地酒，氣氛家庭式',
+        detail: '位於大津市中央區，是被譽為「大津深夜食堂」的小型居酒屋。女老闆 Misa 對滋賀地酒造詣極深，可依客人口味推薦最匹配的酒款。家庭式氛圍，許多熟客聚集，外國旅客也能感受到溫暖招待。Google 評分 4.9（30 則評論）。需注意週一公休，建議事先電話預約。',
+        icon: '🏮', badges: [{ text: '週二~六 17:00~23:00', cls: 'sbadge-tip' }, { text: '週日一公休', cls: 'sbadge-warn' }, { text: '建議預約', cls: 'sbadge-tip' }],
+        bar: true }
+    ]
+  },
+  2: {
+    label: 'DAY 2', title: '清水寺・合掌秘境 → 丹後溫泉',
+    meta: ['飯店早餐', '住宿依梯次不同', '含泡湯'],
+    driveTime: '約 3.5 小時車程',
+    driveDetail: '大津→清水寺 約30分｜清水寺→美山町 約70分｜美山町→舞鶴 約45分｜舞鶴→宮津美居 Spa 約40分（上山至飯店）',
+    color: '#2980b9', center: { lat: 35.2, lng: 135.6 }, zoom: 10, exportable: true,
+    wxCoord: { lat: 35.58, lng: 135.23, name: '宮津・天橋立' },
+    stops: [
+      { lat: 34.9947, lng: 135.7847, placeId: 'ChIJB_vchdMIAWARujTEUIZlr2I', name: '世界遺產 清水寺 — 二、三年坂', desc: '建於798年，清水舞台139根大圓木支撐，未用一根釘子',
+        detail: '創建於公元798年，是京都最古老的寺院之一，1994年列入世界文化遺產。最著名的「清水舞台」由139根高聳的椹木大圓木交錯支撐，完全未使用一根釘子，展現古代工匠的卓越技藝。舞台懸空12公尺，俯瞰京都市景令人屏息。大殿供奉的千手觀音像平時密藏，每33年才對外公開一次。下山途中的二年坂、三年坂是充滿京都風情的石板老街，兩旁有抹茶甜點、清水燒陶器等特色小舖。',
+        icon: '🏯', badges: [{ text: '早：飯店內早餐', cls: 'sbadge-meal' }] },
+      { lat: 35.3129, lng: 135.6225, placeId: 'ChIJj6DuIB_LAWARQYPR92HLa-Q', name: '美山町 — 茅葺合掌屋秘境', desc: '日本三大合掌村之一，被譽為「日本人心靈的故鄉」',
+        detail: '位於京都府中部山區，與岐阜白川鄉、福島大內宿並列日本三大合掌村。群山環抱之中，沿著清澈河岸排列的茅葺屋頂民家，保存著江戶時代的農村風貌，被日本媒體譽為「日本人心靈的故鄉」。村落現有約50棟合掌屋，仍有居民在此生活，每年冬季點燈活動更是絕景。由於位置偏遠，交通極為不便，跟團前往是最輕鬆的方式。',
+        icon: '🏠', badges: [{ text: '午：美山御膳（¥2,500）', cls: 'sbadge-meal' }, { text: '自己去交通不便', cls: 'sbadge-tip' }] },
+      { lat: 35.4747, lng: 135.3854, placeId: 'ChIJlfSUjkyI_18RNm3TKrgNYPs', name: '舞鶴紅磚公園', desc: '8棟列為國家重要文化財，古典歐洲氛圍',
+        detail: '舞鶴市是日本海沿岸的重要港口城市，這處公園前身為明治時代舊日本海軍的彈藥庫與倉儲設施。戰後建物群完整保存，紅磚砌成的歐式倉庫群散發濃厚的歷史氛圍，其中12棟建物中有8棟被指定為日本國家重要文化財。現已改建為博物館、咖啡廳與紀念品店，是日本少見的工業遺產活化典範。',
+        icon: '🧱', badges: [] },
+      { lat: 35.5785, lng: 135.2342, placeId: 'ChIJl5o78wea_18R5NYYertI5qo', name: '京都宮津美居Spa度假飯店（住宿）', desc: '位於山上田井區，距天橋立駅約12分鐘車程',
+        detail: '⚠️ 注意：飯店位於山上偏僻位置，周邊無餐廳。提供宮津駅免費接駁巴士（先到先得不可預約，末班約傍晚），飯店內附設自助餐廳與會席料理。最大特色是「下午茶 Lounge」與「晚間 Lounge」均免費提供包含紅白清酒在內的酒類飲料，可在 lounge 邊看夕陽邊喝酒。⚠️ 晚上「下山外出喝酒」幾乎不可行，因接駁車末班早、計程車單程約 2500–3000 円。建議直接善用 lounge 與飯店設施。地址：〒626-8510 京都府宮津市字田井小字岩本58｜TEL 81-772-25-1188',
+        icon: '🏨', badges: [{ text: '6/26 住宿', cls: 'sbadge-hotel' }, { text: '住宿含泡湯', cls: 'sbadge-hotel' }, { text: '晚：飯店自助餐或會席料理', cls: 'sbadge-meal' }] }
+    ]
+  },
+  3: {
+    label: 'DAY 3', title: '米其林秘境・日本三景 → 大阪',
+    meta: ['飯店早餐', '住：大阪本町都 CITY', '今日移動量最大'],
+    driveTime: '約 4.5 小時車程',
+    driveDetail: '飯店→伊根 約30分｜伊根→天橋立 約30分｜天橋立→大阪 約2.5小時',
+    color: '#27ae60', center: { lat: 35.3, lng: 135.35 }, zoom: 9, exportable: true,
+    wxCoord: { lat: 35.58, lng: 135.23, name: '天橋立→大阪' },
+    stops: [
+      { lat: 35.6757, lng: 135.2875, placeId: 'ChIJ5dKjhYaf_18RWgwkvOIyeZs', name: '★ 米其林 伊根灣舟屋 — 海上遊覽船', desc: '230間舟屋圍繞靜謐伊根灣，從海上欣賞江戶時代漁村聚落',
+        detail: '伊根町位於京都府最北端的丹後半島，沿著寧靜的伊根灣海岸綿延約5公里，聚集了多達230間獨特的「舟屋」建築群。舟屋是一種起源於江戶時代中期的特殊漁民住居，一樓直接臨海停泊漁船，二樓作為起居空間，整排臨水而建，倒映在平靜海面上的景象如詩如畫。2005年被指定為日本重要傳統建造物群保存地區，並獲米其林評鑑星級景點肯定。搭乘遊覽船從海上欣賞，隨船飛翔的海鷗群更添生動。',
+        icon: '⛵', badges: [{ text: '早：飯店內早餐', cls: 'sbadge-meal' }, { text: '天候不佳退費¥600/人', cls: 'sbadge-warn' }] },
+      { lat: 35.5827, lng: 135.1967, placeId: 'ChIJg1I9UUGX_18RGFp9tn-rMe0', name: '元伊勢籠神社', desc: '2500年以上歷史，據說是伊勢神宮的本源',
+        detail: '丹後地方地位最高的古神社，正式名稱為「元伊勢籠神社」，歷史超過2500年。據古書記載，天照大神與豐受大神在移祀至現在的伊勢神宮之前，曾短暫供奉於此地，因此被尊稱為「元伊勢」，意即伊勢神宮的發源地。神社建築保存著古代神社建築樣式，境內氣氛莊嚴肅穆，是日本神道文化的重要起源地之一。',
+        icon: '⛩',  badges: [] },
+      { lat: 35.5867, lng: 135.1950, placeId: 'ChIJWUlXFmiX_18Rshlam6CbEN8', name: '天橋立 — 傘松公園纜車', desc: '日本三景之一！低頭從兩腳間望去，沙堤有如升天之龍',
+        detail: '與廣島嚴島神社、宮城松島並列「日本三景」。天橋立是一條全長約3.6公里、寬僅40～100公尺的天然沙洲，橫跨宮津灣，沙洲上生長著約8000棵松樹。最特別的觀賞方式是登上傘松公園，彎腰低頭從兩腳之間反向觀看，沙洲宛如一條蜿蜒騰空的龍，這個看法被稱為「股覗き」，是日本人一生必體驗的奇景。搭乘纜車上山，俯瞰整個宮津灣視野遼闊。',
+        icon: '🌉', badges: [{ text: '午：天橋立風味餐（¥2,500）', cls: 'sbadge-meal' }] },
+      { lat: 34.6709, lng: 135.5014, name: '道頓崛 — 心齋橋 — 戎橋商店街', desc: '霓虹燈倒映運河，心齋橋商店街、御堂筋名牌大道',
+        detail: '大阪最具代表性的繁華夜生活區，以戎橋上的「固力果跑步人」霓虹看板聞名全球。道頓崛運河兩岸餐廳林立，章魚燒、大阪燒、串炸等大阪靈魂美食應有盡有。緊鄰的心齋橋商店街是大阪最長的拱廊購物街，從平價連鎖到頂級精品一應俱全；御堂筋大道則林立LV、Gucci等世界名牌旗艦店。晚餐建議在此自由享用，預算彈性大。',
+        icon: '🏙', badges: [{ text: '晚：自理', cls: 'sbadge-meal' }] },
+      { lat: 34.6798, lng: 135.5067, placeId: 'ChIJ45f83nTnAGARBh4qKIeKuEY', name: '大阪本町都 CITY（住宿）', desc: '6/27、6/28 連續兩晚，大阪市中央區本町',
+        detail: '第一團 DAY3、DAY4 連續兩晚入住大阪本町都 CITY（MIYAKO CITY OSAKA HOMMACHI）。位於大阪市中心本町，地理位置優越，鄰近地鐵本町站，步行可達心齋橋、難波等主要商圈，DAY4 自由活動進出方便、不需拖行李移動。地址：〒541-0057 大阪市中央区北久宝寺町1-8-7｜TEL 81-6-6263-0385',
+        icon: '🏨', badges: [{ text: '住宿', cls: 'sbadge-hotel' }] },
+      { lat: 34.6857, lng: 135.4996, placeId: 'ChIJM3iM0QvnAGAR4bWHUzdwMSI', name: 'Bar Lit Honmachi（雞尾酒吧）', desc: '飯店步行約7分，4.9分小酒吧，師傅手藝精湛',
+        detail: '位於本町河原町，距大阪本町都 CITY 約 500 公尺。小型隱藏吧，師傅手藝以「精準如武士、安靜如忍者」著稱，雞尾酒平衡度極高。氣氛低調適合慢慢喝。Google 評分 4.9（147 則評論）。⚠️ 17:00–02:00 營業，全週無休，是 DAY 3 晚上最佳選擇。',
+        icon: '🍸', badges: [{ text: '17:00-02:00', cls: 'sbadge-tip' }, { text: '小型吧建議早到', cls: 'sbadge-tip' }],
+        bar: true },
+      { lat: 34.6825, lng: 135.5011, placeId: 'ChIJTamiNITnAGARVZMwIcrXdh8', name: 'MADUME 本町（居酒屋・海鮮）', desc: '飯店步行約5分，3142則評論的本町地下街隱藏名店',
+        detail: '位於南本町地下街 B2F，是本町地區極受好評的居酒屋，新鮮海鮮現點現做，價格實惠。氣氛輕鬆，週五晚常坐滿上班族。Google 評分 4.8（3142 則評論）。⚠️ 週六日公休，DAY 3 若為週五或週一至四可選擇。',
+        icon: '🍶', badges: [{ text: '17:00-23:00', cls: 'sbadge-tip' }, { text: '週六日公休', cls: 'sbadge-warn' }],
+        bar: true },
+      { lat: 34.6774, lng: 135.4980, placeId: 'ChIJbYhUPNfnAGARnOY3Q5BMm0A', name: 'WCB DARK LAB (West Coast Brewing)', desc: '飯店步行約12分，靜岡知名精釀啤酒酒吧',
+        detail: '位於南船場，靜岡知名精釀啤酒品牌 West Coast Brewing 的大阪直營酒吧。提供品牌自家多種 IPA、酸啤酒等罐裝與生啤，可外帶。漢堡與美式餐點搭配啤酒。氣氛友善、員工外語能力佳。Google 評分 4.7。⚠️ 週一公休。',
+        icon: '🍺', badges: [{ text: '17:00-24:00', cls: 'sbadge-tip' }, { text: '週一公休', cls: 'sbadge-warn' }],
+        bar: true },
+      { lat: 34.6833, lng: 135.5044, placeId: 'ChIJlfdxCVDnAGARN6RpSmWy_zc', name: '日本酒原價酒藏 大阪本町', desc: '飯店步行約5分，50+ 種日本酒原價販售',
+        detail: '位於本町大一ビル B1，提供來自全日本各地 50 種以上的日本酒，每杯約 300–500 円，無限暢飲方案 1380 円無時間限制。包含獺祭、十四代、新政等難尋名酒。居酒屋風格小菜豐富，員工會推薦合口味的酒。Google 評分 4.7。⚠️ 週日公休。',
+        icon: '🍶', badges: [{ text: '15:00-23:30', cls: 'sbadge-tip' }, { text: '週日公休', cls: 'sbadge-warn' }],
+        bar: true }
+    ]
+  },
+  4: {
+    label: 'DAY 4', title: '大阪全日自由活動',
+    meta: ['飯店早餐', '今日不派車', '午晚餐自理'],
+    driveTime: null, driveDetail: null,
+    color: '#8e44ad', center: { lat: 34.693, lng: 135.502 }, zoom: 13, exportable: false,
+    wxCoord: { lat: 34.68, lng: 135.50, name: '大阪' },
+    stops: [
+      { lat: 34.6798, lng: 135.5067, placeId: 'ChIJ45f83nTnAGARBh4qKIeKuEY', name: '大阪本町都 CITY（住宿）', desc: '今晚續住同一飯店，自由活動進出方便',
+        detail: '第一團 DAY4 續住大阪本町都 CITY（MIYAKO CITY OSAKA HOMMACHI），與 DAY3 同一間，行李免搬動。全日自由活動不派車，可由此飯店為據點出發。地址：〒541-0057 大阪市中央区北久宝寺町1-8-7｜TEL 81-6-6263-0385',
+        icon: '🏨', badges: [{ text: '6/28 續住同飯店', cls: 'sbadge-hotel' }, { text: '今日不派車', cls: 'sbadge-tip' }] },
+      { lat: 34.665,  lng: 135.432,  placeId: 'ChIJXeLVg9DgAGARqlIyMCX-BTY', name: '環球影城 USJ', desc: '超級任天堂世界、哈利波特，建議提前購票，車程約20分',
+        detail: '日本最受歡迎的主題樂園之一，2021年開幕的「超級任天堂世界」是全球首座，馬力歐賽車等設施排隊動輒2小時以上。哈利波特魔法世界的霍格華茲城堡、鄧不利多的辦公室等場景高度還原原著。建議提前在官網購買「快速通關券」，或選擇平日前往。從大阪市區搭JR夢咲線約15分鐘可達。',
+        icon: '🎢', badges: [{ text: '建議提前購票', cls: 'sbadge-tip' }] },
+      { lat: 34.6654, lng: 135.4988, placeId: 'ChIJ7_ZM7hHnAGARvBkV-jqyz24', name: '美國村（アメリカ村）', desc: '大阪潮流聖地，二手潮牌、街頭文化、平價小吃',
+        detail: '大阪年輕潮流文化的發源地，聚集了大量二手古著店、獨立潮牌、唱片行與街頭塗鴉藝術。三角公園周邊是街頭表演的聚集地，附近有大量平價美食選擇。與東京原宿風格不同，美國村更帶有濃厚的大阪在地草根氣息，是感受大阪年輕文化的最佳地點。',
+        icon: '👟', badges: [{ text: '購物・美食', cls: 'sbadge-tip' }] },
+      { lat: 34.6935, lng: 135.5023, placeId: 'ChIJ9RFkRWnnAGARZh-hyWjBhtg', name: '難波・なんばパークス', desc: '大型購物商場，頂層有空中花園，逛街首選',
+        detail: '建於舊大阪球場遺址上的複合式商業設施，最大特色是沿著建築外牆層層堆疊的「空中花園」，綠意盎然的梯田式庭園從2樓一路延伸至9樓屋頂。內有超過200間商店與餐廳，品牌涵蓋日系服飾、生活雜貨到美食餐廳，是難波地區規模最大的購物中心之一。',
+        icon: '🛍', badges: [{ text: '購物', cls: 'sbadge-tip' }] },
+      { lat: 34.6654, lng: 135.5062,  placeId: 'ChIJXSJB5UHnAGARQcEjvngsHaw', name: '黑門市場', desc: '大阪廚房，新鮮海鮮、和牛、各式熟食一條街',
+        detail: '被稱為「大阪的廚房」，有超過180間店舖的傳統市場，主打新鮮海產、和牛、河豚及各式熟食。近年轉型為觀光市場，邊走邊吃是主要玩法：現烤和牛串、生猛海鮮、新鮮草莓等即食美食選擇豐富。建議在此解決午餐，預算每人約1500～3000日圓即可吃得非常滿足。',
+        icon: '🦀', badges: [{ text: '自費餐食', cls: 'sbadge-meal' }] },
+      { lat: 34.6525, lng: 135.5063, placeId: 'ChIJV6JXdmDnAGAR-9a4atjXsTY', name: '新世界・通天閣', desc: '大阪最懷舊老街，炸串名店雲集，通天閣登頂可眺望市區',
+        detail: '大阪最懷舊的下町老街，保留了昭和時代的獨特氛圍。通天閣是新世界的地標，高103公尺，頂樓展望台可360度眺望大阪市區，據說摸塔內的幸運之神「Billiken」可以實現願望。周邊的炸串（串カツ）是新世界名物，醬汁只能淋一次、禁止二次沾醬是此地不成文的規矩。',
+        icon: '🏛', badges: [{ text: '自費景點', cls: 'sbadge-tip' }] },
+      { lat: 34.6461, lng: 135.5135, placeId: 'ChIJed3mI_DdAGARJyFcpACSbwc', name: '天王寺・阿倍野HARUKAS', desc: '日本最高摩天大樓，300公尺展望台俯瞰大阪',
+        detail: '阿倍野HARUKAS是日本最高的超高層建築，地上60層、高300公尺。頂層的HARUKAS 300展望台視野極為開闊，晴天時可遠眺大阪灣乃至紀伊半島。天王寺周邊有天王寺動物園、大阪市立美術館及日本庭園慶沢園，適合半天排程。地下街和近鐵百貨也是購物好去處。',
+        icon: '🗼', badges: [{ text: '自費景點', cls: 'sbadge-tip' }] },
+      { lat: 34.6883, lng: 135.5261, placeId: 'ChIJJ_AZutLgAGARwYqBzSs8DkM', name: '大阪城天守閣', desc: '豐臣秀吉的象徵，城內有歷史博物館，周圍公園適合散步',
+        detail: '豐臣秀吉於1583年興建，是日本三名城之一，也是大阪的精神象徵。現存天守閣為1931年重建，外觀維持桃山時代風格，內部改建為8層歷史博物館，展示豐臣時代的文物與大阪歷史。周圍的大阪城公園佔地廣達106公頃，春天櫻花、夏天綠意，是大阪市民最愛的休閒場所。',
+        icon: '🏯', badges: [{ text: '自費景點', cls: 'sbadge-tip' }] },
+      { lat: 34.7057, lng: 135.4903, placeId: 'ChIJbbXqmojmAGARh-OQXHzkwEc', name: '梅田空中庭園展望台', desc: '梅田標誌性雙塔建築，頂層露天展望台，夜景絕佳',
+        detail: '梅田スカイビル是大阪最具建築特色的地標之一，由兩棟40層高樓在頂部以「空中庭園」相連，形成獨特的空洞造型。頂層露天展望台海拔173公尺，360度無遮蔽視野，日落時分與夜景尤為壯觀。地下1樓還原了昭和初期的大阪老街「瀧見小路」，氛圍十足。',
+        icon: '🌃', badges: [{ text: '自費景點', cls: 'sbadge-tip' }] },
+      { lat: 34.6912, lng: 135.4915, placeId: 'ChIJrVid0PbmAGARVvoeAwYmgg4', name: '中之島・大阪市立科學館', desc: '適合親子，科學體驗館；中之島公園沿河岸漫步也很舒適',
+        detail: '中之島是大阪市中心被堂島川與土佐堀川夾圍的小島，自江戶時代起即為大阪的行政與文化中心。大阪市立科學館以宇宙與科學為主題，設有投影天象儀，適合親子同遊。中之島公園的玫瑰園每年5月與10月盛開，沿河岸散步環境悠閒，附近還有中央公會堂等重要歷史建築。',
+        icon: '🔭', badges: [{ text: '自費景點', cls: 'sbadge-tip' }] },
+      { lat: 34.6937, lng: 135.5025, name: '道頓崛・難波再訪', desc: '白天與夜晚氣氛截然不同，吉本興業劇場、章魚燒激戰區',
+        detail: '白天的道頓崛與夜晚截然不同，陽光下更能細看固力果看板的細節與周邊建築。吉本興業旗下的「なんばグランド花月」劇場就在附近，是欣賞大阪搞笑文化（漫才）的最佳場所，建議提前購票。附近的法善寺橫丁是一條充滿老大阪情調的小巷，青苔覆蓋的水掛不動尊是大阪人祈求生意興隆的信仰中心。',
+        icon: '🐙', badges: [{ text: '美食・娛樂', cls: 'sbadge-meal' }] }
+    ]
+  },
+  5: {
+    label: 'DAY 5', title: '返回溫暖的家',
+    meta: ['飯店早餐', '✈ 関空 11:10', '桃園 13:05 抵達'],
+    driveTime: '約 1 小時車程',
+    driveDetail: '大阪市區→關西機場 約50-60分',
+    color: '#d35400', center: { lat: 34.55, lng: 135.35 }, zoom: 10, exportable: true,
+    wxCoord: { lat: 34.68, lng: 135.50, name: '大阪→關空' },
+    stops: [
+      { lat: 34.6798, lng: 135.5067, placeId: 'ChIJ45f83nTnAGARBh4qKIeKuEY', name: '大阪本町都 CITY — 退房', desc: '享用飯店早餐，整理行李，專車前往關西機場',
+        detail: '於大阪本町都 CITY 享用飯店早餐後辦理退房。出發前可在飯店附近的便利商店補充零食伴手禮。地址：〒541-0057 大阪市中央区北久宝寺町1-8-7｜TEL 81-6-6263-0385',
+        icon: '🏨', badges: [{ text: '早：飯店內早餐', cls: 'sbadge-meal' }] },
+      { lat: 34.434, lng: 135.244, name: '關西國際機場 → 桃園', desc: '長榮 BR177，6/29(一) 11:10 出發，13:05 抵達桃園，五日之旅圓滿結束！',
+        detail: '長榮航空 BR177，11:10 從大阪關西海上空港起飛，13:05 抵達台灣桃園國際機場，飛行時間約2小時。機場內有大量免稅店可做最後採購。回到桃園後，五天四夜的關西秘境之旅正式圓滿結束！',
+        icon: '✈',  badges: [{ text: '午：機上簡餐', cls: 'sbadge-meal' }] }
+    ]
+  }
+};
+
+let map, currentDay = 1;
+let markers = [], infoWindow = null;
+let gpsMarker = null, gpsCircle = null, gpsWatchId = null, gpsActive = false;
+let searchMarker = null, autocomplete = null;
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 34.98, lng: 135.75 }, zoom: 12,
+    mapTypeId: 'roadmap',
+    styles: [
+      { elementType: 'geometry', stylers: [{ color: '#1d2c4d' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#8ec3b9' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#1a3646' }] },
+      { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#023e58' }] },
+      { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#283d6a' }] },
+      { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#6f9ba5' }] },
+      { featureType: 'poi', elementType: 'labels.text.stroke', stylers: [{ color: '#1d2c4d' }] },
+      { featureType: 'poi.park', elementType: 'geometry.fill', stylers: [{ color: '#023e58' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#304a7d' }] },
+      { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#98a5be' }] },
+      { featureType: 'road', elementType: 'labels.text.stroke', stylers: [{ color: '#1d2c4d' }] },
+      { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#2c6675' }] },
+      { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#b0d5ce' }] },
+      { featureType: 'transit.line', elementType: 'geometry.fill', stylers: [{ color: '#283d6a' }] },
+      { featureType: 'transit.station', elementType: 'geometry', stylers: [{ color: '#3a4762' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0e1626' }] },
+      { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4e6d70' }] }
+    ],
+    disableDefaultUI: false, zoomControl: true, zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+    mapTypeControl: false, streetViewControl: false, fullscreenControl: false
+  });
+
+  infoWindow = new google.maps.InfoWindow();
+
+  autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('search-input'), { language: 'zh-TW' }
+  );
+  autocomplete.bindTo('bounds', map);
+  autocomplete.addListener('place_changed', onPlaceChanged);
+  document.getElementById('search-input').addEventListener('input', function() {
+    document.getElementById('search-clear').style.display = this.value ? 'block' : 'none';
+  });
+
+  switchDay(1);
+}
+
+// GPS
+function toggleGps() {
+  gpsActive ? stopGps() : startGps();
+}
+
+function startGps() {
+  if (!navigator.geolocation) { alert('你的瀏覽器不支援 GPS 定位'); return; }
+  const btn = document.getElementById('gps-btn');
+  btn.classList.add('locating');
+  btn.textContent = '⏳';
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      btn.classList.remove('locating');
+      btn.textContent = '🔵';
+      btn.classList.add('gps-active');
+      gpsActive = true;
+      const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const acc = pos.coords.accuracy;
+
+      if (gpsCircle) { gpsCircle.setCenter(latlng); gpsCircle.setRadius(acc); }
+      else {
+        gpsCircle = new google.maps.Circle({
+          center: latlng, radius: acc, map,
+          fillColor: '#4a90d9', fillOpacity: 0.1,
+          strokeColor: '#4a90d9', strokeOpacity: 0.35, strokeWeight: 1
+        });
+      }
+      if (gpsMarker) { gpsMarker.setPosition(latlng); }
+      else {
+        gpsMarker = new google.maps.Marker({
+          position: latlng, map, zIndex: 1000, title: '我的位置',
+          icon: { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#4a90d9', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2.5 }
+        });
+        gpsMarker.addListener('click', () => {
+          infoWindow.setContent(`<div style="font-family:sans-serif;padding:4px;"><b style="font-size:14px;">📍 我的位置</b><div style="font-size:12px;color:#7a6e63;margin-top:4px;">精確度：約 ${Math.round(acc)} 公尺</div></div>`);
+          infoWindow.open(map, gpsMarker);
+        });
+        map.panTo(latlng); map.setZoom(15);
+      }
+    },
+    () => { stopGps(); alert('無法取得位置，請確認已允許瀏覽器定位權限'); },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+  );
+}
+
+function stopGps() {
+  if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
+  if (gpsMarker) { gpsMarker.setMap(null); gpsMarker = null; }
+  if (gpsCircle) { gpsCircle.setMap(null); gpsCircle = null; }
+  gpsActive = false;
+  const btn = document.getElementById('gps-btn');
+  btn.textContent = '📍';
+  btn.classList.remove('gps-active', 'locating');
+}
+
+// Search
+function onPlaceChanged() {
+  const place = autocomplete.getPlace();
+  if (!place || !place.geometry || !place.geometry.location) {
+    const val = document.getElementById('search-input').value;
+    if (!val) return;
+    new google.maps.Geocoder().geocode({ address: val }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        placeMarkerAndPan(results[0].geometry.location, val, results[0].formatted_address, results[0].geometry.viewport);
+      }
+    });
+    return;
+  }
+  placeMarkerAndPan(place.geometry.location, place.name, place.formatted_address, place.geometry.viewport);
+}
+
+function placeMarkerAndPan(location, name, address, viewport) {
+  if (searchMarker) { searchMarker.setMap(null); searchMarker = null; }
+  searchMarker = new google.maps.Marker({
+    position: location, map, zIndex: 999, title: name,
+    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 14, fillColor: '#f0c040', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2.5 }
+  });
+  infoWindow.setContent(`<div style="font-family:sans-serif;padding:4px;min-width:180px;max-width:240px;"><div style="font-size:11px;color:#c9973a;font-weight:700;margin-bottom:4px;">🔍 搜尋結果</div><div style="font-size:14px;font-weight:700;color:#1a1714;margin-bottom:4px;">${name}</div><div style="font-size:12px;color:#7a6e63;">${address || ''}</div></div>`);
+  infoWindow.open(map, searchMarker);
+  if (viewport) map.fitBounds(viewport);
+  else { map.panTo(location); map.setZoom(16); }
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  if (searchMarker) { searchMarker.setMap(null); searchMarker = null; }
+  infoWindow.close();
+}
+
+// Map
+function clearMarkers() { markers.forEach(m => m.setMap(null)); markers = []; }
+
+// === 即時撈 Google Places 詳情(新版 Place class) ===
+// 同一個 placeId 在同一次瀏覽中只撈一次,結果快取避免重複呼叫額度
+const placeCache = {};
+
+async function fetchLiveInfo(stop, baseCard) {
+  // 組出即時資訊區塊的 HTML
+  const renderLive = (data) => {
+    if (!data) return ''; // 撈失敗 → 不顯示 live 區塊,卡片只剩手動內容
+    let html = '<div style="background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.18);border-radius:8px;padding:8px 10px;margin-bottom:6px;">';
+    html += '<div style="font-size:10px;color:#4285f4;font-weight:700;margin-bottom:4px;">📡 Google 即時資訊</div>';
+    if (data.rating) {
+      const cnt = data.userRatingCount ? `（${data.userRatingCount} 則）` : '';
+      html += `<div style="font-size:13px;color:#1a1714;margin-bottom:2px;">⭐ ${data.rating} ${cnt}</div>`;
+    }
+    if (data.openNow !== null && data.openNow !== undefined) {
+      const txt = data.openNow ? '<span style="color:#27ae60;font-weight:700;">營業中</span>' : '<span style="color:#c0392b;font-weight:700;">休息中</span>';
+      html += `<div style="font-size:12px;margin-bottom:2px;">🕒 ${txt}</div>`;
+    }
+    if (data.todayHours) {
+      html += `<div style="font-size:12px;color:#555;">本日：${data.todayHours}</div>`;
+    }
+    html += '</div>';
+    return html;
+  };
+
+  // 快取命中 → 直接用
+  if (placeCache[stop.placeId]) {
+    infoWindow.setContent(baseCard(renderLive(placeCache[stop.placeId])));
+    return;
+  }
+
+  try {
+    // 新版 Place class:建立物件後 fetchFields 指定要的欄位(field mask,控成本)
+    const { Place } = await google.maps.importLibrary('places');
+    const place = new Place({ id: stop.placeId });
+    await place.fetchFields({
+      fields: ['rating', 'userRatingCount', 'regularOpeningHours', 'currentOpeningHours']
+    });
+
+    // 取本日營業時間文字
+    let todayHours = null;
+    const oh = place.regularOpeningHours;
+    if (oh && oh.weekdayDescriptions && oh.weekdayDescriptions.length === 7) {
+      // weekdayDescriptions 從週一開始;JS getDay() 週日=0
+      const jsDay = new Date().getDay();
+      const idx = jsDay === 0 ? 6 : jsDay - 1;
+      todayHours = oh.weekdayDescriptions[idx];
+    }
+
+    let openNow = null;
+    if (place.currentOpeningHours && typeof place.currentOpeningHours.openNow === 'boolean') {
+      openNow = place.currentOpeningHours.openNow;
+    }
+
+    const data = {
+      rating: place.rating || null,
+      userRatingCount: place.userRatingCount || null,
+      openNow: openNow,
+      todayHours: todayHours
+    };
+    placeCache[stop.placeId] = data;
+    infoWindow.setContent(baseCard(renderLive(data)));
+  } catch (err) {
+    // 撈失敗(授權、網路、區域型無資料等)→ 回退成純手動卡片,不開天窗
+    console.warn('Places 即時資訊載入失敗,改用內建資料：', stop.name, err);
+    infoWindow.setContent(baseCard(''));
+  }
+}
+
+function switchDay(dayNum) {
+  currentDay = dayNum;
+  const day = DAYS[dayNum];
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.day) === dayNum));
+  clearMarkers();
+  renderSidebar(dayNum);
+  // 預先計算每個 stop 的顯示編號（跳過 bar；連續雙團 stop 共用同編號）
+  const stopNums = [];
+  let n = 0;
+  let lastNonBarTour = null;
+  for (let k = 0; k < day.stops.length; k++) {
+    const s = day.stops[k];
+    if (s.bar) { stopNums.push(null); continue; }
+    if (s.tour && lastNonBarTour && lastNonBarTour !== s.tour) {
+      // 與上一個非 bar stop 是不同 tour，共用編號
+      stopNums.push(n);
+    } else {
+      n++;
+      stopNums.push(n);
+    }
+    lastNonBarTour = s.tour || null;
+  }
+  day.stops.forEach((stop, i) => {
+    const iBar = stop.bar === true;
+    const iTour = stop.tour;
+    const markerNum = stopNums[i];
+    let markerColor = day.color;
+    if (iTour === 1) markerColor = '#c0392b';
+    if (iTour === 2) markerColor = '#2980b9';
+    const marker = new google.maps.Marker({
+      position: { lat: stop.lat, lng: stop.lng }, map,
+      label: iBar ? null : { text: String(markerNum), color: 'white', fontSize: '14px', fontWeight: 'bold' },
+      icon: iBar
+        ? { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#f0c040', fillOpacity: 0.9, strokeColor: 'white', strokeWeight: 2 }
+        : { path: google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: markerColor, fillOpacity: 1, strokeColor: 'white', strokeWeight: 2.5 },
+      title: stop.name,
+      zIndex: iBar ? 1 : 5
+    });
+    const badgeHtml = stop.badges.map(b => `<span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-top:4px;margin-right:4px;background:rgba(201,151,58,0.15);color:#c9973a;border:1px solid rgba(201,151,58,0.3);">${b.text}</span>`).join('');
+    marker.addListener('click', () => {
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stop.name + ' 日本')}`;
+      const detailText = stop.detail || stop.desc;
+      // 先用手動資料即時組出卡片內容(保證一定看得到),live 區塊預留占位
+      const baseCard = (liveHtml) => `<div style="font-family:sans-serif;padding:4px;min-width:220px;max-width:300px;"><div style="font-size:10px;color:${day.color};font-weight:700;margin-bottom:4px;">${day.label} · ${i+1}/${day.stops.length}</div><div style="font-size:15px;font-weight:700;color:#1a1714;margin-bottom:6px;">${stop.icon} ${stop.name}</div>${liveHtml}<div style="font-size:13px;color:#555;line-height:1.7;margin:8px 0;">${detailText}</div>${badgeHtml}<div style="margin-top:10px;"><a href="${mapsUrl}" target="_blank" style="display:inline-block;background:#4285f4;color:white;font-size:12px;font-weight:700;padding:7px 14px;border-radius:6px;text-decoration:none;">🗺 Google Maps 查看</a></div></div>`;
+      // 若有 placeId,先顯示「載入中」占位,再非同步撈即時資訊
+      const loadingHtml = stop.placeId
+        ? `<div id="live-info" style="font-size:12px;color:#999;margin-bottom:6px;">⏳ 載入即時資訊…</div>`
+        : '';
+      infoWindow.setContent(baseCard(loadingHtml));
+      infoWindow.open(map, marker);
+      highlightStop(i);
+      if (stop.placeId) fetchLiveInfo(stop, baseCard);
+    });
+    markers.push(marker);
+  });
+  map.panTo(day.center); map.setZoom(day.zoom);
+}
+
+function renderSidebar(dayNum) {
+  const day = DAYS[dayNum];
+  const header = document.getElementById('sidebar-header');
+  header.style.borderBottom = `2px solid ${day.color}50`;
+
+  const driveHtml = day.driveTime
+    ? `<div class="drive-box"><div class="drive-main">🚌 ${day.driveTime}</div><div class="drive-detail">${day.driveDetail}</div></div>`
+    : `<div class="drive-box"><div class="drive-main">🚶 全日自由活動，不派車</div></div>`;
+
+  const exportHtml = day.exportable
+    ? `<button class="export-btn" onclick="exportToGoogleMaps(${dayNum})">🗺 匯出至 Google Maps</button>`
+    : '';
+
+  const dateMap = { 1:'2026-06-25', 2:'2026-06-26', 3:'2026-06-27', 4:'2026-06-28', 5:'2026-06-29' };
+  const wxHtml = day.wxCoord
+    ? `<div class="wx-box" id="wx-box"><div class="wx-loading">☁ 載入 ${day.wxCoord.name} 天氣…</div></div>`
+    : '';
+  const memoHtml = `
+    <div class="memo-box">
+      <div class="memo-head">📝 我的備忘（${day.label}・僅存本機）</div>
+      <div class="memo-field"><label>房號</label><input type="text" class="memo-room" data-key="room-${dayNum}" placeholder="入住後填入"></div>
+      <div id="memo-notes-${dayNum}"></div>
+      <button class="memo-add" onclick="addMemoNote(${dayNum})">＋ 新增一則備忘</button>
+    </div>`;
+
+  header.innerHTML = `
+    <div class="day-label" style="color:${day.color}">${day.label}</div>
+    <div class="day-title">${day.title}</div>
+    <div class="day-meta">${day.meta.map(m => `<span class="meta-pill">${m}</span>`).join('')}</div>
+    ${driveHtml}${exportHtml}${wxHtml}${memoHtml}
+  `;
+  if (day.wxCoord) fetchWeather(day.wxCoord, dateMap[dayNum]);
+  loadMemo(dayNum);
+
+  // 預先計算每個 stop 的顯示編號（與 switchDay 邏輯一致）
+  const sidebarStopNums = [];
+  let sn = 0;
+  let sidebarLastTour = null;
+  for (let k = 0; k < day.stops.length; k++) {
+    const s = day.stops[k];
+    if (s.bar) { sidebarStopNums.push(null); continue; }
+    if (s.tour && sidebarLastTour && sidebarLastTour !== s.tour) {
+      sidebarStopNums.push(sn);
+    } else {
+      sn++;
+      sidebarStopNums.push(sn);
+    }
+    sidebarLastTour = s.tour || null;
+  }
+  const stopsHtml = day.stops.map((stop, i) => {
+    const isFirstBar = stop.bar && (i === 0 || !day.stops[i-1].bar);
+    const separator = isFirstBar ? `<div style="padding:10px 16px 6px;font-size:11px;letter-spacing:0.15em;font-weight:700;color:var(--muted);border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;">🍺 晚上推薦酒吧／居酒屋</div>` : '';
+    let numBg = day.color;
+    if (stop.tour === 1) numBg = '#c0392b';
+    if (stop.tour === 2) numBg = '#2980b9';
+    const numHtml = stop.bar
+      ? `<div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;">🍺</div>`
+      : `<div class="stop-num" style="background:${numBg}">${sidebarStopNums[i]}</div>`;
+    return separator + `
+    <div class="stop-item" id="stop-${i}" onclick="focusStop(${i})">
+      <div class="stop-left">${numHtml}</div>
+      <div class="stop-content">
+        <div class="stop-name">${stop.icon} ${stop.name}</div>
+        <div class="stop-desc">${stop.desc}</div>
+        <div class="stop-badges">${stop.badges.map(b => `<span class="sbadge ${b.cls}">${b.text}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('stops-list').innerHTML = stopsHtml;
+}
+
+function focusStop(idx) {
+  const stop = DAYS[currentDay].stops[idx];
+  map.panTo({ lat: stop.lat, lng: stop.lng }); map.setZoom(15);
+  google.maps.event.trigger(markers[idx], 'click');
+  highlightStop(idx);
+  if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.remove('open');
+}
+
+function highlightStop(idx) {
+  document.querySelectorAll('.stop-item').forEach((el, i) => el.classList.toggle('active-stop', i === idx));
+  const el = document.getElementById(`stop-${idx}`);
+  if (el) {
+    const sidebar = document.getElementById('sidebar');
+    const elTop = el.offsetTop;
+    const elBottom = elTop + el.offsetHeight;
+    const sidebarTop = sidebar.scrollTop;
+    const sidebarBottom = sidebarTop + sidebar.clientHeight;
+    if (elTop < sidebarTop || elBottom > sidebarBottom) {
+      sidebar.scrollTo({ top: elTop - 80, behavior: 'smooth' });
+    }
+  }
+}
+
+function exportToGoogleMaps(dayNum) {
+  const day = DAYS[dayNum];
+  const stops = day.stops.filter(s => {
+    if (s.bar) return false; // 不匯出酒吧
+    return true;
+  });
+  const pts = stops.map(s => `${s.lat},${s.lng}`);
+  const url = `https://www.google.com/maps/dir/${pts.join('/')}`;
+  window.open(url, '_blank');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function toggleEmergency() {
+  document.getElementById('emergency-overlay').classList.toggle('open');
+  document.getElementById('emergency-panel').classList.toggle('open');
+}
+
+// === 天氣（Open-Meteo，免金鑰，依座標）===
+async function fetchWeather(coord, dateStr) {
+  const box = document.getElementById('wx-box');
+  if (!box) return;
+  const wcode = {
+    0:'☀️ 晴', 1:'🌤 大致晴', 2:'⛅ 多雲時晴', 3:'☁️ 陰',
+    45:'🌫 霧', 48:'🌫 霧凇', 51:'🌦 毛毛雨', 53:'🌦 毛毛雨', 55:'🌧 毛毛雨',
+    61:'🌧 小雨', 63:'🌧 中雨', 65:'🌧 大雨', 66:'🌧 凍雨', 67:'🌧 凍雨',
+    71:'🌨 小雪', 73:'🌨 中雪', 75:'❄️ 大雪', 80:'🌦 陣雨', 81:'🌧 陣雨', 82:'⛈ 強陣雨',
+    95:'⛈ 雷雨', 96:'⛈ 雷雨冰雹', 99:'⛈ 雷雨冰雹'
+  };
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lng}`
+      + `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max`
+      + `&timezone=Asia%2FTokyo&start_date=${dateStr}&end_date=${dateStr}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.daily || !data.daily.time || data.daily.time.length === 0) {
+      box.innerHTML = `<div class="wx-loading">天氣：出發前一週才有預報（${coord.name}）</div>`;
+      return;
+    }
+    const code = data.daily.weather_code[0];
+    const tmax = Math.round(data.daily.temperature_2m_max[0]);
+    const tmin = Math.round(data.daily.temperature_2m_min[0]);
+    const pop = data.daily.precipitation_probability_max[0];
+    const desc = wcode[code] || '☁️';
+    const umbrella = (pop >= 50 || (code >= 51 && code <= 99)) ? '<span class="wx-umb">☂️ 建議帶傘</span>' : '';
+    box.innerHTML = `<div class="wx-main">${desc}　${tmin}°–${tmax}°C</div>`
+      + `<div class="wx-sub">${coord.name}・降雨機率 ${pop != null ? pop : '—'}%　${umbrella}</div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="wx-loading">天氣載入失敗，請確認網路（${coord.name}）</div>`;
+  }
+}
+
+// === 個人備忘（localStorage，只存本機）===
+function memoGet(key) { try { return localStorage.getItem('eec_fg_' + key) || ''; } catch(e){ return ''; } }
+function memoSet(key, val) { try { localStorage.setItem('eec_fg_' + key, val); } catch(e){} }
+
+function loadMemo(dayNum) {
+  const roomInput = document.querySelector(`.memo-room[data-key="room-${dayNum}"]`);
+  if (roomInput) {
+    roomInput.value = memoGet('room-' + dayNum);
+    roomInput.oninput = () => memoSet('room-' + dayNum, roomInput.value);
+  }
+  // 載入該天已存的備忘則數
+  const countRaw = memoGet('notecount-' + dayNum);
+  const count = countRaw ? parseInt(countRaw) : 0;
+  const wrap = document.getElementById('memo-notes-' + dayNum);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < count; i++) renderMemoNote(dayNum, i);
+}
+
+function renderMemoNote(dayNum, idx) {
+  const wrap = document.getElementById('memo-notes-' + dayNum);
+  if (!wrap) return;
+  const div = document.createElement('div');
+  div.className = 'memo-field';
+  div.innerHTML = `<textarea class="memo-note" rows="2" placeholder="備忘…"></textarea>`;
+  const ta = div.querySelector('textarea');
+  ta.value = memoGet(`note-${dayNum}-${idx}`);
+  ta.oninput = () => memoSet(`note-${dayNum}-${idx}`, ta.value);
+  wrap.appendChild(div);
+}
+
+function addMemoNote(dayNum) {
+  const countRaw = memoGet('notecount-' + dayNum);
+  const count = countRaw ? parseInt(countRaw) : 0;
+  memoSet('notecount-' + dayNum, count + 1);
+  renderMemoNote(dayNum, count);
+}
+</script>
+
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtebHQaANklp3rQAr1t2IhzAdrUGMTDrA&libraries=places&callback=initMap&language=zh-TW&loading=async">
+</script>
+</body>
+</html>
