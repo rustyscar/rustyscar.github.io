@@ -106,6 +106,11 @@
   .tag.lottery{background:var(--lottery-soft);color:var(--lottery);}
   .tag.amount{background:var(--crimson-soft);color:var(--crimson);}
   .tag.essay{background:#e8e2f0;color:#5a4a82;}
+  .tag.pri{font-weight:800;border:1.5px solid currentColor;}
+  .tag.tb{background:transparent;color:var(--muted);border:1px dashed var(--line);font-weight:600;}
+  .legend-head{font-size:11px;letter-spacing:.12em;color:var(--ink);font-weight:700;}
+  .sel-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+  .sel-arrow{color:var(--line);font-size:11px;}
   .flag{
     display:block;font-size:11px;color:var(--crimson);font-weight:700;margin-top:5px;
   }
@@ -128,7 +133,7 @@
   <div class="wrap">
     <div class="eyebrow">RUN with HEART · 受贈團體對照</div>
     <h1>東京馬拉松 <span class="yr">2027</span> 慈善計畫</h1>
-    <p class="lede">37 個可由台灣居民報名的官方計畫,依<strong>名額由多至少</strong>排列。已排除 3 個限居日者的團體。點欄位標題可重新排序,綠標為<strong>抽籤制</strong>(不靠捐款金額或理念文章,對非高額捐款者最公平)。</p>
+    <p class="lede">37 個可由台灣居民報名的官方計畫,依<strong>名額由多至少</strong>排列(已排除 3 個限居日者)。「遴選方式」欄分兩層:<strong>主要決勝機制</strong>(實線標籤)決定錄取,後方虛線標籤是<strong>同額/同分時</strong>的決勝。全表唯一與捐款金額無關的是<strong>日本身障運動協會(純抽籤)</strong>。</p>
   </div>
 </header>
 
@@ -136,7 +141,8 @@
   <div class="wrap controls-inner">
     <span class="ctl-label">篩選</span>
     <button class="pill active" data-filter="all">全部</button>
-    <button class="pill" data-filter="lottery">僅抽籤制</button>
+    <button class="pill" data-filter="lottery">純抽籤(金額無關)</button>
+    <button class="pill" data-filter="essay">文章優先</button>
     <button class="pill" data-filter="low">門檻 ≤¥120,000</button>
     <button class="pill" data-filter="sport">運動相關</button>
     <input class="search" type="text" placeholder="搜尋名稱 / 內容…" id="search">
@@ -162,59 +168,67 @@
   </div>
 
   <div class="legend">
-    <span><span class="tag lottery">抽籤</span> 不靠金額/文章</span>
-    <span><span class="tag amount">金額</span> 依捐款高低</span>
-    <span><span class="tag essay">文章</span> 依理念文章</span>
-    <span><span class="tag">早申請</span> 同額時先到先得</span>
+    <span class="legend-head">主要決勝機制:</span>
+    <span><span class="tag amount">金額第一</span> 捐款報越高越前面</span>
+    <span><span class="tag essay">文章優先</span> 理念文章為主、金額次要</span>
+    <span><span class="tag lottery">純抽籤</span> 與金額無關</span>
+    <span class="legend-head" style="margin-left:8px;">同額時的決勝:</span>
+    <span><span class="tag tb">抽籤</span></span>
+    <span><span class="tag tb">文章</span></span>
+    <span><span class="tag tb">早申請</span></span>
   </div>
 
   <footer>
-    <p><span class="k">門檻提醒:</span>序號 32 Chance for Children 雖未限居日,但僅收過往 CFC 跑者,台灣新申請者實質無法報名(已標灰)。有效選項為 36 個。</p>
-    <p style="margin-top:8px;"><span class="k">建議:</span>以錄取機率角度,門檻 ¥100,000 的抽籤制(特殊奧運、日本身障運動協會、JCV)CP 值最佳;其中身障運動協會與跑者背景契合度最高。</p>
-    <p style="margin-top:8px;">資料來源:東京馬拉松財團 RUN with HEART 官方頁面。金額為成為慈善跑者的最低承諾捐款。</p>
+    <p><span class="k">重要更正(依 2027 官方選定基準 PDF):</span>2027 全 37 團體中,<span class="k">唯一與捐款金額完全無關的只有「日本身障運動協會」(純抽籤)</span>。其餘所有團體金額都有作用。先前版本把 KnK、Florence 標為「先到先得」、把特殊奧運/JCV/日本財團標為「抽籤制」皆不精確——這些其實都是「金額第一,同額才抽籤/先到先得」,已修正。</p>
+    <p style="margin-top:8px;"><span class="k">門檻提醒:</span>序號 32 Chance for Children 雖未限居日,但僅收過往 CFC 跑者,台灣新申請者實質無法報名(已標灰)。有效選項為 36 個。</p>
+    <p style="margin-top:8px;"><span class="k">建議:</span>若要「捐最低額也不吃虧」,唯一選擇是<span class="k">日本身障運動協會</span>(¥100,000、純抽籤、與跑者背景契合)。其他團體想穩,需把金額報在門檻之上。文章優先制(運動傳承1/2/3、Family House、MadreBonita)則是寫得好比捐得多有用。</p>
+    <p style="margin-top:8px;">資料來源:東京馬拉松財團 RUN with HEART 2027 官方選定基準 PDF(0622版)。金額為成為慈善跑者的最低承諾捐款。</p>
   </footer>
 </div>
 
 <script>
+// pri = 主要決勝機制 (amount=金額第一 / essay=文章優先 / lottery=純抽籤)
+// tb  = 同額/同分時的決勝順序 (依官方 2027 選定基準 PDF)
 const data=[
- {rank:1,name:"日本麥當勞之家",web:"dmhcj.or.jp/english",cap:700,yen:120000,desc:"為遠地住院病童及家屬提供「第二個家」住宿設施",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:2,name:"運動傳承計畫 1",web:"sportslegacy.jp/en",cap:434,yen:150000,desc:"透過運動推動社會進步、教育與設施建設",sel:[["essay","文章"]],sport:true},
- {rank:3,name:"Peace Winds Japan",web:"wanko.peace-winds.org",cap:410,yen:200000,desc:"救援棄犬、訓練災害救助/治療犬;國際人道救援",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:4,name:"ACE 終止童工",web:"global.acejapan.org",cap:233,yen:200000,desc:"消除童工、保障兒童權利(迦納可可產區+日本)",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:5,name:"日本 UNHCR",web:"japanforunhcr.org",cap:214,yen:150000,desc:"為戰亂難民兒童提供運動與教育支援",sel:[["amount","金額"],["essay","文章"]],sport:true},
- {rank:6,name:"Gold Ribbon Network",web:"goldribbon.jp/english",cap:199,yen:120000,desc:"兒癌獎學金、治療交通住宿補助、研究補助",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:7,name:"Plan International Japan",web:"plan-international.jp",cap:198,yen:150000,desc:"支援開發中國家女童教育與自立(團體每人¥220,000)",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:8,name:"Kamonohashi Project",web:"kamonohashi-project.net",cap:152,yen:200000,desc:"防止兒虐、協助受虐兒童復原",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:9,name:"日本對癌協會",web:"jcancer.jp",cap:147,yen:150000,desc:"免費癌症諮詢專線、推廣篩檢、研究補助",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:10,name:"NPO KIDSDOOR",web:"kidsdoor.net/en",cap:145,yen:150000,desc:"為弱勢兒童提供免費學習與社交空間(國內名額至多20%)",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:11,name:"特殊奧運(日本)",web:"son.or.jp",cap:132,yen:100000,desc:"為智能障礙者提供運動訓練與賽事",sel:[["lottery","抽籤"]],sport:true},
- {rank:12,name:"Family House",web:"familyhouse.or.jp/en",cap:120,yen:130000,desc:"為重症病童及家屬提供醫院旁住宿設施",sel:[["essay","文章"],["amount","金額"]],sport:false},
- {rank:13,name:"Teach For Japan",web:"teachforjapan.org/en",cap:117,yen:170000,desc:"培訓教師投入弱勢學校,改善教育公平",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:14,name:"日本身障運動協會",web:"parasports.or.jp",cap:114,yen:100000,desc:"推廣帕拉運動、辦理全國身障運動賽事",sel:[["lottery","抽籤"]],sport:true},
- {rank:15,name:"CARE International Japan",web:"careintjp.org",cap:112,yen:150000,desc:"援助開發中國家與烏克蘭婦女、女童自立",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:16,name:"Pride House Tokyo NPO",web:"pridehouse.jp/en",cap:109,yen:100000,desc:"經營日本首座常設 LGBTQ+ 中心",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:17,name:"WaterAid Japan",web:"wateraid.org",cap:107,yen:100000,desc:"提供潔淨水、廁所與衛生教育",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:18,name:"運動傳承計畫 3(能登)",web:"sportslegacy.jp/en",cap:100,yen:150000,desc:"2024 能登半島地震災區救援(透過紅十字會)",sel:[["essay","文章"]],sport:true},
- {rank:19,name:"Room to Read Japan",web:"japan.roomtoread.org",cap:100,yen:160000,desc:"兒童識字與性別平等教育(約 USD 1,000)",sel:[["amount","金額"],["lottery","抽籤"]],sport:false},
- {rank:20,name:"國境なき子どもたち(KnK)",web:"knk-int.org",cap:93,yen:180000,desc:"柬/菲/孟弱勢與街頭兒童教育支援",sel:[["amount","金額"],["","先到先得"]],sport:false},
- {rank:21,name:"東京玩具美術館",web:"art-play.or.jp/ttm/en",cap:92,yen:150000,desc:"共融型美術館,以玩具/遊戲連結各世代",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:22,name:"Solaputi Kids' Camp",web:"solaputi.jp/en",cap:91,yen:100000,desc:"邀重症病童及家屬至附醫療露營區",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:23,name:"Friends Without A Border",web:"fwab.jp/en",cap:83,yen:150000,desc:"在寮國經營兒童醫院、提供免費醫療",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:24,name:"日本環境教育論壇(JEEF)",web:"jeef.or.jp/english",cap:83,yen:100000,desc:"推動「不遺漏任何人」的環境教育",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:25,name:"NPO Sodateage Net",web:"sodateage.net",cap:69,yen:140000,desc:"支援社會孤立的青少年連結社會",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:26,name:"NPO Florence",web:"florence.or.jp/english",cap:63,yen:150000,desc:"支援單親/貧困家庭(病童臨托等)",sel:[["amount","金額"],["","先到先得"]],sport:false},
- {rank:27,name:"日本骨髓捐贈推進協議會",web:"marrow.or.jp",cap:49,yen:150000,desc:"推廣骨髓捐贈登錄、支援白血病患者",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:28,name:"JOICFP",web:"joicfp.or.jp/eng",cap:46,yen:120000,desc:"推動性與生殖健康權利(亞非+日本)",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:29,name:"ADRA Japan",web:"adrajpn.org",cap:43,yen:165000,desc:"國際緊急人道救援與教育/生計支援",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:30,name:"世界兒童疫苗委員會(JCV)",web:"jcv-jp.org",cap:41,yen:100000,desc:"為開發中國家兒童提供疫苗",sel:[["amount","金額"],["lottery","抽籤"]],sport:false},
- {rank:31,name:"難民支援協會(JAR)",web:"refugee.or.jp/en",cap:40,yen:150000,desc:"為來日難民提供醫療/食物/住宿綜合支援",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:32,name:"Chance for Children",web:"cfc.or.jp/english",cap:40,yen:100000,desc:"提供貧困兒童課外教育折抵券",sel:[["amount","金額"],["lottery","抽籤"]],sport:false,flag:"限過往 CFC 跑者,台灣新人無法報名",blocked:true},
- {rank:33,name:"NPO MadreBonita",web:"madrebonita.com/en",cap:40,yen:120000,desc:"提供產後身心復原課程、推廣產後知識",sel:[["essay","文章"],["amount","金額"]],sport:false},
- {rank:34,name:"日本 IDDM Network",web:"japan-iddm.net",cap:40,yen:120000,desc:"資助第一型糖尿病治癒研究",sel:[["amount","金額"],["essay","文章"]],sport:false},
- {rank:35,name:"運動傳承計畫 2(311)",web:"sportslegacy.jp/en",cap:34,yen:150000,desc:"支援 311 震災三縣孤兒教育",sel:[["essay","文章"]],sport:true},
- {rank:36,name:"World Vision Japan",web:"congrant.com/project/worldvision",cap:30,yen:150000,desc:"撒哈拉以南潔淨水與衛生設施",sel:[["amount","金額"],["","早申請"]],sport:false},
- {rank:37,name:"日本財團",web:"en.nippon-foundation.or.jp",cap:30,yen:350000,desc:"兒童支援基金(經濟/家庭/教育困境兒童);門檻最高",sel:[["amount","金額"],["lottery","抽籤"]],sport:false}
+ {rank:1,name:"日本麥當勞之家",web:"dmhcj.or.jp/english",cap:700,yen:120000,desc:"為遠地住院病童及家屬提供「第二個家」住宿設施",pri:"amount",tb:["早申請"],sport:false},
+ {rank:2,name:"運動傳承計畫 1",web:"sportslegacy.jp/en",cap:434,yen:150000,desc:"透過運動推動社會進步、教育與設施建設",pri:"essay",tb:[],sport:true},
+ {rank:3,name:"Peace Winds Japan",web:"wanko.peace-winds.org",cap:410,yen:200000,desc:"救援棄犬、訓練災害救助/治療犬;國際人道救援",pri:"amount",tb:["文章"],sport:false},
+ {rank:4,name:"ACE 終止童工",web:"global.acejapan.org",cap:233,yen:200000,desc:"消除童工、保障兒童權利(迦納可可產區+日本)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:5,name:"日本 UNHCR",web:"japanforunhcr.org",cap:214,yen:150000,desc:"為戰亂難民兒童提供運動與教育支援",pri:"amount",tb:["文章"],sport:true},
+ {rank:6,name:"Gold Ribbon Network",web:"goldribbon.jp/english",cap:199,yen:120000,desc:"兒癌獎學金、治療交通住宿補助、研究補助",pri:"amount",tb:["早申請"],sport:false},
+ {rank:7,name:"Plan International Japan",web:"plan-international.jp",cap:198,yen:150000,desc:"支援開發中國家女童教育與自立(團體每人¥220,000)",pri:"amount",tb:["文章"],sport:false},
+ {rank:8,name:"Kamonohashi Project",web:"kamonohashi-project.net",cap:152,yen:200000,desc:"防止兒虐、協助受虐兒童復原",pri:"amount",tb:["早申請"],sport:false},
+ {rank:9,name:"日本對癌協會",web:"jcancer.jp",cap:147,yen:150000,desc:"免費癌症諮詢專線、推廣篩檢、研究補助",pri:"amount",tb:["早申請"],sport:false},
+ {rank:10,name:"NPO KIDSDOOR",web:"kidsdoor.net/en",cap:145,yen:150000,desc:"為弱勢兒童提供免費學習與社交空間(國內名額至多20%)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:11,name:"特殊奧運(日本)",web:"son.or.jp",cap:132,yen:100000,desc:"為智能障礙者提供運動訓練與賽事",pri:"amount",tb:["抽籤"],sport:true},
+ {rank:12,name:"Family House",web:"familyhouse.or.jp/en",cap:120,yen:130000,desc:"為重症病童及家屬提供醫院旁住宿設施",pri:"essay",tb:["金額"],sport:false},
+ {rank:13,name:"Teach For Japan",web:"teachforjapan.org/en",cap:117,yen:170000,desc:"培訓教師投入弱勢學校,改善教育公平",pri:"amount",tb:["早申請"],sport:false},
+ {rank:14,name:"日本身障運動協會",web:"parasports.or.jp",cap:114,yen:100000,desc:"推廣帕拉運動、辦理全國身障運動賽事",pri:"lottery",tb:[],sport:true,note:"文章+共鳴後抽籤;全表唯一金額無關"},
+ {rank:15,name:"CARE International Japan",web:"careintjp.org",cap:112,yen:150000,desc:"援助開發中國家與烏克蘭婦女、女童自立",pri:"amount",tb:["文章"],sport:false},
+ {rank:16,name:"Pride House Tokyo NPO",web:"pridehouse.jp/en",cap:109,yen:100000,desc:"經營日本首座常設 LGBTQ+ 中心",pri:"amount",tb:["文章"],sport:false},
+ {rank:17,name:"WaterAid Japan",web:"wateraid.org",cap:107,yen:100000,desc:"提供潔淨水、廁所與衛生教育",pri:"amount",tb:["文章"],sport:false},
+ {rank:18,name:"運動傳承計畫 3(能登)",web:"sportslegacy.jp/en",cap:100,yen:150000,desc:"2024 能登半島地震災區救援(透過紅十字會)",pri:"essay",tb:[],sport:true},
+ {rank:19,name:"Room to Read Japan",web:"japan.roomtoread.org",cap:100,yen:160000,desc:"兒童識字與性別平等教育(約 USD 1,000)",pri:"amount",tb:["抽籤"],sport:false},
+ {rank:20,name:"國境なき子どもたち(KnK)",web:"knk-int.org",cap:93,yen:180000,desc:"柬/菲/孟弱勢與街頭兒童教育支援",pri:"amount",tb:["早申請"],sport:false},
+ {rank:21,name:"東京玩具美術館",web:"art-play.or.jp/ttm/en",cap:92,yen:150000,desc:"共融型美術館,以玩具/遊戲連結各世代",pri:"amount",tb:["早申請"],sport:false},
+ {rank:22,name:"Solaputi Kids' Camp",web:"solaputi.jp/en",cap:91,yen:100000,desc:"邀重症病童及家屬至附醫療露營區",pri:"amount",tb:["文章"],sport:false,note:"金額+文章+累積貢獻綜合計分"},
+ {rank:23,name:"Friends Without A Border",web:"fwab.jp/en",cap:83,yen:150000,desc:"在寮國經營兒童醫院、提供免費醫療",pri:"amount",tb:["文章"],sport:false},
+ {rank:24,name:"日本環境教育論壇(JEEF)",web:"jeef.or.jp/english",cap:83,yen:100000,desc:"推動「不遺漏任何人」的環境教育",pri:"amount",tb:["文章"],sport:false},
+ {rank:25,name:"NPO Sodateage Net",web:"sodateage.net",cap:69,yen:140000,desc:"支援社會孤立的青少年連結社會",pri:"amount",tb:["早申請"],sport:false},
+ {rank:26,name:"NPO Florence",web:"florence.or.jp/english",cap:63,yen:150000,desc:"支援單親/貧困家庭(病童臨托等)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:27,name:"日本骨髓捐贈推進協議會",web:"marrow.or.jp",cap:49,yen:150000,desc:"推廣骨髓捐贈登錄、支援白血病患者",pri:"amount",tb:["文章"],sport:false},
+ {rank:28,name:"JOICFP",web:"joicfp.or.jp/eng",cap:46,yen:120000,desc:"推動性與生殖健康權利(亞非+日本)",pri:"amount",tb:["文章"],sport:false},
+ {rank:29,name:"ADRA Japan",web:"adrajpn.org",cap:43,yen:165000,desc:"國際緊急人道救援與教育/生計支援",pri:"amount",tb:["文章"],sport:false},
+ {rank:30,name:"世界兒童疫苗委員會(JCV)",web:"jcv-jp.org",cap:41,yen:100000,desc:"為開發中國家兒童提供疫苗",pri:"amount",tb:["抽籤"],sport:false},
+ {rank:31,name:"難民支援協會(JAR)",web:"refugee.or.jp/en",cap:40,yen:150000,desc:"為來日難民提供醫療/食物/住宿綜合支援",pri:"amount",tb:["文章"],sport:false},
+ {rank:32,name:"Chance for Children",web:"cfc.or.jp/english",cap:40,yen:100000,desc:"提供貧困兒童課外教育折抵券",pri:"amount",tb:["抽籤"],sport:false,flag:"限過往 CFC 跑者,台灣新人無法報名",blocked:true},
+ {rank:33,name:"NPO MadreBonita",web:"madrebonita.com/en",cap:40,yen:120000,desc:"提供產後身心復原課程、推廣產後知識",pri:"essay",tb:["金額"],sport:false},
+ {rank:34,name:"日本 IDDM Network",web:"japan-iddm.net",cap:40,yen:120000,desc:"資助第一型糖尿病治癒研究",pri:"amount",tb:["文章"],sport:false},
+ {rank:35,name:"運動傳承計畫 2(311)",web:"sportslegacy.jp/en",cap:34,yen:150000,desc:"支援 311 震災三縣孤兒教育",pri:"essay",tb:[],sport:true},
+ {rank:36,name:"World Vision Japan",web:"congrant.com/project/worldvision",cap:30,yen:150000,desc:"撒哈拉以南潔淨水與衛生設施",pri:"amount",tb:["早申請"],sport:false},
+ {rank:37,name:"日本財團",web:"en.nippon-foundation.or.jp",cap:30,yen:350000,desc:"兒童支援基金(經濟/家庭/教育困境兒童);門檻最高",pri:"amount",tb:["抽籤"],sport:false}
 ];
+const PRI_LABEL={amount:"金額第一",essay:"文章優先",lottery:"純抽籤"};
 
 const fmt=n=>"¥"+n.toLocaleString();
 const body=document.getElementById("body");
@@ -225,7 +239,8 @@ function passesFilter(d){
     const q=query.toLowerCase();
     if(!(d.name.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q))) return false;
   }
-  if(curFilter==="lottery") return d.sel.some(s=>s[0]==="lottery");
+  if(curFilter==="lottery") return d.pri==="lottery";
+  if(curFilter==="essay") return d.pri==="essay";
   if(curFilter==="low") return d.yen<=120000;
   if(curFilter==="sport") return d.sport;
   return true;
@@ -236,10 +251,14 @@ function render(){
   rows.sort((a,b)=>{
     let x=a[sortKey], y=b[sortKey];
     if(sortKey==="name"){x=a.name;y=b.name;return sortDir*x.localeCompare(y,"ja");}
+    if(sortKey==="sel"){x=a.pri;y=b.pri;return sortDir*String(x).localeCompare(String(y));}
     return sortDir*(x-y);
   });
   body.innerHTML=rows.map(d=>{
-    const tags=d.sel.map(s=>`<span class="tag ${s[0]}">${s[1]}</span>`).join(" ");
+    const pri=`<span class="tag pri ${d.pri}">${PRI_LABEL[d.pri]}</span>`;
+    const tbs=d.tb.map(t=>`<span class="tag tb">${t}</span>`).join("");
+    const chain=d.tb.length?`<span class="sel-arrow">→ 同額:</span>${tbs}`:"";
+    const note=d.note?`<span class="flag" style="color:var(--muted);">※ ${d.note}</span>`:"";
     const flag=d.flag?`<span class="flag">⚠ ${d.flag}</span>`:"";
     return `<tr class="${d.blocked?'blocked':''}">
       <td class="rank">${d.rank}</td>
@@ -247,7 +266,7 @@ function render(){
       <td><span class="cap">${d.cap}</span></td>
       <td class="yen">${fmt(d.yen)}</td>
       <td class="desc">${d.desc}</td>
-      <td>${tags}${flag}</td>
+      <td><div class="sel-row">${pri}${chain}</div>${note}${flag}</td>
     </tr>`;
   }).join("");
   document.getElementById("count").textContent=`顯示 ${rows.length} / ${data.length} 個計畫`;
