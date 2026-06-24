@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>東京馬拉松 2027 慈善計畫(手機版)</title>
+<style>
+  :root{
+    --ink:#16140f;
+    --paper:#f7f4ec;
+    --paper-2:#efe9dc;
+    --line:#d9d0bd;
+    --crimson:#b8332e;
+    --crimson-soft:#f0d9d6;
+    --gold:#8a6d1f;
+    --muted:#6b6356;
+    --lottery:#1f6f5c;
+    --lottery-soft:#dcefe8;
+    --essay-c:#5a4a82;
+    --essay-soft:#e8e2f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Hiragino Sans","Noto Sans TC","PingFang TC",-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;font-size:15px;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 60px;
+  }
+  .wrap{padding:0 16px;}
+
+  header{border-bottom:2px solid var(--ink);padding:28px 16px 18px;}
+  .eyebrow{font-size:11px;letter-spacing:.2em;color:var(--crimson);font-weight:700;margin-bottom:8px;}
+  h1{font-family:"Times New Roman","Songti TC",serif;font-size:27px;font-weight:700;line-height:1.1;margin-bottom:10px;}
+  h1 .yr{color:var(--crimson);}
+  .lede{font-size:13px;color:var(--muted);}
+  .lede strong{color:var(--ink);}
+
+  /* sticky controls */
+  .controls{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 16px;}
+  .search{width:100%;border:1px solid var(--line);background:#fff;font:inherit;font-size:15px;padding:10px 14px;border-radius:10px;margin-bottom:10px;}
+  .search:focus{outline:none;border-color:var(--ink);}
+  .filters{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .filters::-webkit-scrollbar{display:none;}
+  .pill{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:13px;padding:8px 13px;border-radius:999px;white-space:nowrap;}
+  .pill.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .sortbar{display:flex;gap:7px;margin-top:9px;align-items:center;}
+  .sortbar .lbl{font-size:11px;color:var(--muted);letter-spacing:.1em;}
+  .sortbar button{flex:1;border:1px solid var(--line);background:#fff;font:inherit;font-size:12px;padding:7px 4px;border-radius:8px;color:var(--ink);}
+  .sortbar button.active{background:var(--paper-2);border-color:var(--ink);font-weight:700;}
+  .count{font-size:12px;color:var(--muted);margin-top:9px;}
+
+  /* cards */
+  .cards{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;position:relative;overflow:hidden;}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--crimson);}
+  .card.lottery::before{background:var(--lottery);}
+  .card.essay::before{background:var(--essay-c);}
+  .card.blocked{opacity:.5;}
+  .c-top{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;}
+  .c-rank{font-family:"Times New Roman",serif;font-weight:700;color:var(--muted);font-size:13px;flex:0 0 auto;}
+  .c-name{font-weight:700;font-size:17px;line-height:1.25;}
+  .c-name a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--crimson);}
+  .c-web{font-size:11px;color:var(--gold);margin:2px 0 10px 22px;word-break:break-all;}
+  .c-stats{display:flex;gap:10px;margin-bottom:10px;}
+  .stat{flex:1;background:var(--paper);border-radius:9px;padding:8px 10px;}
+  .stat .k{font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
+  .stat .v{font-family:"Times New Roman",serif;font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;}
+  .stat .v.yen{font-size:16px;}
+  .c-desc{font-size:13px;color:var(--muted);margin-bottom:11px;}
+  .c-sel{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;white-space:nowrap;}
+  .tag.pri{border:1.5px solid currentColor;}
+  .tag.amount{background:var(--crimson-soft);color:var(--crimson);}
+  .tag.essay{background:var(--essay-soft);color:var(--essay-c);}
+  .tag.lottery{background:var(--lottery-soft);color:var(--lottery);}
+  .tag.tb{background:transparent;color:var(--muted);border:1px dashed var(--line);font-weight:600;}
+  .arrow{font-size:11px;color:var(--muted);}
+  .c-note{font-size:11px;color:var(--muted);margin-top:8px;}
+  .c-flag{font-size:11px;color:var(--crimson);font-weight:700;margin-top:8px;display:block;}
+
+  /* legend + footer */
+  details{margin:0 16px 14px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  summary{padding:13px 15px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";color:var(--crimson);font-size:18px;}
+  details[open] summary::after{content:"－";}
+  .det-body{padding:0 15px 15px;font-size:13px;color:var(--muted);line-height:1.7;}
+  .det-body .row{display:flex;gap:8px;align-items:center;margin-bottom:7px;}
+  .det-body .k{color:var(--ink);font-weight:700;}
+  .det-body p{margin-bottom:9px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">RUN with HEART · 受贈團體</div>
+  <h1>東京馬拉松 <span class="yr">2027</span> 慈善計畫</h1>
+  <p class="lede">37 個可由台灣居民報名的計畫,依<strong>名額多寡</strong>排列。實線標籤=主要決勝機制,虛線=同額時的決勝。全表唯一<strong>金額無關</strong>的是日本身障運動協會(純抽籤)。</p>
+</header>
+
+<div class="controls">
+  <input class="search" type="text" id="search" placeholder="搜尋名稱 / 內容…">
+  <div class="filters">
+    <button class="pill active" data-filter="all">全部</button>
+    <button class="pill" data-filter="lottery">純抽籤</button>
+    <button class="pill" data-filter="essay">文章優先</button>
+    <button class="pill" data-filter="low">≤¥120,000</button>
+    <button class="pill" data-filter="sport">運動相關</button>
+  </div>
+  <div class="sortbar">
+    <span class="lbl">排序</span>
+    <button data-sort="cap" class="active">名額多→少</button>
+    <button data-sort="yen">金額低→高</button>
+  </div>
+  <div class="count" id="count"></div>
+</div>
+
+<details>
+  <summary>標籤說明 & 重要提醒</summary>
+  <div class="det-body">
+    <p class="k" style="margin-bottom:8px;">主要決勝機制:</p>
+    <div class="row"><span class="tag pri amount">金額第一</span> 捐款報越高越前面</div>
+    <div class="row"><span class="tag pri essay">文章優先</span> 理念文章為主、金額次要</div>
+    <div class="row"><span class="tag pri lottery">純抽籤</span> 與金額無關</div>
+    <p class="k" style="margin:12px 0 8px;">同額時的決勝:</p>
+    <div class="row"><span class="tag tb">抽籤</span><span class="tag tb">文章</span><span class="tag tb">早申請</span></div>
+    <p style="margin-top:14px;"><span class="k">更正:</span>全 37 團體中,唯一與捐款金額完全無關的只有「日本身障運動協會」(純抽籤)。其餘金額都有作用。</p>
+    <p><span class="k">門檻提醒:</span>Chance for Children 僅收過往 CFC 跑者,台灣新人無法報名(已標灰)。有效選項 36 個。</p>
+    <p><span class="k">經驗值:</span>歷年回報顯示門檻 10 萬円團體實際當選多在 10.8～13 萬円,幾乎無人靠門檻金額上岸。金額制想穩,建議門檻+1～3 萬円。</p>
+    <p><span class="k">2027 期程:</span>慈善跑者申請 2026/6/24 11:00 ～ 8/31 17:00(較往年延長)。</p>
+    <p style="font-size:11px;margin-top:10px;">資料來源:東京馬拉松財團 2027 官方選定基準 PDF(0622版)。</p>
+  </div>
+</details>
+
+<div class="cards" id="cards"></div>
+
+<script>
+const data=[
+ {rank:1,name:"日本麥當勞之家",web:"dmhcj.or.jp/english",cap:700,yen:120000,desc:"為遠地住院病童及家屬提供「第二個家」住宿設施",pri:"amount",tb:["早申請"],sport:false},
+ {rank:2,name:"運動傳承計畫 1",web:"sportslegacy.jp/en",cap:434,yen:150000,desc:"透過運動推動社會進步、教育與設施建設",pri:"essay",tb:[],sport:true},
+ {rank:3,name:"Peace Winds Japan",web:"wanko.peace-winds.org",cap:410,yen:200000,desc:"救援棄犬、訓練災害救助/治療犬;國際人道救援",pri:"amount",tb:["文章"],sport:false},
+ {rank:4,name:"ACE 終止童工",web:"global.acejapan.org",cap:233,yen:200000,desc:"消除童工、保障兒童權利(迦納可可產區+日本)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:5,name:"日本 UNHCR",web:"japanforunhcr.org",cap:214,yen:150000,desc:"為戰亂難民兒童提供運動與教育支援",pri:"amount",tb:["文章"],sport:true},
+ {rank:6,name:"Gold Ribbon Network",web:"goldribbon.jp/english",cap:199,yen:120000,desc:"兒癌獎學金、治療交通住宿補助、研究補助",pri:"amount",tb:["早申請"],sport:false},
+ {rank:7,name:"Plan International Japan",web:"plan-international.jp",cap:198,yen:150000,desc:"支援開發中國家女童教育與自立(團體每人¥220,000)",pri:"amount",tb:["文章"],sport:false},
+ {rank:8,name:"Kamonohashi Project",web:"kamonohashi-project.net",cap:152,yen:200000,desc:"防止兒虐、協助受虐兒童復原",pri:"amount",tb:["早申請"],sport:false},
+ {rank:9,name:"日本對癌協會",web:"jcancer.jp",cap:147,yen:150000,desc:"免費癌症諮詢專線、推廣篩檢、研究補助",pri:"amount",tb:["早申請"],sport:false},
+ {rank:10,name:"NPO KIDSDOOR",web:"kidsdoor.net/en",cap:145,yen:150000,desc:"為弱勢兒童提供免費學習與社交空間(國內名額至多20%)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:11,name:"特殊奧運(日本)",web:"son.or.jp",cap:132,yen:100000,desc:"為智能障礙者提供運動訓練與賽事",pri:"amount",tb:["抽籤"],sport:true},
+ {rank:12,name:"Family House",web:"familyhouse.or.jp/en",cap:120,yen:130000,desc:"為重症病童及家屬提供醫院旁住宿設施",pri:"essay",tb:["金額"],sport:false},
+ {rank:13,name:"Teach For Japan",web:"teachforjapan.org/en",cap:117,yen:170000,desc:"培訓教師投入弱勢學校,改善教育公平",pri:"amount",tb:["早申請"],sport:false},
+ {rank:14,name:"日本身障運動協會",web:"parasports.or.jp",cap:114,yen:100000,desc:"推廣帕拉運動、辦理全國身障運動賽事",pri:"lottery",tb:[],sport:true,note:"文章+共鳴後抽籤;全表唯一金額無關"},
+ {rank:15,name:"CARE International Japan",web:"careintjp.org",cap:112,yen:150000,desc:"援助開發中國家與烏克蘭婦女、女童自立",pri:"amount",tb:["文章"],sport:false},
+ {rank:16,name:"Pride House Tokyo NPO",web:"pridehouse.jp/en",cap:109,yen:100000,desc:"經營日本首座常設 LGBTQ+ 中心",pri:"amount",tb:["文章"],sport:false},
+ {rank:17,name:"WaterAid Japan",web:"wateraid.org",cap:107,yen:100000,desc:"提供潔淨水、廁所與衛生教育",pri:"amount",tb:["文章"],sport:false},
+ {rank:18,name:"運動傳承計畫 3(能登)",web:"sportslegacy.jp/en",cap:100,yen:150000,desc:"2024 能登半島地震災區救援(透過紅十字會)",pri:"essay",tb:[],sport:true},
+ {rank:19,name:"Room to Read Japan",web:"japan.roomtoread.org",cap:100,yen:160000,desc:"兒童識字與性別平等教育(約 USD 1,000)",pri:"amount",tb:["抽籤"],sport:false},
+ {rank:20,name:"國境なき子どもたち(KnK)",web:"knk-int.org",cap:93,yen:180000,desc:"柬/菲/孟弱勢與街頭兒童教育支援",pri:"amount",tb:["早申請"],sport:false},
+ {rank:21,name:"東京玩具美術館",web:"art-play.or.jp/ttm/en",cap:92,yen:150000,desc:"共融型美術館,以玩具/遊戲連結各世代",pri:"amount",tb:["早申請"],sport:false},
+ {rank:22,name:"Solaputi Kids' Camp",web:"solaputi.jp/en",cap:91,yen:100000,desc:"邀重症病童及家屬至附醫療露營區",pri:"amount",tb:["文章"],sport:false,note:"金額+文章+累積貢獻綜合計分"},
+ {rank:23,name:"Friends Without A Border",web:"fwab.jp/en",cap:83,yen:150000,desc:"在寮國經營兒童醫院、提供免費醫療",pri:"amount",tb:["文章"],sport:false},
+ {rank:24,name:"日本環境教育論壇(JEEF)",web:"jeef.or.jp/english",cap:83,yen:100000,desc:"推動「不遺漏任何人」的環境教育",pri:"amount",tb:["文章"],sport:false},
+ {rank:25,name:"NPO Sodateage Net",web:"sodateage.net",cap:69,yen:140000,desc:"支援社會孤立的青少年連結社會",pri:"amount",tb:["早申請"],sport:false},
+ {rank:26,name:"NPO Florence",web:"florence.or.jp/english",cap:63,yen:150000,desc:"支援單親/貧困家庭(病童臨托等)",pri:"amount",tb:["早申請"],sport:false},
+ {rank:27,name:"日本骨髓捐贈推進協議會",web:"marrow.or.jp",cap:49,yen:150000,desc:"推廣骨髓捐贈登錄、支援白血病患者",pri:"amount",tb:["文章"],sport:false},
+ {rank:28,name:"JOICFP",web:"joicfp.or.jp/eng",cap:46,yen:120000,desc:"推動性與生殖健康權利(亞非+日本)",pri:"amount",tb:["文章"],sport:false},
+ {rank:29,name:"ADRA Japan",web:"adrajpn.org",cap:43,yen:165000,desc:"國際緊急人道救援與教育/生計支援",pri:"amount",tb:["文章"],sport:false},
+ {rank:30,name:"世界兒童疫苗委員會(JCV)",web:"jcv-jp.org",cap:41,yen:100000,desc:"為開發中國家兒童提供疫苗",pri:"amount",tb:["抽籤"],sport:false},
+ {rank:31,name:"難民支援協會(JAR)",web:"refugee.or.jp/en",cap:40,yen:150000,desc:"為來日難民提供醫療/食物/住宿綜合支援",pri:"amount",tb:["文章"],sport:false},
+ {rank:32,name:"Chance for Children",web:"cfc.or.jp/english",cap:40,yen:100000,desc:"提供貧困兒童課外教育折抵券",pri:"amount",tb:["抽籤"],sport:false,flag:"限過往 CFC 跑者,台灣新人無法報名",blocked:true},
+ {rank:33,name:"NPO MadreBonita",web:"madrebonita.com/en",cap:40,yen:120000,desc:"提供產後身心復原課程、推廣產後知識",pri:"essay",tb:["金額"],sport:false},
+ {rank:34,name:"日本 IDDM Network",web:"japan-iddm.net",cap:40,yen:120000,desc:"資助第一型糖尿病治癒研究",pri:"amount",tb:["文章"],sport:false},
+ {rank:35,name:"運動傳承計畫 2(311)",web:"sportslegacy.jp/en",cap:34,yen:150000,desc:"支援 311 震災三縣孤兒教育",pri:"essay",tb:[],sport:true},
+ {rank:36,name:"World Vision Japan",web:"congrant.com/project/worldvision",cap:30,yen:150000,desc:"撒哈拉以南潔淨水與衛生設施",pri:"amount",tb:["早申請"],sport:false},
+ {rank:37,name:"日本財團",web:"en.nippon-foundation.or.jp",cap:30,yen:350000,desc:"兒童支援基金(經濟/家庭/教育困境兒童);門檻最高",pri:"amount",tb:["抽籤"],sport:false}
+];
+const PRI_LABEL={amount:"金額第一",essay:"文章優先",lottery:"純抽籤"};
+const fmt=n=>"¥"+n.toLocaleString();
+const cardsEl=document.getElementById("cards");
+let curFilter="all", sortKey="cap", query="";
+
+function passesFilter(d){
+  if(query){const q=query.toLowerCase();if(!(d.name.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q)))return false;}
+  if(curFilter==="lottery")return d.pri==="lottery";
+  if(curFilter==="essay")return d.pri==="essay";
+  if(curFilter==="low")return d.yen<=120000;
+  if(curFilter==="sport")return d.sport;
+  return true;
+}
+function render(){
+  let rows=data.filter(passesFilter);
+  rows.sort((a,b)=> sortKey==="cap" ? b.cap-a.cap : a.yen-b.yen );
+  cardsEl.innerHTML=rows.map(d=>{
+    const pri=`<span class="tag pri ${d.pri}">${PRI_LABEL[d.pri]}</span>`;
+    const chain=d.tb.length?`<span class="arrow">→ 同額:</span>${d.tb.map(t=>`<span class="tag tb">${t}</span>`).join("")}`:"";
+    const note=d.note?`<span class="c-note">※ ${d.note}</span>`:"";
+    const flag=d.flag?`<span class="c-flag">⚠ ${d.flag}</span>`:"";
+    return `<div class="card ${d.pri} ${d.blocked?'blocked':''}">
+      <div class="c-top"><span class="c-rank">#${d.rank}</span><span class="c-name"><a href="https://${d.web}" target="_blank" rel="noopener">${d.name}</a></span></div>
+      <div class="c-web">${d.web}</div>
+      <div class="c-stats">
+        <div class="stat"><div class="k">名額</div><div class="v">${d.cap}</div></div>
+        <div class="stat"><div class="k">最低金額</div><div class="v yen">${fmt(d.yen)}</div></div>
+      </div>
+      <div class="c-desc">${d.desc}</div>
+      <div class="c-sel">${pri}${chain}</div>
+      ${note}${flag}
+    </div>`;
+  }).join("");
+  document.getElementById("count").textContent=`顯示 ${rows.length} / ${data.length} 個計畫`;
+}
+document.querySelectorAll(".pill").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".pill").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");curFilter=b.dataset.filter;render();
+}));
+document.querySelectorAll(".sortbar button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".sortbar button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");sortKey=b.dataset.sort;render();
+}));
+document.getElementById("search").addEventListener("input",e=>{query=e.target.value;render();});
+render();
+</script>
+</body>
+</html>
