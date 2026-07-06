@@ -84,7 +84,7 @@
     <p class="kicker">Tokyo Marathon 2027 · Charity Runner</p>
     <h1>東京馬拉松 2027 慈善報名 — 每日狀態追蹤</h1>
     <p class="meta">報名期間：<b>2026/6/24 11:00 – 7/9 17:00</b>　·　選拔非先到先得，截止前皆可報</p>
-    <p class="meta">最後更新：<b id="lastupd">2026/7/1 9:00</b>　·　已記錄天數：<b id="daycount">1</b></p>
+    <p class="meta">最後更新：<b id="lastupd">2026/7/6 10:00</b>　·　已記錄天數：<b id="daycount">1</b></p>
     <p class="src">資料來源：RUN with HEART 官方各團體申請狀況看板　https://www.runwithheart.jp/news/1/</p>
   </header>
 
@@ -149,49 +149,49 @@
 <script>
 // 每日資料：status 物件以日期鍵存放，新增一天就在每筆 push 一個鍵。
 const ORGS = [
-  {name:"運動傳承-1", thr:15, slot:434, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full"}},
-  {name:"運動傳承-2", thr:15, slot:34, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"運動傳承-3", thr:15, slot:100, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"麥當勞之家", thr:12, slot:700, mech:"金額順(優先枠150)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Peace Winds", thr:20, slot:410, mech:"純金額→同額先到", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"ACE", thr:20, slot:233, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full"}},
-  {name:"UNHCR", thr:15, slot:214, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"Plan International", thr:15, slot:198, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"Gold Ribbon", thr:12, slot:199, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Kamonohashi", thr:20, slot:152, mech:"純金額(優先枠20)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"特殊奧運", thr:10, slot:132, mech:"純抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Room to Read", thr:16, slot:100, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"KIDSDOOR", thr:15, slot:145, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"日本對癌協會", thr:15, slot:147, mech:"金額+先到", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Family House", thr:13, slot:120, mech:"金額+訊息(優先枠)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"身障運動協會", thr:10, slot:114, mech:"訊息+抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Teach For Japan", thr:17, slot:117, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"Care International", thr:15, slot:112, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"WaterAid", thr:10, slot:107, mech:"金額(優先枠10)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"Solaputi", thr:10, slot:91, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"Pride House東京", thr:10, slot:109, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"FWAB", thr:15, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"KnK", thr:18, slot:93, mech:"金額(優先枠)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"東京玩具美術館", thr:15, slot:92, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"育て上げネット", thr:14, slot:69, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"東京都農林水產", thr:10, slot:67, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full"}},
-  {name:"JEEF", thr:10, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"Florence", thr:15, slot:63, mech:"金額(優先枠31)", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"ADRA Japan", thr:16.5, slot:43, mech:"金額+訊息(優先枠7)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"JOICFP", thr:12, slot:46, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full"}},
-  {name:"骨髓捐贈協議會", thr:15, slot:49, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full"}},
-  {name:"東京防災救急", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"難民支援協會JAR", thr:15, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
-  {name:"守護兒童癌症會", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"MadreBonita", thr:12, slot:40, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full"}},
-  {name:"JCV", thr:10, slot:41, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"日本IDDM", thr:12, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"World Vision", thr:15, slot:30, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full"}},
-  {name:"日本財團", thr:35, slot:30, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open"}},
+  {name:"運動傳承-1", thr:15, slot:434, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"運動傳承-2", thr:15, slot:34, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"運動傳承-3", thr:15, slot:100, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"麥當勞之家", thr:12, slot:700, mech:"金額順(優先枠150)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Peace Winds", thr:20, slot:410, mech:"純金額→同額先到", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"ACE", thr:20, slot:233, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"UNHCR", thr:15, slot:214, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Plan International", thr:15, slot:198, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Gold Ribbon", thr:12, slot:199, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Kamonohashi", thr:20, slot:152, mech:"純金額(優先枠20)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"特殊奧運", thr:10, slot:132, mech:"純抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Room to Read", thr:16, slot:100, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"KIDSDOOR", thr:15, slot:145, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本對癌協會", thr:15, slot:147, mech:"金額+先到", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Family House", thr:13, slot:120, mech:"金額+訊息(優先枠)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"身障運動協會", thr:10, slot:114, mech:"訊息+抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Teach For Japan", thr:17, slot:117, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Care International", thr:15, slot:112, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"WaterAid", thr:10, slot:107, mech:"金額(優先枠10)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Solaputi", thr:10, slot:91, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Pride House東京", thr:10, slot:109, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"FWAB", thr:15, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"KnK", thr:18, slot:93, mech:"金額(優先枠)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"東京玩具美術館", thr:15, slot:92, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"育て上げネット", thr:14, slot:69, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"東京都農林水產", thr:10, slot:67, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"JEEF", thr:10, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Florence", thr:15, slot:63, mech:"金額(優先枠31)", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"ADRA Japan", thr:16.5, slot:43, mech:"金額+訊息(優先枠7)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"JOICFP", thr:12, slot:46, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"骨髓捐贈協議會", thr:15, slot:49, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"東京防災救急", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"難民支援協會JAR", thr:15, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"守護兒童癌症會", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"MadreBonita", thr:12, slot:40, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"JCV", thr:10, slot:41, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本IDDM", thr:12, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"World Vision", thr:15, slot:30, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本財團", thr:35, slot:30, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"open"}},
 ];
 // 日期欄順序（新增日就 push）
-const DATES = ["0625","0626","0629","0701"];
-const DATE_LABEL = {"0625":"6/25","0626":"6/26","0629":"6/29","0701":"7/1"};
+const DATES = ["0625","0626","0629","0701","0702","0706"];
+const DATE_LABEL = {"0625":"6/25","0626":"6/26","0629":"6/29","0701":"7/1","0702":"7/2","0706":"7/6"};
 
 let sortKey="thr", sortDir=1, curSort=null;
 const tbody=document.getElementById('tbody');
