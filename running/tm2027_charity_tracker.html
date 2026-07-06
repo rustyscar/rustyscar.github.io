@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>東京馬拉松2027 慈善報名追蹤</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#FFFFFF; --panel2:#F6F5F1; --line:#E3E1D9;
+    --ink:#1F1E1B; --ink2:#6B6960; --ink3:#9A988F;
+    --green:#1D9E75; --green-bg:#E1F5EE; --green-ink:#0F6E56;
+    --red:#D8453F; --red-bg:#FBEAE9; --red-ink:#A32D2D;
+    --amber:#B57814; --accent:#9A7B1E;
+    --jp:#2E6FB0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Hiragino Sans","Noto Sans TC","PingFang TC",system-ui,sans-serif;
+    line-height:1.6; font-size:15px;
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:28px 18px 64px;}
+  header{border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:22px;}
+  .kicker{font-size:12px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin:0 0 8px;}
+  h1{font-size:25px; font-weight:600; margin:0 0 10px; letter-spacing:.01em;}
+  .meta{font-size:13px; color:var(--ink2); margin:2px 0;}
+  .meta b{color:var(--ink); font-weight:600;}
+  .src{font-size:12px; color:var(--ink3); margin-top:8px; word-break:break-all;}
+
+  .summary{display:flex; gap:10px; flex-wrap:wrap; margin:20px 0 8px;}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 16px; min-width:120px;}
+  .stat .n{font-size:24px; font-weight:600; line-height:1;}
+  .stat .l{font-size:12px; color:var(--ink2); margin-top:5px;}
+  .stat.green .n{color:var(--green-ink);}
+  .stat.red .n{color:var(--red-ink);}
+
+  .controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:18px 0 12px;}
+  .controls input, .controls select{
+    background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+    border-radius:8px; padding:7px 11px; font-size:13px; font-family:inherit;
+  }
+  .controls input{flex:1; min-width:160px;}
+  .controls .hint{font-size:12px; color:var(--ink3);}
+
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--panel);}
+  table{border-collapse:collapse; width:100%; font-size:13px; min-width:720px;}
+  thead th{
+    position:sticky; top:0; background:var(--panel2); color:var(--ink2);
+    font-weight:600; text-align:left; padding:10px 10px; border-bottom:1px solid var(--line);
+    font-size:12px; white-space:nowrap;
+  }
+  thead th.date{text-align:center; color:var(--accent);}
+  tbody td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FAF9F5;}
+  .name{font-weight:500; color:var(--ink); white-space:nowrap;}
+  .jp-tag{display:inline-block; margin-left:6px; font-size:10px; color:var(--jp); border:1px solid var(--jp); border-radius:4px; padding:0 4px; vertical-align:1px;}
+  .num{text-align:right; font-variant-numeric:tabular-nums; color:var(--ink); white-space:nowrap;}
+  .mech{color:var(--ink2); font-size:12px; white-space:nowrap;}
+  .lottery{color:var(--amber); font-weight:600;}
+  td.date{text-align:center;}
+  .pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; white-space:nowrap;}
+  .pill.green{background:var(--green-bg); color:var(--green-ink);}
+  .pill.red{background:var(--red-bg); color:var(--red-ink);}
+  .pill.dash{color:var(--ink3);}
+
+  .legend{display:flex; gap:18px; flex-wrap:wrap; margin:16px 2px; font-size:12px; color:var(--ink2);}
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  .notes{margin-top:26px; border-top:1px solid var(--line); padding-top:18px; font-size:12.5px; color:var(--ink2);}
+  .notes h3{font-size:14px; color:var(--ink); margin:0 0 8px; font-weight:600;}
+  .notes ul{margin:0 0 14px; padding-left:18px;}
+  .notes li{margin:4px 0;}
+  .notes b{color:var(--ink);}
+  .star{color:var(--jp);}
+  @media (max-width:560px){ h1{font-size:21px;} .wrap{padding:20px 12px 48px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">Tokyo Marathon 2027 · Charity Runner</p>
+    <h1>東京馬拉松 2027 慈善報名 — 每日狀態追蹤</h1>
+    <p class="meta">報名期間：<b>2026/6/24 11:00 – 7/9 17:00</b>　·　選拔非先到先得，截止前皆可報</p>
+    <p class="meta">最後更新：<b id="lastupd">2026/7/6 10:00</b>　·　已記錄天數：<b id="daycount">1</b></p>
+    <p class="src">資料來源：RUN with HEART 官方各團體申請狀況看板　https://www.runwithheart.jp/news/1/</p>
+  </header>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="controls">
+    <input id="search" type="text" placeholder="搜尋團體名稱…">
+    <select id="filter">
+      <option value="all">全部團體</option>
+      <option value="open">只看最新「受付中」</option>
+      <option value="full">只看最新「已爆」</option>
+      <option value="lottery">只看抽籤制</option>
+      <option value="le15">門檻 ≤15萬</option>
+      <option value="ge20">門檻 ≥20萬</option>
+    </select>
+    <span class="hint">點欄位標題可排序</span>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:var(--green)"></i>受付中（尚未額滿）</span>
+    <span><i class="dot" style="background:var(--red)"></i>已爆（申請超過名額，仍可報）</span>
+    <span class="lottery">★ 抽籤制（金額無關）</span>
+    <span class="star">JP = 限日本居住</span>
+  </div>
+
+  <div class="tablewrap">
+    <table id="tbl">
+      <thead>
+        <tr id="headrow">
+          <th data-sort="name">團體</th>
+          <th data-sort="thr" class="num">門檻</th>
+          <th data-sort="slot" class="num">名額</th>
+          <th data-sort="mech">機制</th>
+          <th class="date" data-date="0625">6/25</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="notes">
+    <h3>關於每日更新</h3>
+    <ul>
+      <li>本表每日新增一欄記錄當天狀態，<b>保留每一天的歷史</b>，可橫向對照各團體何時「由綠轉紅」。</li>
+      <li><b>自動化限制：</b>本工具無法自行在每天 6 點抓取——需由你每天來訊觸發，屆時即時抓取官方最新看板、解析、補上當天欄位並重出此檔。</li>
+    </ul>
+    <h3>判讀重點</h3>
+    <ul>
+      <li><b>「已爆」≠ 一定上不了：</b>它代表申請人數已超過名額，但金額制團體最終按<b>寄付金額高低排序</b>，高額者仍可擠進；只是競爭已白熱化。</li>
+      <li><b>「受付中」≠ 穩上：</b>代表目前申請數未滿名額，此刻申請卡位機率高，但截止前仍會湧入。</li>
+      <li><b>承諾金額 = 實付金額：</b>填多少，獲選後就須足額支付，不能填高付低。落選則無需付款。</li>
+      <li><b>★ 抽籤制</b>（特殊奧運、身障運動協會）金額無關，出門檻價與高價中籤率相同；惟兩者 6/25 已爆。</li>
+    </ul>
+    <h3>資料限制</h3>
+    <ul>
+      <li>名額為各團體 2026/2027 公布數整理，年度間可能微調；機制以最新公布為準，個別團體可能逐年變動。</li>
+      <li>運動傳承 1/2/3 與 Pride House 不適用寄付金控除（其餘多數適用）。</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+// 每日資料：status 物件以日期鍵存放，新增一天就在每筆 push 一個鍵。
+const ORGS = [
+  {name:"運動傳承-1", thr:15, slot:434, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"運動傳承-2", thr:15, slot:34, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"運動傳承-3", thr:15, slot:100, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"麥當勞之家", thr:12, slot:700, mech:"金額順(優先枠150)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Peace Winds", thr:20, slot:410, mech:"純金額→同額先到", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"ACE", thr:20, slot:233, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"UNHCR", thr:15, slot:214, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Plan International", thr:15, slot:198, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Gold Ribbon", thr:12, slot:199, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Kamonohashi", thr:20, slot:152, mech:"純金額(優先枠20)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"特殊奧運", thr:10, slot:132, mech:"純抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Room to Read", thr:16, slot:100, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"KIDSDOOR", thr:15, slot:145, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本對癌協會", thr:15, slot:147, mech:"金額+先到", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Family House", thr:13, slot:120, mech:"金額+訊息(優先枠)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"身障運動協會", thr:10, slot:114, mech:"訊息+抽籤", jp:false, lottery:true, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Teach For Japan", thr:17, slot:117, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Care International", thr:15, slot:112, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"WaterAid", thr:10, slot:107, mech:"金額(優先枠10)", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Solaputi", thr:10, slot:91, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Pride House東京", thr:10, slot:109, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"FWAB", thr:15, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"KnK", thr:18, slot:93, mech:"金額(優先枠)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"full"}},
+  {name:"東京玩具美術館", thr:15, slot:92, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"育て上げネット", thr:14, slot:69, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"東京都農林水產", thr:10, slot:67, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"JEEF", thr:10, slot:83, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"Florence", thr:15, slot:63, mech:"金額(優先枠31)", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"ADRA Japan", thr:16.5, slot:43, mech:"金額+訊息(優先枠7)", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"JOICFP", thr:12, slot:46, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"骨髓捐贈協議會", thr:15, slot:49, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"full","0702":"full","0706":"full"}},
+  {name:"東京防災救急", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"難民支援協會JAR", thr:15, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"full","0706":"full"}},
+  {name:"守護兒童癌症會", thr:10, slot:null, mech:"純金額", jp:true, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"MadreBonita", thr:12, slot:40, mech:"金額+訊息", jp:false, lottery:false, status:{"0625":"open","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"JCV", thr:10, slot:41, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本IDDM", thr:12, slot:40, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"World Vision", thr:15, slot:30, mech:"純金額", jp:false, lottery:false, status:{"0625":"full","0626":"full","0629":"full","0701":"full","0702":"full","0706":"full"}},
+  {name:"日本財團", thr:35, slot:30, mech:"金額後抽", jp:false, lottery:false, status:{"0625":"open","0626":"open","0629":"open","0701":"open","0702":"open","0706":"open"}},
+];
+// 日期欄順序（新增日就 push）
+const DATES = ["0625","0626","0629","0701","0702","0706"];
+const DATE_LABEL = {"0625":"6/25","0626":"6/26","0629":"6/29","0701":"7/1","0702":"7/2","0706":"7/6"};
+
+let sortKey="thr", sortDir=1, curSort=null;
+const tbody=document.getElementById('tbody');
+const headrow=document.getElementById('headrow');
+
+function statusPill(s){
+  if(s==="open") return '<span class="pill green">受付中</span>';
+  if(s==="full") return '<span class="pill red">已爆</span>';
+  return '<span class="pill dash">—</span>';
+}
+function ensureDateHeaders(){
+  // 移除舊日期欄，重建
+  [...headrow.querySelectorAll('th.date')].forEach(th=>th.remove());
+  DATES.forEach(d=>{
+    const th=document.createElement('th');
+    th.className='date'; th.dataset.date=d; th.textContent=DATE_LABEL[d]||d;
+    headrow.appendChild(th);
+  });
+}
+function render(list){
+  ensureDateHeaders();
+  tbody.innerHTML='';
+  list.forEach(o=>{
+    const tr=document.createElement('tr');
+    const thrTxt = (o.thr%1===0? o.thr : o.thr.toFixed(1))+'萬';
+    const slotTxt = o.slot==null? '—' : o.slot;
+    const mechCls = o.lottery? 'mech lottery':'mech';
+    const mechTxt = (o.lottery? '★ ':'')+o.mech;
+    const jpTag = o.jp? '<span class="jp-tag">JP</span>':'';
+    let cells = `<td class="name">${o.name}${jpTag}</td>`
+      + `<td class="num">${thrTxt}</td>`
+      + `<td class="num">${slotTxt}</td>`
+      + `<td class="${mechCls}">${mechTxt}</td>`;
+    DATES.forEach(d=>{ cells += `<td class="date">${statusPill(o.status[d])}</td>`; });
+    tr.innerHTML=cells;
+    tbody.appendChild(tr);
+  });
+}
+function applyView(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const f=document.getElementById('filter').value;
+  const latest=DATES[DATES.length-1];
+  let list=ORGS.filter(o=>{
+    if(q && !o.name.toLowerCase().includes(q)) return false;
+    if(f==="open" && o.status[latest]!=="open") return false;
+    if(f==="full" && o.status[latest]!=="full") return false;
+    if(f==="lottery" && !o.lottery) return false;
+    if(f==="le15" && o.thr>15) return false;
+    if(f==="ge20" && o.thr<20) return false;
+    return true;
+  });
+  if(curSort){
+    list.sort((a,b)=>{
+      let va,vb;
+      if(curSort==="name"){va=a.name;vb=b.name;return va.localeCompare(vb)*sortDir;}
+      if(curSort==="thr"){va=a.thr;vb=b.thr;}
+      if(curSort==="slot"){va=a.slot??-1;vb=b.slot??-1;}
+      if(curSort==="mech"){va=a.mech;vb=b.mech;return va.localeCompare(vb)*sortDir;}
+      return (va-vb)*sortDir;
+    });
+  }
+  render(list);
+}
+function renderSummary(){
+  const latest=DATES[DATES.length-1];
+  const open=ORGS.filter(o=>o.status[latest]==="open").length;
+  const full=ORGS.filter(o=>o.status[latest]==="full").length;
+  document.getElementById('summary').innerHTML =
+    `<div class="stat"><div class="n">${ORGS.length}</div><div class="l">總團體數</div></div>`
+    + `<div class="stat green"><div class="n">${open}</div><div class="l">最新 · 受付中</div></div>`
+    + `<div class="stat red"><div class="n">${full}</div><div class="l">最新 · 已爆</div></div>`;
+  document.getElementById('daycount').textContent=DATES.length;
+}
+headrow.addEventListener('click',e=>{
+  const th=e.target.closest('th'); if(!th||!th.dataset.sort) return;
+  const k=th.dataset.sort;
+  if(curSort===k){sortDir*=-1;} else {curSort=k; sortDir=1;}
+  applyView();
+});
+document.getElementById('search').addEventListener('input',applyView);
+document.getElementById('filter').addEventListener('change',applyView);
+renderSummary();
+applyView();
+</script>
+</body>
+</html>
