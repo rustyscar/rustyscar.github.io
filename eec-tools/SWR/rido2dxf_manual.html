@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>Rido2DXF v2.2.3 使用說明</title>
+<style>
+  :root{
+    --fg:#1f2328; --fg-soft:#4b5563; --bg:#ffffff; --bg-soft:#f6f7f9;
+    --border:#d9dde3; --accent:#2b5aa8; --accent-soft:#e8f0fb;
+    --warn-bg:#fff8e6; --warn-border:#e8c766;
+    --ok:#1a7f37; --ng:#b3261e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-soft); color:var(--fg);
+    font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;
+    line-height:1.75; font-size:15.5px;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px 80px;}
+  header.page-header{
+    background:linear-gradient(135deg,#1e3a5f,#2b5aa8);
+    color:#fff; padding:36px 20px 28px;
+  }
+  header.page-header .inner{max-width:960px; margin:0 auto;}
+  header.page-header h1{margin:0 0 8px; font-size:1.9rem; letter-spacing:.02em;}
+  header.page-header p.tagline{margin:0 0 4px; font-size:1.05rem; color:#dce8fb;}
+  header.page-header p.date{margin:0; font-size:.85rem; color:#b7cdec;}
+
+  main{background:var(--bg); margin-top:-18px; border-radius:10px 10px 0 0;
+       box-shadow:0 1px 3px rgba(0,0,0,.08); padding:8px 36px 20px;}
+
+  h2{
+    font-size:1.35rem; margin:2.4em 0 .8em; padding-bottom:.35em;
+    border-bottom:2px solid var(--accent); color:#16324f;
+  }
+  h2 .num{color:var(--accent); margin-right:.4em;}
+  h3{font-size:1.08rem; margin:1.8em 0 .6em; color:#1f2937;}
+  h4{font-size:.98rem; margin:1.4em 0 .5em; color:#374151;}
+  p{margin:.6em 0;}
+  ul,ol{margin:.5em 0; padding-left:1.6em;}
+  li{margin:.3em 0;}
+  a{color:var(--accent);}
+
+  code, .path, .code{
+    font-family:Consolas,"Cascadia Mono",monospace;
+    background:#eef1f5; border:1px solid var(--border); border-radius:4px;
+    padding:.1em .4em; font-size:.92em; color:#1f2937;
+  }
+  pre{
+    background:#1e2530; color:#e5e9f0; padding:14px 16px; border-radius:8px;
+    overflow-x:auto; font-size:.88rem; line-height:1.6;
+  }
+  pre code{background:none; border:none; padding:0; color:inherit;}
+
+  table{border-collapse:collapse; width:100%; margin:1em 0; font-size:.92rem;}
+  caption{caption-side:top; text-align:left; font-weight:bold; margin-bottom:.4em; color:#374151;}
+  th,td{border:1px solid var(--border); padding:7px 10px; text-align:left; vertical-align:top;}
+  th{background:var(--accent-soft); color:#16324f; font-weight:700;}
+  tbody tr:nth-child(even){background:#fafbfc;}
+  .tbl-wrap{overflow-x:auto; margin:1em 0;}
+  .tbl-wrap table{margin:0;}
+
+  .box{
+    border-left:4px solid var(--accent); background:var(--accent-soft);
+    padding:12px 16px; border-radius:0 6px 6px 0; margin:1.1em 0; font-size:.94rem;
+  }
+  .box.tip::before{content:"提示　"; font-weight:700; color:var(--accent);}
+  .box.warn{border-left-color:var(--warn-border); background:var(--warn-bg);}
+  .box.warn::before{content:"注意　"; font-weight:700; color:#8a6100;}
+  .box.note{border-left-color:#8a8f98; background:#f2f3f5;}
+  .box.note::before{content:"待確認　"; font-weight:700; color:#5b6068;}
+
+  figure{margin:1.4em 0; text-align:center;}
+  figure img{
+    max-width:100%; height:auto; border:1px solid var(--border);
+    border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,.08);
+  }
+  figcaption{margin-top:.5em; font-size:.88rem; color:var(--fg-soft);}
+
+  .badge{
+    display:inline-block; font-size:.78rem; font-weight:700; padding:.15em .55em;
+    border-radius:4px; margin-left:.4em; vertical-align:middle;
+  }
+  .badge.new{background:#e6f4ea; color:var(--ok);}
+
+  .toc{
+    background:var(--bg-soft); border:1px solid var(--border); border-radius:8px;
+    padding:14px 20px; margin:1.5em 0; font-size:.92rem;
+  }
+  .toc ol{margin:.4em 0 0;}
+  .toc a{text-decoration:none;}
+  .toc a:hover{text-decoration:underline;}
+
+  footer{
+    max-width:960px; margin:0 auto; padding:24px 36px 40px; color:var(--fg-soft);
+    font-size:.85rem;
+  }
+  footer .final-note{
+    border:1px solid var(--warn-border); background:var(--warn-bg); color:#5b4a12;
+    border-radius:8px; padding:14px 18px; font-size:.9rem; margin-bottom:14px;
+  }
+
+  @media (max-width:640px){
+    main{padding:8px 18px 16px;}
+    header.page-header{padding:28px 16px 22px;}
+    h2{font-size:1.18rem;}
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="inner">
+    <h1>Rido2DXF v2.2.3 使用說明</h1>
+    <p class="tagline">RIDO 擋土連續壁分析輸出 .LST → DXF 內力／配筋圖＋配筋 Excel</p>
+    <p class="date">文件日期：2026 年 7 月 4 日</p>
+  </div>
+</header>
+
+<div class="wrap">
+<main>
+
+<div class="toc">
+  本文件章節
+  <ol>
+    <li><a href="#sec1">簡介與版本重點</a></li>
+    <li><a href="#sec2">安裝與啟動</a></li>
+    <li><a href="#sec3">繪圖轉檔</a></li>
+    <li><a href="#sec4">配筋檢核</a></li>
+    <li><a href="#sec5">DXF 輸出說明</a></li>
+    <li><a href="#sec6">Excel 輸出說明</a></li>
+    <li><a href="#sec7">常見問題</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="sec1"><span class="num">1.</span>簡介與版本重點</h2>
+
+<p>
+Rido2DXF 將 RIDO 擋土連續壁分析程式輸出的列表檔（<code>*.LST</code>）轉換為
+DXF 圖檔，繪出各施工階段之<strong>位移／彎矩／剪力對深度分布圖</strong>；
+並可依連續壁幾何與配筋條件執行<strong>撓曲＋剪力配筋檢核</strong>，
+輸出配筋 DXF 圖與配筋表 Excel。
+</p>
+
+<div class="box warn">
+本工具產出之圖面與配筋結果為分析輔助，用於設計、施工或送審前，
+須由負責工程師依規範原文覆核，本文件不構成最終設計依據。
+</div>
+
+<h3>v2.2.3 版本重點</h3>
+<div class="tbl-wrap">
+<table>
+<caption>自 v2.2.2 以來的變更（依 git 發佈紀錄整理）</caption>
+<thead><tr><th>項目</th><th>內容</th></tr></thead>
+<tbody>
+<tr><td>剪力筋號數限制</td>
+    <td>水平剪力筋／水平斜撐／垂直斜撐三型號數選單限縮為
+        <code>#4</code>／<code>#5</code>／<code>#6</code>（<code>#0</code>＝不設此型），
+        對齊公司施工慣例；水平主筋維持 <code>#4</code>～<code>#11</code> 全清單。</td></tr>
+<tr><td>壁厚由 EI 反算並取整</td>
+    <td>依 LST 內連續壁勁度 EI 反算壁厚 <code>t</code>，結果四捨五入為整數
+        公分後帶入「配筋檢核」分頁（仍可手動修改）。</td></tr>
+<tr><td>水平主筋最小比自動化</td>
+    <td>移除「最小比 % 」手動覆寫欄，一律依 §11.6.1
+        牆最小水平鋼筋比規定自動計算與檢核。</td></tr>
+<tr><td>包絡線預設開啟</td>
+    <td>「繪圖轉檔」分頁的「加繪包絡線」選項預設勾選（各階段最大／最小包絡線）。</td></tr>
+<tr><td>最小鋼筋檢核表格化</td>
+    <td>§9.6.1 最小撓曲鋼筋與 §9.6.1.3「多配 1/3」免除條款，
+        由文字敘述改為表格化呈現（As 提供／As,min／4/3×As,req／採用門檻／結果／說明），
+        並將判定措辭統一為「可滿足」／「無法滿足」，避免與強度不足的「OK／NG」混淆。</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>本版本為 Python 重構版；所有解析與繪圖規則均以真實工程案例逆向驗證
+（25 階段 × 3 曲線 × 136 點、軸線 330 條與舊版基準 DXF 完全吻合）。
+專案內保留的 C++ 原始碼為更早期版本，僅供歷史參考，行為與現行輸出不一致。</p>
+
+<div class="box note">
+RIDO 4 新版列表格式解析（<code>rido2dxf/parser/rido4.py</code>）目前為預留擴充點，
+尚待取得範例檔驗證；現行版本以 RIDO 2/3 格式為主。
+</div>
+
+<!-- ============================================================ -->
+<h2 id="sec2"><span class="num">2.</span>安裝與啟動</h2>
+
+<p>本工具以 <strong>exe 版</strong>發佈，免安裝 Python 或任何套件，
+雙擊即可開啟圖形介面：</p>
+
+<div class="tbl-wrap">
+<table>
+<caption>程式路徑</caption>
+<thead><tr><th>項目</th><th>路徑</th></tr></thead>
+<tbody>
+<tr>
+  <td>Rido2DXF.exe</td>
+  <td><span class="path">dist\Rido2DXF_v2.2.3_exe\Rido2DXF.exe</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>使用方式</h3>
+<p>直接雙擊 <span class="path">Rido2DXF.exe</span> 即可開啟圖形介面，
+不需另外安裝 Python 或任何套件。</p>
+
+<div class="box tip">
+命令列薄殼：把 <code>.LST</code> 檔拖曳到 <span class="path">執行轉檔.bat</span>
+上，或雙擊該檔後於提示中輸入檔案路徑，可不開圖形介面直接轉檔。
+</div>
+
+<div class="box note">
+另有 Python＋.bat 可攜版（<span class="path">dist\Rido2DXF_v2.2.3_python+bat\</span>）
+供開發者檢視原始碼或客製使用，一般使用者請採用 exe 版即可。
+</div>
+
+<!-- ============================================================ -->
+<h2 id="sec3"><span class="num">3.</span>繪圖轉檔</h2>
+
+<p>此分頁將 LST 檔的位移／彎矩／剪力曲線輸出為 DXF 圖檔，
+每張圖三個可調參數：<strong>每格單位</strong>、<strong>繪製極限</strong>（圖幅邊界值）、
+<strong>圖寬</strong>；深度範圍固定為 0 至資料最深點，不可調整。</p>
+
+<figure>
+  <img src="使用說明_圖/01_繪圖轉檔.png" alt="繪圖轉檔分頁截圖">
+  <figcaption>圖 3-1　「繪圖轉檔」分頁：載入 LST 後自動顯示資料最大值、
+  帶入建議繪製極限，並即時顯示格數與每格寬度</figcaption>
+</figure>
+
+<h3>操作流程</h3>
+<ol>
+  <li>於上方「檔案」區塊按「瀏覽…」選擇 <code>.LST</code> 檔（或直接貼上路徑）。
+      選檔後程式立即解析，「資料最大值」欄會顯示位移／彎矩／剪力的實際最大值，
+      並自動帶入建議的「繪製極限」。</li>
+  <li>視需要調整每格單位、繪製極限、圖寬；灰字區會即時顯示
+      「→ N 格，每格寬 X」，若最大值超過極限會顯示警告文字（仍可執行，但圖形會被裁切）。</li>
+  <li>於「選項」區塊設定圖層樣式、DXF 版本與 PSR 係數。</li>
+  <li>按「執行轉檔」。輸出檔為與輸入檔同資料夾、同檔名的 <code>.dxf</code>；
+      若輸出檔已存在會先詢問是否覆蓋。</li>
+  <li>完成後按「開啟輸出資料夾」快速查看結果。</li>
+</ol>
+
+<h3>欄位說明</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>欄位</th><th>單位</th><th>說明</th></tr></thead>
+<tbody>
+<tr><td>每格單位</td><td>位移 cm／彎矩 t-m／剪力 t</td>
+    <td>未指定時自動依 1-2-5 數列選取，使格數落在合理範圍內。</td></tr>
+<tr><td>資料最大值</td><td>同上</td>
+    <td>唯讀，選檔後自動計算並套用目前的 PSR 折減。</td></tr>
+<tr><td>繪製極限</td><td>同上</td>
+    <td>圖幅邊界值。選檔或改單位後自動帶入「資料最大值以單位無條件進位」；
+        可自訂。訂得比資料最大值小會警告，但仍會輸出（圖形被裁切）。</td></tr>
+<tr><td>圖寬</td><td>（無因次繪圖單位）</td>
+    <td>預設 20，三張圖同值即等寬；格數＝極限 ÷ 單位（進位），
+        每格圖面寬度自動＝圖寬 ÷ 2 ÷ 格數。</td></tr>
+<tr><td>加繪包絡線</td><td>─</td>
+    <td>勾選後另繪各階段最大／最小包絡線（<code>ENVELOPE_MAX</code>／
+        <code>ENVELOPE_MIN</code> 圖層）。v2.2.3 起預設開啟。</td></tr>
+<tr><td>圖層樣式</td><td>─</td>
+    <td><code>legacy</code>＝沿用舊版數字編號圖層（<code>000</code>／<code>001</code>…）；
+        <code>named</code>＝改用具名圖層（<code>AXIS</code>／<code>PHASE_01</code>…）。</td></tr>
+<tr><td>DXF 版本</td><td>─</td>
+    <td><code>R12</code>（預設，與逆向驗證基準相同）／<code>R2000</code>／
+        <code>R2010</code>／<code>R2018</code>。</td></tr>
+<tr><td>PSR 係數</td><td>0.1～1.0</td>
+    <td>3D 效應折減係數，直接乘於位移／彎矩／剪力上，繪圖與配筋檢核共用；
+        資料最大值與繪製極限會隨之連動更新。1.0＝不折減。
+        <strong>此欄位每次開啟程式固定重設為 1.0，不會被記憶</strong>，
+        避免忘記上次已折減過。</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+除「輸入 LST 路徑」與「PSR 係數」外，其餘所有欄位（含配筋檢核分頁）
+在關閉視窗或執行成功時都會自動記憶，下次開啟沿用。
+</div>
+
+<!-- ============================================================ -->
+<h2 id="sec4"><span class="num">4.</span>配筋檢核</h2>
+
+<p>此分頁依連續壁幾何、材料與配筋條件，對載入的 LST 內力包絡線
+執行撓曲（垂直主筋）與剪力配筋檢核，並檢核水平主筋是否滿足最小鋼筋比。</p>
+
+<figure>
+  <img src="使用說明_圖/02_配筋檢核.png" alt="配筋檢核分頁截圖">
+  <figcaption>圖 4-1　「配筋檢核」分頁：幾何材料、垂直主筋、加筋允許號數、
+  水平主筋即時檢核、剪力筋間距即時檢核（圖中示範自動間距觸發斜撐 45° 軟性警告）</figcaption>
+</figure>
+
+<h3>4.1　幾何與材料</h3>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>欄位</th><th>預設值</th><th>說明</th></tr></thead>
+<tbody>
+<tr><td>壁厚 t</td><td>依 EI 反算，取整數 cm</td>
+    <td>選檔後由 LST 記載之連續壁勁度 EI 自動反算並四捨五入為整數公分
+        （關係式：<code>EI = 12000·√fc'·t³·0.7·10 / 12</code>）；可自行修改覆寫。</td></tr>
+<tr><td>fc'</td><td>245 kgf/cm²</td><td>混凝土抗壓強度，影響壁厚反算與斷面容量計算。</td></tr>
+<tr><td>淨保護層</td><td>10 cm</td><td>用於計算有效深度 d 與剪力筋間距上限。</td></tr>
+<tr><td>載重係數 FS</td><td>1.33</td>
+    <td>除在能力側，檢核條件為 φMn/FS ≥ M<sub>RIDO</sub>、φVn/FS ≥ V<sub>RIDO</sub>。</td></tr>
+</tbody>
+</table>
+</div>
+<p>「鋼筋強度設定…」按鈕可開啟各號數鋼筋 fy 值設定視窗
+（預設 <code>#4</code>／<code>#5</code> 為 2800 kgf/cm²，<code>#6</code> 以上為 4200 kgf/cm²）。</p>
+
+<h3>4.2　垂直主筋（撓曲）</h3>
+<p>擋土側（負彎矩）與開挖側（正彎矩）分別設定基本筋號數與間距，
+主筋配置在斷面外側。可選號數限 <strong>#6 起，不含 #9</strong>（公司慣例不用 #9）。</p>
+<p>「加筋允許號數」勾選可用於補強的號數（同間距插於基本筋之間）；
+程式對彎矩超出基本筋容量的區段，自動從勾選號數中選擇最小夠用者，
+並自動分區、計算延伸長度與伸展長度 ld。</p>
+
+<h3>4.3　水平主筋（最小鋼筋，即時檢核）</h3>
+<p>使用者指定號數與間距，程式僅檢核鋼筋比 ρ 是否滿足
+§11.6.1 牆最小水平鋼筋比規定（<code>#5</code> 以下且 fy ≥ 4200 → 0.20%，
+其餘 → 0.25%），欄位變動時即時顯示 ρ 值、規定門檻與 OK／提醒狀態
+（如圖 4-1 中「ρ=0.276% 需≥0.250%(§11.6.1 自動) ✓ OK」）。
+v2.2.3 起移除手動覆寫最小比的欄位，一律採規範自動值。</p>
+
+<h3>4.4　剪力筋</h3>
+<p>可設定三種剪力筋：水平剪力筋、水平斜撐、垂直斜撐，各自可選
+<strong>#4／#5／#6</strong>（<code>#0</code>＝不設此型）與折減係數
+（水平剪力筋預設 1.0，兩種斜撐預設 0.85）。</p>
+<p>間距設定二擇一：</p>
+<ul>
+  <li><strong>手動輸入</strong>（預設）：分別輸入基本間距水平 sH × 垂直 sV，
+      程式即時檢核 sH／sV 是否為對應主筋間距的整數倍，
+      並在斜撐傾角超過 45°（間距 &gt; d − 保護層 − db/2）時顯示軟性警告
+      （不擋執行，Vs 依實際角度折減計算）。</li>
+  <li><strong>自動配置</strong>：勾選「自動配置間距」後，程式依主筋間距整數倍
+      自動計算並向下加密，手動輸入框停用。</li>
+</ul>
+<p>剪力不足時程式自動加密（優先序：先降各型垂直間距 sV，
+再降水平間距 sH；水平剪力筋 → 垂直斜撐 → 水平斜撐）。</p>
+
+<h3>4.5　底部免配區</h3>
+<p>「底部免配區開放」核取方塊，<strong>預設不勾選</strong>（主筋與剪力筋配到壁底）。
+勾選後才會計算免配深度：免配主筋條件為 |M| &lt; Mcr/(4/3)，
+裸區另需滿足 V &lt; 0.5·φVc0/FS（含尺寸效應），
+最終裸區深度取兩者較小值（較保守）。</p>
+
+<h3>4.6　執行與輸出</h3>
+<p>按「執行配筋檢核」後，輸出兩個檔案（不覆蓋原繪圖轉檔輸出的 <code>.dxf</code>）：</p>
+<ul>
+  <li><code>&lt;檔名&gt;_配筋.dxf</code>　含容量線與加筋色帶的配筋圖</li>
+  <li><code>&lt;檔名&gt;_配筋表.xlsx</code>　三分頁配筋報告（詳見第 6 章）</li>
+</ul>
+<p>下方訊息區會列出撓曲與剪力配筋表、水平主筋檢核結果、開裂彎矩、
+裸區深度，以及警告（強度不足，需處理）與提醒（最小鋼筋未達規範下限，
+非錯誤，供技師判定）。完成後可按「開啟輸出資料夾」查看檔案。</p>
+
+<!-- ============================================================ -->
+<h2 id="sec5"><span class="num">5.</span>DXF 輸出說明</h2>
+
+<p>本節以實際案例（<code>11310M_配筋.dxf</code>，含內力圖＋配筋疊圖）截圖說明
+DXF 圖面的分區、圖層與 HATCH 色帶意義；截圖為 <code>ezdxf</code> 渲染之預覽圖
+（黑底畫布，實際 DXF 檔案內容不含底色，於 AutoCAD 等軟體開啟時底色依各自設定而定）。</p>
+
+<h3>5.1　整體版面：三張圖＋深度軸</h3>
+<figure>
+  <img src="使用說明_圖/03_DXF內力配筋圖_整體佈局.png" alt="DXF整體三圖佈局截圖">
+  <figcaption>圖 5-1　輸出 DXF 由左至右四條垂直軸：深度基準軸（GL 標註，公尺）、
+  位移圖（cm）、彎矩圖（t-m/m）、剪力圖（t/m）；本例為配筋 DXF，故彎矩／剪力圖上
+  另疊繪配筋容量線與圖例</figcaption>
+</figure>
+<div class="tbl-wrap">
+<table>
+<caption>繪圖轉檔輸出（內力圖）圖層</caption>
+<thead><tr><th>圖層（legacy 樣式）</th><th>named 樣式</th><th>內容</th></tr></thead>
+<tbody>
+<tr><td><code>000</code></td><td><code>AXIS</code></td><td>深度基準軸、刻度（色 7）</td></tr>
+<tr><td><code>0</code></td><td><code>ANNOTATION</code></td><td>文字標註（色 5）</td></tr>
+<tr><td><code>001</code>～<code>0nn</code></td><td><code>PHASE_01</code>…</td>
+    <td>各施工階段曲線（色＝階段編號）</td></tr>
+<tr><td><code>ENVELOPE_MAX</code> / <code>ENVELOPE_MIN</code></td><td>同左</td>
+    <td>加繪包絡線開啟時的最大／最小包絡線</td></tr>
+</tbody>
+</table>
+</div>
+<p>三張圖的單位與方向：<strong>位移圖</strong>單位 cm，正值向右；
+<strong>彎矩圖</strong>單位 t-m/m，正值向左（鏡射繪製，圖 5-1 中綠線
+<code>M(+)exc</code> 為開挖側正彎矩、洋紅線 <code>M(-)ret</code> 為擋土側負彎矩，
+兩者分居軸線兩側）；<strong>剪力圖</strong>單位 t/m，正值向右、不鏡射，
+容量線於軸線左右對稱各畫一條（剪力無方向性）。深度軸以 GL 高程標註，
+每 5 m 一個文字、每 1 m 一格刻度。</p>
+
+<h3>5.2　配筋疊圖局部放大：容量線與 HATCH 色帶</h3>
+<figure>
+  <img src="使用說明_圖/04_DXF配筋容量線與HATCH局部放大.png" alt="DXF配筋容量線與HATCH局部放大截圖">
+  <figcaption>圖 5-2　彎矩圖與剪力圖局部放大：基本筋容量線（全深直線）、
+  加筋 HATCH 色帶（僅加筋增量區段）、剪力容量線（軸線左右對稱）與密集段 HATCH、
+  右側完整圖例（LEGEND）</figcaption>
+</figure>
+<p>圖 5-2 中可辨識的元素：</p>
+<ul>
+  <li><strong>基本筋容量線</strong>：綠線＝開挖側 <code>exc base (M+)</code>、
+      洋紅線＝擋土側 <code>ret base (M-)</code>，全深直線，代表基本筋單獨提供的
+      <code>φMn/FS</code>，線旁標註號數、間距與容量值。</li>
+  <li><strong>加筋 HATCH 色帶</strong>：黃色斜線帶＝開挖側加筋 <code>exc ADD</code>、
+      橘色斜線帶＝擋土側加筋 <code>ret ADD</code>，僅標示於基本筋容量線到加筋容量線
+      之間的「加筋增量」區段與深度範圍，方便辨識實際補強起訖位置；
+      基本筋容量線全深不加影線。</li>
+  <li><strong>剪力容量線</strong>：青線＝剪力基本 grid 容量 <code>fVn/FS</code>，
+      於中軸左右對稱各畫一條（剪力純量、不分擋土／開挖）。</li>
+  <li><strong>剪力密集段 HATCH</strong>：黃色斜線帶，標示密集段的整幅深度範圍，
+      代表該區段剪力筋已加密。</li>
+  <li><strong>圖例（LEGEND）</strong>：位於剪力圖右側，列出各施工階段曲線顏色，
+      以及容量線／HATCH 色帶的圖例對照，供對照圖面判讀。</li>
+</ul>
+<p>配筋 DXF（<code>_配筋.dxf</code>）使用 <code>R2010</code>（需 R2004 以上）
+而非 <code>R12</code>，即為需支援 HATCH 半透明色帶所致。</p>
+
+<!-- ============================================================ -->
+<h2 id="sec6"><span class="num">6.</span>Excel 輸出說明</h2>
+
+<p>配筋檢核輸出的 <code>&lt;檔名&gt;_配筋表.xlsx</code>（以下以實際案例
+<code>11310M_配筋表.xlsx</code> 為例）含三個分頁，用途各異：</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>分頁</th><th>頁籤色</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>配筋報告</td><td>藍</td>
+    <td>易讀報告：基本資料、垂直主筋（擋土／開挖分表）、
+        最小鋼筋檢核、水平主筋、剪力配筋（基本＋密集段）、
+        三種剪力筋說明、免配區／裸區、假設條件、警告與提醒。
+        本節下方以此分頁實際內容截圖說明。</td></tr>
+<tr><td>DiaphragmWall對應</td><td>灰</td>
+    <td>以公司 <code>DiaphragmWall.xlsm</code> 模板原格式生成、程式自動填入數字，
+        設有工作表保護（密碼 <code>rido2dxf</code>）以防手滑覆寫，
+        作為程式原始輸出的唯讀基準。</td></tr>
+<tr><td>連續壁配筋立圖(工程師)</td><td>綠</td>
+    <td>同上內容的可編輯複本，供工程師依判斷直接修改後，
+        接續公司 DiaphragmWall 繪圖工具使用。<strong>修改不會回寫報告分頁</strong>，
+        且重新執行程式會整份覆蓋輸出檔，修改後請另存新檔或改檔名。</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>6.1　垂直主筋（撓曲）與最小鋼筋檢核怎麼讀</h3>
+<figure>
+  <img src="使用說明_圖/05_配筋報告_垂直主筋與最小鋼筋檢核.png" alt="配筋報告分頁：垂直主筋與最小鋼筋檢核截圖">
+  <figcaption>圖 6-1　「配筋報告」分頁節錄：擋土側／開挖側垂直主筋（基本筋＋加筋）表，
+  與垂直主筋最小鋼筋檢核表（此例兩面均為「提醒」，即未達 §9.6.1 且不適用「多配 1/3」免除）</figcaption>
+</figure>
+<p>上表底色：<strong>淡藍＝基本筋列</strong>、<strong>淡橘＝加筋列</strong>。
+關鍵欄位：</p>
+<ul>
+  <li><strong>M,max</strong>：該區段對應之最大彎矩需求（工作載重）。</li>
+  <li><strong>φMn/FS</strong>：折減後之斷面容量，須 ≥ M,max。</li>
+  <li><strong>DCR</strong>（Demand-Capacity Ratio）＝ M,max ÷ (φMn/FS)；
+      基本筋列 DCR 常見 &gt;1（單獨不足屬正常，因設計上仰賴加筋補強），
+      加筋列 DCR 應 ≤1。</li>
+  <li><strong>判定</strong>欄：<span class="badge new" style="background:#E2EFDA;color:#1a7f37;">OK</span>
+      強度足夠；<span class="badge new" style="background:#FFF2CC;color:#8a6100;">由加筋補強</span>
+      基本筋單獨不足、已由下方加筋區段補足（非錯誤，屬設計常態）；
+      NG（本例未出現）＝允許之最大加筋仍不足，需加大號數／雙排／加厚或提高 fc'。</li>
+</ul>
+<p>下方「最小鋼筋檢核」表即 §9.6.1／§9.6.1.3「多配 1/3」免除條款的判讀結果，
+判定同樣以淡黃底標示「提醒」。三種可能情形：</p>
+<ol>
+  <li>As 提供直接 ≥ As,min（符合，不特別標色）；</li>
+  <li>As,min 未達，但該面幾無撓曲需求（4/3×As,req 甚小），依 §9.6.1.3 免除；</li>
+  <li>As 提供 ≥ 4/3×As,req 但 &lt; As,min（依「多配 1/3」條款視為符合）。</li>
+</ol>
+<p>本例（圖 6-1）擋土側與開挖側 As 提供皆為 16.13 cm²/m，未達
+As,min=22.96 cm²/m，且不滿足上述免除情形，故兩面均列為
+<strong>「提醒」</strong>（非強度不足，供技師依規範原文判定連續壁是否適用牆章節）。</p>
+
+<h3>6.2　水平主筋最小鋼筋與剪力三型怎麼讀</h3>
+<figure>
+  <img src="使用說明_圖/06_配筋報告_水平主筋與剪力配筋.png" alt="配筋報告分頁：水平主筋與剪力配筋截圖">
+  <figcaption>圖 6-2　「配筋報告」分頁節錄：水平主筋最小鋼筋檢核，
+  與剪力配筋表（基本全段＋密集段）</figcaption>
+</figure>
+<p><strong>水平主筋</strong>僅檢核鋼筋比 ρ 是否滿足 §11.6.1 最小水平鋼筋比：
+ρ 提供 &lt; ρ 最小時，判定欄同樣以淡黃底標示「提醒」（本例 ρ=0.207% 未達
+0.250%），為規範下限提醒而非強度不足。</p>
+<p><strong>剪力配筋表</strong>底色：<strong>淡藍＝基本(全段)列</strong>、
+<strong>淡橘＝密集段列</strong>，欄位意義與撓曲表對應（Vu,max／fVn/FS／DCR）；
+判定欄同樣以綠底 OK、黃底「由密集段補強」表示。三種剪力筋型
+（水平剪力筋、水平斜撐、垂直斜撐）之號數、間距與角度限制已於
+<a href="#sec4">§4.4</a> 說明，Excel 表中則於「三之一、三種剪力筋」小節
+逐型列出 Vs 貢獻與折減係數。</p>
+
+<!-- ============================================================ -->
+<h2 id="sec7"><span class="num">7.</span>常見問題</h2>
+
+<h3>Q1　exe 版雙擊後「打不開」或閃退</h3>
+<p>請嘗試：</p>
+<ul>
+  <li>安裝 Microsoft Visual C++ Redistributable 2015-2022（最新版）後再重新嘗試開啟 exe。</li>
+</ul>
+
+<h3>Q2　哪些設定會被記住？哪些不會？</h3>
+<p>除「輸入 LST 路徑」與「PSR 係數」外，其餘所有欄位
+（繪圖刻度、選項、配筋幾何材料、主筋、剪力筋、fy 設定等）
+在關閉視窗或執行成功時都會寫入使用者家目錄的
+<code>.rido2dxf.json</code>，下次開啟自動套用。PSR 係數固定每次重設為 1.0，
+避免使用者忘記上次已套用折減。</p>
+
+<h3>Q3　輸出檔已存在怎麼辦？</h3>
+<p>程式會彈出對話框詢問是否覆蓋；選「否」則取消操作，原檔不受影響。</p>
+
+<h3>Q4　繪製極限設得比資料最大值小會怎樣？</h3>
+<p>介面會在灰字提示區顯示警告文字，但仍允許執行轉檔；
+超出極限的曲線部分在圖面上會被裁切，請自行確認是否符合需求。</p>
+
+</main>
+</div>
+
+<footer>
+  <div class="final-note">
+    本工具（含繪圖轉檔與配筋檢核模組）產出之圖面、配筋表與所有計算結果，
+    均為設計輔助之用，內力分析結果與配筋設計成果須由負責技師依規範原文
+    覆核後，方可用於送審、設計或施工文件。
+  </div>
+  <p>Rido2DXF v2.2.3 使用說明｜本文件依專案原始碼、README.md 與發佈說明整理，
+  如有出入請以程式實際行為與負責技師覆核結果為準。</p>
+</footer>
+
+</body>
+</html>
