@@ -303,3 +303,27 @@ footer strong{color:var(--ink-2);}
   h2{break-after:avoid}
   .alert,.col.coach,tr.key td{-webkit-print-color-adjust:exact; print-color-adjust:exact}
 }
+
+/* ---- 總體規劃頁 ---- */
+.phase{
+  border:1px solid var(--line); border-left:3px solid var(--line-strong);
+  border-radius:3px; padding:12px 14px; margin-bottom:10px; background:var(--surface);
+}
+.phase:last-child{margin-bottom:0}
+.phead{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:6px;}
+.pkey{
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+  background:var(--ink); color:var(--bg); padding:2px 7px; border-radius:2px;
+}
+.phead strong{font-size:15px;}
+.prange{font-size:12px; color:var(--ink-3); margin-left:auto;}
+.phase p{margin:0; font-size:13.5px; line-height:1.75; color:var(--ink-2);}
+table.road{min-width:0;}                    /* 四欄都短，不需要橫向捲動 */
+table.road td,table.road th{padding:7px 8px;}
+tr.dl td{color:var(--ink-3);}
+tr.dl td:first-child::after{content:"　減"; font-size:10px;}
+tr.wnote td{
+  padding:2px 8px 9px; border-bottom:1px solid var(--line);
+  font-size:12.5px; line-height:1.7; color:var(--ink-3);
+}
+tr.wnote + tr td{padding-top:9px}
