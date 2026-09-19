@@ -80,6 +80,14 @@ h2{
   color:var(--ink-2); padding-bottom:7px; border-bottom:1px solid var(--line-strong);
 }
 
+/* 可收合的參考區塊：summary 外觀等同 h2 */
+.fold > details > summary{
+  font-family:var(--serif); font-size:17px; font-weight:600; letter-spacing:.02em;
+  color:var(--ink-2); padding-bottom:7px; margin-bottom:14px;
+  border-bottom:1px solid var(--line-strong); min-height:44px;
+}
+.fold > details[open] > summary{margin-bottom:14px;}
+
 /* ---- 分頁（週別／批次）---- */
 .tabs{
   display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;
@@ -159,6 +167,25 @@ tr.key td{background:var(--surface-2);}
 }
 .alert b{font-family:var(--sans);}
 
+/* ---- 折疊區塊（共用）----
+   長文一律折疊。手機單欄下，一段 800 字的判讀若全展開會蓋掉整個版面。 */
+details > summary{
+  cursor:pointer; list-style:none; min-height:40px;
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:13px; letter-spacing:.04em; color:var(--ink-2);
+}
+details > summary::-webkit-details-marker{display:none}
+details > summary::before{
+  content:"▸"; flex:0 0 auto; font-size:11px; color:var(--ink-3);
+  transition:transform .15s ease;
+}
+details[open] > summary::before{transform:rotate(90deg)}
+details > summary:focus-visible{outline:2px solid var(--z1); outline-offset:2px;}
+details > summary .p{
+  font-family:var(--sans); font-size:12.5px; color:var(--ink-3); font-weight:400;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
+}
+
 /* ---- 執行狀態 ---- */
 .chip{
   font-family:var(--mono); font-size:11px; letter-spacing:.06em;
@@ -174,13 +201,76 @@ tr.key td{background:var(--surface-2);}
 .bar.over > i{background:var(--over)}
 .bar.under > i{background:var(--z3)}
 
-/* ---- 分析區塊 ---- */
-.analysis{background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:14px 16px;}
-.analysis h3{font-size:14px; font-family:var(--sans); font-weight:700; margin:14px 0 4px;}
-.analysis h3:first-child{margin-top:0}
-.analysis p{margin:0 0 8px; font-size:14px; color:var(--ink-2);}
-.analysis p:last-child{margin-bottom:0}
+/* ---- 逐日執行卡 ----
+   取代原本的 7 欄表格。表格在手機上會把長判讀擠進約 70px 寬的欄位，
+   撐出數千 px 的細長條（2026-09-19 回報）。卡片讓長文獨佔整行。 */
+.erows{display:flex; flex-direction:column; gap:12px;}
+.erow{
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:13px 15px;
+}
+.ehead{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+.ehead .date{font-size:18px;}
+.elabel{font-weight:700; font-size:15px;}
+.ehead .chip{margin-left:auto;}
+.erx{
+  margin:0 0 10px; font-size:13px; color:var(--ink-3);
+  font-family:var(--mono); letter-spacing:.02em;
+}
+.emetrics{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr));
+  gap:8px 10px; margin:10px 0 0;
+}
+.emetrics > div{min-width:0;}
+.emetrics dt{font-size:10.5px; letter-spacing:.08em; color:var(--ink-3); margin:0;}
+.emetrics dd{
+  margin:1px 0 0; font-family:var(--mono); font-variant-numeric:tabular-nums;
+  font-size:15px; font-weight:600; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
+}
+.emetrics dd .u{font-size:11.5px; font-weight:400; color:var(--ink-3);}
+.enote{margin-top:12px; border-top:1px dashed var(--line); padding-top:4px;}
+.enote p{margin:8px 0 0; font-size:13.5px; line-height:1.75; color:var(--ink-2);}
+.enote p:first-of-type{margin-top:6px;}
+
+/* ---- 待確認事項 ---- */
+.flags{list-style:none; margin:0; padding:0;}
+.flags li{
+  margin:0 0 9px; padding:9px 12px; font-size:13.5px; line-height:1.7;
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  border-left:3px solid var(--line-strong);
+}
+.flags li:last-child{margin-bottom:0}
+.flabel{
+  display:inline-block; margin-right:7px; padding:1px 7px; border-radius:2px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; white-space:nowrap;
+  vertical-align:.06em;
+}
+.flabel.pend{background:var(--warn-bg); color:var(--miss); border:1px solid var(--warn-line);}
+.flabel.closed{background:var(--surface-2); color:var(--ink-3); border:1px solid var(--line);}
+li:has(.flabel.pend){border-left-color:var(--miss);}
+.closedbox{margin-top:14px;}
+.closedbox .flags{margin-top:10px;}
+.closedbox .flags li{border-left-color:var(--line); background:transparent;}
+
+/* ---- 分析區塊 ----
+   背景／分析／結論／建議四段合計 3,600 字以上，全展開不利閱讀。
+   結論與建議預設展開（要行動），背景與分析預設折疊。 */
+.analysis{background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:6px 16px 14px;}
+.asec{border-top:1px solid var(--line);}
+.asec:first-child{border-top:0}
+.asec > summary{
+  font-family:var(--serif); font-size:15px; font-weight:700; color:var(--ink);
+  letter-spacing:.04em; min-height:44px;
+}
+.asec > p{margin:0 0 9px; font-size:14px; line-height:1.8; color:var(--ink-2);}
+.asec > p:first-of-type{margin-top:2px}
+.asec > p:last-child{margin-bottom:12px}
 .analysis strong{color:var(--ink)}
+.disclaim{
+  margin:12px 0 0; padding-top:11px; border-top:1px solid var(--line);
+  font-size:12.5px; line-height:1.7; color:var(--ink-3);
+}
 .empty{color:var(--ink-3); font-size:13.5px; font-style:normal;}
 
 /* ---- 規則 ---- */
@@ -207,7 +297,9 @@ footer strong{color:var(--ink-2);}
   .wrap{max-width:none; padding-block:0}
   .sitenav,.tabs{display:none!important}
   .panel[hidden]{display:block!important}
-  .day,.rest,.rule,table,.analysis{break-inside:avoid; page-break-inside:avoid}
+  details:not([open]) > *:not(summary){display:revert!important}
+  details{display:block}
+  .day,.rest,.rule,table,.analysis,.erow,.flags li{break-inside:avoid; page-break-inside:avoid}
   h2{break-after:avoid}
   .alert,.col.coach,tr.key td{-webkit-print-color-adjust:exact; print-color-adjust:exact}
 }
