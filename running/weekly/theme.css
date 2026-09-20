@@ -327,3 +327,4 @@ tr.wnote td{
   font-size:12.5px; line-height:1.7; color:var(--ink-3);
 }
 tr.wnote + tr td{padding-top:9px}
+.was{color:var(--ink-3); font-size:12px; font-weight:400;}
