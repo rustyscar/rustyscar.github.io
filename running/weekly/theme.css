@@ -333,3 +333,26 @@ tr.wnote + tr td{padding-top:9px}
 .alert.sync{margin-top:14px; font-size:14px;}
 .alert.sync ul{margin:6px 0 0 18px; padding:0;}
 .alert.sync li{margin:2px 0;}
+
+/* 判讀文字的【標籤】前綴（build_pages.prose 產生）。
+   標籤與內文同行但視覺分離，讓人眼一掃就看到「環境」「腳踝」這些切分點。 */
+b.tag{
+  display:inline-block; min-width:4.2em; margin-right:8px;
+  font-family:var(--sans); font-weight:700; color:var(--ink-1);
+}
+.enote p{margin:10px 0 0;}
+@media (max-width:480px){
+  b.tag{display:block; min-width:0; margin:0 0 2px;}
+}
+
+/* 每週完成度徽章。90~110% 視為在線上；超出不等於好（見原則十一：EA 與睡眠優先）。 */
+.pill{display:inline-block; padding:1px 7px; border-radius:10px; font-size:12px;
+      font-family:var(--mono); white-space:nowrap;}
+.pill.on{background:#E6F4EA; color:#1E6B34;}
+.pill.under{background:var(--warn-bg); color:#8A4B38;}
+.pill.over{background:#FFF3D6; color:#7A5A12;}
+@media (prefers-color-scheme:dark){
+  .pill.on{background:#17301F; color:#7FD19A;}
+  .pill.under{background:#2A1B17; color:#E0AA9B;}
+  .pill.over{background:#2E2613; color:#E3C878;}
+}
