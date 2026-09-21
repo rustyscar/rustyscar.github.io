@@ -328,3 +328,8 @@ tr.wnote td{
 }
 tr.wnote + tr td{padding-top:9px}
 .was{color:var(--ink-3); font-size:12px; font-weight:400;}
+
+/* 資料同步異常橫幅（lib/sync_status.py 產生）。沿用 .alert 配色，只補清單間距。 */
+.alert.sync{margin-top:14px; font-size:14px;}
+.alert.sync ul{margin:6px 0 0 18px; padding:0;}
+.alert.sync li{margin:2px 0;}
