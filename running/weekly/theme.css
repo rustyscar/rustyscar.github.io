@@ -338,7 +338,8 @@ tr.wnote + tr td{padding-top:9px}
    標籤與內文同行但視覺分離，讓人眼一掃就看到「環境」「腳踝」這些切分點。 */
 b.tag{
   display:inline-block; min-width:4.2em; margin-right:8px;
-  font-family:var(--sans); font-weight:700; color:var(--ink-1);
+  font-family:var(--sans); font-weight:700;
+  color:var(--bg);
 }
 .enote p{margin:10px 0 0;}
 @media (max-width:480px){
